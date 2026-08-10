@@ -406,13 +406,13 @@ onclick="abrirCarrinho()"
 
 >
 
-```
-🛒 Carrinho
-```
 
-```
+🛒 Carrinho
+
+
+
 <span id="cartCount">0</span>
-```
+
 
   </button>
 
@@ -439,9 +439,9 @@ onclick="filtrarProdutos('Todos', this)"
 
 >
 
-```
+
 Todos
-```
+
 
   </button>
 
@@ -451,9 +451,9 @@ onclick="filtrarProdutos('Bolos', this)"
 
 >
 
-```
+
 🎂 Bolos
-```
+
 
   </button>
 
@@ -463,9 +463,9 @@ onclick="filtrarProdutos('Doces', this)"
 
 >
 
-```
+
 🍫 Doces
-```
+
 
   </button>
 
@@ -475,9 +475,9 @@ onclick="filtrarProdutos('Kits', this)"
 
 >
 
-```
+
 🎁 Kits
-```
+
 
   </button>
 
@@ -509,7 +509,7 @@ onclick="filtrarProdutos('Kits', this)"
 
   <div class="modal-content">
 
-```
+
 <div class="modal-title">
 
   <h2>🛒 Seu carrinho</h2>
@@ -541,7 +541,7 @@ onclick="filtrarProdutos('Kits', this)"
 >
   Continuar pedido
 </button>
-```
+
 
   </div>
 
@@ -558,7 +558,8 @@ onclick="filtrarProdutos('Kits', this)"
 
   <div class="modal-content">
 
-```
+`
+    
 <div class="modal-title">
 
   <h2>📝 Finalizar pedido</h2>
@@ -685,10 +686,7 @@ onclick="filtrarProdutos('Kits', this)"
     Selecione o horário
   </option>
 
-  <option value="10:00">10:00</option>
-  <option value="11:00">11:00</option>
-  <option value="12:00">12:00</option>
-  <option value="13:00">13:00</option>
+
   <option value="14:00">14:00</option>
   <option value="15:00">15:00</option>
   <option value="16:00">16:00</option>
@@ -2379,20 +2377,6 @@ onclick="filtrarProdutos('Kits', this)"
       );
 
 
-    } catch (erroFinal) {
-
-      console.error(
-        "ERRO FINAL DO PEDIDO:",
-        erroFinal
-      );
-
-
-      mostrarErro(
-        erroFinal.message ||
-        "Não foi possível finalizar o pedido."
-      );
-
-
     } finally {
 
       botao.disabled =
@@ -2506,7 +2490,36 @@ onclick="filtrarProdutos('Kits', this)"
   carregarProdutos();
 
 </script>
+<script>
+function abrirCheckout() {
+  const modal = document.getElementById("checkoutModal");
 
+  if (!modal) {
+    alert("Erro: a tela de checkout não foi encontrada.");
+    return;
+  }
+
+  if (typeof carrinho === "undefined" || carrinho.length === 0) {
+    alert("Seu carrinho está vazio. 🍰");
+    return;
+  }
+
+  modal.style.display = "flex";
+  modal.classList.add("show");
+}
+
+
+function fecharCheckout() {
+  const modal = document.getElementById("checkoutModal");
+
+  if (!modal) {
+    return;
+  }
+
+  modal.style.display = "none";
+  modal.classList.remove("show");
+}
+</script>
 </body>
 </html>
-```
+

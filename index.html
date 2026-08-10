@@ -9,7 +9,6 @@
   <title>Lá Dociê | Confeitaria</title>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
@@ -24,17 +23,17 @@
     header {
       background: #4b281d;
       color: white;
-      padding: 18px 20px;
+      padding: 16px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 10;
+      z-index: 20;
     }
 
     .logo {
-      font-size: 25px;
+      font-size: 24px;
       font-weight: bold;
     }
 
@@ -42,25 +41,25 @@
       color: #d9a441;
     }
 
-    .cart {
+    .cart-button {
+      border: none;
+      border-radius: 30px;
+      padding: 12px 17px;
       background: #e0b35b;
       color: #3d241c;
-      border: 0;
-      border-radius: 30px;
-      padding: 13px 18px;
-      font-size: 16px;
+      font-size: 15px;
       font-weight: bold;
       cursor: pointer;
     }
 
     .hero {
       text-align: center;
-      padding: 65px 20px 35px;
+      padding: 55px 20px 30px;
     }
 
     .hero h1 {
-      font-size: 43px;
       margin: 0;
+      font-size: 42px;
       line-height: 1.1;
     }
 
@@ -70,28 +69,30 @@
 
     .hero p {
       max-width: 650px;
-      margin: 25px auto;
-      font-size: 19px;
-      line-height: 1.6;
+      margin: 20px auto;
       color: #765b51;
+      font-size: 18px;
+      line-height: 1.6;
     }
 
     .categories {
+      max-width: 1100px;
+      margin: auto;
       display: flex;
-      gap: 12px;
+      gap: 10px;
       overflow-x: auto;
       padding: 10px 20px 25px;
     }
 
     .category {
       white-space: nowrap;
-      padding: 14px 24px;
+      padding: 12px 20px;
       border: 1px solid #dccfc8;
       border-radius: 30px;
       background: white;
       color: #4b281d;
-      font-size: 16px;
       cursor: pointer;
+      font-size: 15px;
     }
 
     .category.active {
@@ -102,7 +103,7 @@
     .products {
       max-width: 1100px;
       margin: auto;
-      padding: 20px;
+      padding: 10px 20px 40px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
@@ -112,19 +113,19 @@
       background: white;
       border-radius: 18px;
       overflow: hidden;
-      box-shadow: 0 4px 15px rgba(70, 35, 20, .10);
       border: 1px solid #eee1da;
+      box-shadow: 0 4px 15px rgba(70, 35, 20, .10);
     }
 
     .product-image {
       width: 100%;
-      height: 190px;
+      height: 200px;
       background: #f3e7df;
       display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: 55px;
+      align-items: center;
       overflow: hidden;
+      font-size: 60px;
     }
 
     .product-image img {
@@ -137,43 +138,52 @@
       padding: 17px;
     }
 
-    .product h3 {
+    .product-info h3 {
       margin: 0 0 8px;
       font-size: 20px;
     }
 
-    .product p {
+    .product-info p {
       color: #765b51;
       min-height: 40px;
+      line-height: 1.4;
     }
 
     .price {
+      margin-top: 12px;
       color: #b47b20;
       font-size: 21px;
       font-weight: bold;
     }
 
-    .add {
+    .add-button,
+    .main-button {
       width: 100%;
-      border: 0;
+      border: none;
       border-radius: 12px;
-      padding: 13px;
+      padding: 14px;
       margin-top: 12px;
       background: #4b281d;
       color: white;
       font-weight: bold;
-      font-size: 15px;
+      font-size: 16px;
       cursor: pointer;
     }
 
+    .add-button:active,
+    .main-button:active {
+      transform: scale(.98);
+    }
+
     .loading {
+      grid-column: 1 / -1;
       text-align: center;
       padding: 50px 20px;
-      font-size: 18px;
+      color: #765b51;
     }
 
     footer {
-      margin-top: 60px;
+      margin-top: 40px;
       padding: 40px 20px;
       text-align: center;
       background: #4b281d;
@@ -182,10 +192,12 @@
       font-weight: bold;
     }
 
+    /* MODAIS */
+
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.55);
+      background: rgba(0, 0, 0, .55);
       display: none;
       align-items: flex-end;
       justify-content: center;
@@ -197,38 +209,45 @@
     }
 
     .modal-content {
-      background: #fffaf7;
       width: 100%;
       max-width: 650px;
-      max-height: 94vh;
+      max-height: 95vh;
       overflow-y: auto;
-      border-radius: 24px 24px 0 0;
       padding: 22px;
+      background: #fffaf7;
+      border-radius: 24px 24px 0 0;
     }
 
-    .modal-header {
+    .modal-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      margin-bottom: 15px;
+    }
+
+    .modal-title h2 {
+      margin: 0;
     }
 
     .close {
-      width: 42px;
-      height: 42px;
-      border: 0;
+      width: 40px;
+      height: 40px;
+      border: none;
       border-radius: 50%;
       background: #eadbd3;
       color: #4b281d;
-      font-size: 20px;
+      font-size: 18px;
       cursor: pointer;
     }
 
+    /* CARRINHO */
+
     .cart-item {
       background: white;
-      border-radius: 14px;
-      padding: 14px;
-      margin: 10px 0;
       border: 1px solid #eee1da;
+      border-radius: 14px;
+      padding: 15px;
+      margin: 10px 0;
     }
 
     .cart-item-top {
@@ -240,15 +259,14 @@
     .quantity {
       display: flex;
       align-items: center;
-      gap: 10px;
-      margin-top: 10px;
+      gap: 12px;
+      margin-top: 12px;
     }
 
     .quantity button {
-      width: 36px;
-      height: 36px;
-      padding: 0;
-      border: 0;
+      width: 35px;
+      height: 35px;
+      border: none;
       border-radius: 50%;
       background: #4b281d;
       color: white;
@@ -257,29 +275,31 @@
     }
 
     .remove {
-      border: 0;
+      border: none;
       background: none;
-      color: #9b3d3d;
-      cursor: pointer;
+      color: #a33d3d;
       font-weight: bold;
+      cursor: pointer;
     }
 
     .total {
-      background: #4b281d;
-      color: white;
-      padding: 18px;
-      border-radius: 14px;
-      margin: 15px 0;
-      font-size: 21px;
-      font-weight: bold;
       display: flex;
       justify-content: space-between;
+      margin-top: 15px;
+      padding: 17px;
+      border-radius: 14px;
+      background: #4b281d;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
     }
+
+    /* FORMULÁRIO */
 
     label {
       display: block;
-      margin-top: 13px;
-      margin-bottom: 5px;
+      margin-top: 14px;
+      margin-bottom: 6px;
       font-weight: bold;
     }
 
@@ -290,9 +310,9 @@
       padding: 13px;
       border: 1px solid #d9ccc5;
       border-radius: 10px;
-      font-size: 16px;
-      font-family: inherit;
       background: white;
+      font-family: Arial, sans-serif;
+      font-size: 16px;
     }
 
     textarea {
@@ -300,77 +320,67 @@
       resize: vertical;
     }
 
-    .option {
+    .radio-box {
       background: white;
       border: 1px solid #ddd0c9;
-      padding: 13px;
       border-radius: 10px;
+      padding: 13px;
       margin-top: 8px;
     }
 
-    .option input {
+    .radio-box label {
+      margin: 0;
+      font-weight: normal;
+    }
+
+    .radio-box input {
       width: auto;
       margin-right: 8px;
     }
 
-    .hidden {
-      display: none !important;
-    }
-
-    .main-button {
-      width: 100%;
-      border: 0;
-      border-radius: 12px;
-      padding: 15px;
-      margin-top: 15px;
-      background: #4b281d;
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
     .secondary-button {
       width: 100%;
-      border: 0;
+      border: none;
       border-radius: 12px;
       padding: 13px;
       margin-top: 10px;
-      background: #d9c0b4;
+      background: #dbc6bb;
       color: #4b281d;
-      font-size: 16px;
       cursor: pointer;
+      font-weight: bold;
     }
 
-    .success-box {
+    .error {
+      margin-top: 12px;
+      padding: 13px;
+      border-radius: 10px;
+      background: #ffe4e0;
+      color: #8d2929;
+      word-break: break-word;
+      line-height: 1.5;
+    }
+
+    .success {
       text-align: center;
-      padding: 20px 5px;
+      padding: 25px 5px;
     }
 
     .success-icon {
       font-size: 65px;
     }
 
-    .error {
-      color: #a53d3d;
-      margin-top: 10px;
-      font-weight: bold;
-    }
-
-    .empty {
-      text-align: center;
-      padding: 30px 10px;
-      color: #765b51;
+    .hidden {
+      display: none !important;
     }
 
     @media (max-width: 500px) {
 
       .hero h1 {
-        font-size: 36px;
+        font-size: 35px;
       }
 
       .hero p {
-        font-size: 17px;
+        font-size: 16px;
       }
 
       .modal-content {
@@ -378,7 +388,6 @@
       }
 
     }
-
   </style>
 
 </head>
@@ -391,9 +400,20 @@
     LÁ <span>DOCIÊ</span>
   </div>
 
-  <button class="cart" onclick="mostrarCarrinho()">
-    🛒 Carrinho
-    <span id="cartCount">0</span>
+<button
+class="cart-button"
+onclick="abrirCarrinho()"
+
+>
+
+```
+🛒 Carrinho
+```
+
+```
+<span id="cartCount">0</span>
+```
+
   </button>
 
 </header>
@@ -405,33 +425,68 @@
   </h1>
 
   <p>
-    Bolos, brigadeiros, cupcakes e kits preparados com carinho
-    para tornar sua comemoração inesquecível.
+    Bolos, brigadeiros, cupcakes e kits preparados
+    com carinho para tornar sua comemoração inesquecível.
   </p>
 
 </section>
 
 <div class="categories">
 
-<button class="category active"
- onclick="filtrarCategoria('Todos', this)">
-Todos </button>
+<button
+class="category active"
+onclick="filtrarProdutos('Todos', this)"
 
-<button class="category"
- onclick="filtrarCategoria('Bolos', this)">
-🎂 Bolos </button>
+>
 
-<button class="category"
- onclick="filtrarCategoria('Doces', this)">
-🍫 Doces </button>
+```
+Todos
+```
 
-<button class="category"
- onclick="filtrarCategoria('Kits', this)">
-🎁 Kits </button>
+  </button>
+
+<button
+class="category"
+onclick="filtrarProdutos('Bolos', this)"
+
+>
+
+```
+🎂 Bolos
+```
+
+  </button>
+
+<button
+class="category"
+onclick="filtrarProdutos('Doces', this)"
+
+>
+
+```
+🍫 Doces
+```
+
+  </button>
+
+<button
+class="category"
+onclick="filtrarProdutos('Kits', this)"
+
+>
+
+```
+🎁 Kits
+```
+
+  </button>
 
 </div>
 
-<section id="products" class="products">
+<section
+  id="products"
+  class="products"
+>
 
   <div class="loading">
     Carregando nossos produtos... 🍰
@@ -443,19 +498,26 @@ Todos </button>
   LÁ DOCIÊ
 </footer>
 
-<!-- CARRINHO -->
+<!-- ==========================================
+     CARRINHO
+========================================== -->
 
-<div id="cartModal" class="modal">
+<div
+  id="cartModal"
+  class="modal"
+>
 
   <div class="modal-content">
 
 ```
-<div class="modal-header">
+<div class="modal-title">
 
   <h2>🛒 Seu carrinho</h2>
 
-  <button class="close"
-    onclick="fecharCarrinho()">
+  <button
+    class="close"
+    onclick="fecharCarrinho()"
+  >
     ✕
   </button>
 
@@ -473,8 +535,10 @@ Todos </button>
 
 </div>
 
-<button class="main-button"
-  onclick="abrirCheckout()">
+<button
+  class="main-button"
+  onclick="abrirCheckout()"
+>
   Continuar pedido
 </button>
 ```
@@ -483,26 +547,35 @@ Todos </button>
 
 </div>
 
-<!-- CHECKOUT -->
+<!-- ==========================================
+     CHECKOUT
+========================================== -->
 
-<div id="checkoutModal" class="modal">
+<div
+  id="checkoutModal"
+  class="modal"
+>
 
   <div class="modal-content">
 
 ```
-<div class="modal-header">
+<div class="modal-title">
 
   <h2>📝 Finalizar pedido</h2>
 
-  <button class="close"
-    onclick="fecharCheckout()">
+  <button
+    class="close"
+    onclick="fecharCheckout()"
+  >
     ✕
   </button>
 
 </div>
 
 
-<label>Nome completo</label>
+<label>
+  Nome completo
+</label>
 
 <input
   id="clienteNome"
@@ -511,7 +584,9 @@ Todos </button>
 >
 
 
-<label>WhatsApp</label>
+<label>
+  WhatsApp
+</label>
 
 <input
   id="clienteTelefone"
@@ -520,7 +595,9 @@ Todos </button>
 >
 
 
-<label>E-mail</label>
+<label>
+  E-mail
+</label>
 
 <input
   id="clienteEmail"
@@ -529,18 +606,21 @@ Todos </button>
 >
 
 
-<label>Como deseja receber?</label>
+<label>
+  Como deseja receber?
+</label>
 
-<div class="option">
 
-  <label style="margin:0;font-weight:normal;">
+<div class="radio-box">
+
+  <label>
 
     <input
       type="radio"
       name="entrega"
       value="retirada"
       checked
-      onchange="alterarTipoEntrega()"
+      onchange="alterarEntrega()"
     >
 
     🏪 Retirar na Lá Dociê
@@ -550,15 +630,15 @@ Todos </button>
 </div>
 
 
-<div class="option">
+<div class="radio-box">
 
-  <label style="margin:0;font-weight:normal;">
+  <label>
 
     <input
       type="radio"
       name="entrega"
       value="entrega"
-      onchange="alterarTipoEntrega()"
+      onchange="alterarEntrega()"
     >
 
     🏠 Receber por entrega
@@ -568,19 +648,26 @@ Todos </button>
 </div>
 
 
-<div id="enderecoArea" class="hidden">
+<div
+  id="enderecoArea"
+  class="hidden"
+>
 
-  <label>Endereço de entrega</label>
+  <label>
+    Endereço de entrega
+  </label>
 
   <textarea
     id="clienteEndereco"
-    placeholder="Rua, número, bairro, complemento..."
+    placeholder="Rua, número, bairro e complemento"
   ></textarea>
 
 </div>
 
 
-<label>Data</label>
+<label>
+  Data do pedido
+</label>
 
 <input
   id="pedidoData"
@@ -588,7 +675,9 @@ Todos </button>
 >
 
 
-<label>Horário</label>
+<label>
+  Horário
+</label>
 
 <select id="pedidoHorario">
 
@@ -596,6 +685,10 @@ Todos </button>
     Selecione o horário
   </option>
 
+  <option value="10:00">10:00</option>
+  <option value="11:00">11:00</option>
+  <option value="12:00">12:00</option>
+  <option value="13:00">13:00</option>
   <option value="14:00">14:00</option>
   <option value="15:00">15:00</option>
   <option value="16:00">16:00</option>
@@ -608,11 +701,14 @@ Todos </button>
 </select>
 
 
-<label>Forma de pagamento</label>
+<label>
+  Forma de pagamento
+</label>
 
-<div class="option">
 
-  <label style="margin:0;font-weight:normal;">
+<div class="radio-box">
+
+  <label>
 
     <input
       type="radio"
@@ -628,9 +724,9 @@ Todos </button>
 </div>
 
 
-<div class="option">
+<div class="radio-box">
 
-  <label style="margin:0;font-weight:normal;">
+  <label>
 
     <input
       type="radio"
@@ -645,9 +741,9 @@ Todos </button>
 </div>
 
 
-<div class="option">
+<div class="radio-box">
 
-  <label style="margin:0;font-weight:normal;">
+  <label>
 
     <input
       type="radio"
@@ -662,11 +758,13 @@ Todos </button>
 </div>
 
 
-<label>Observações</label>
+<label>
+  Observações
+</label>
 
 <textarea
   id="pedidoObservacoes"
-  placeholder="Alguma informação importante?"
+  placeholder="Alguma observação sobre o pedido?"
 ></textarea>
 
 
@@ -674,16 +772,17 @@ Todos </button>
 
   <span>Total</span>
 
-  <span id="checkoutTotalValue">
+  <span id="checkoutTotal">
     R$ 0,00
   </span>
 
 </div>
 
 
-<div id="checkoutErro"
-  class="error">
-</div>
+<div
+  id="checkoutErro"
+  class="error hidden"
+></div>
 
 
 <button
@@ -699,14 +798,19 @@ Todos </button>
 
 </div>
 
-<!-- SUCESSO -->
+<!-- ==========================================
+     SUCESSO
+========================================== -->
 
-<div id="successModal" class="modal">
+<div
+  id="successModal"
+  class="modal"
+>
 
   <div class="modal-content">
 
 ```
-<div class="success-box">
+<div class="success">
 
   <div class="success-icon">
     🎉
@@ -731,7 +835,7 @@ Todos </button>
 
   <button
     class="secondary-button"
-    onclick="fecharTudo()"
+    onclick="voltarLoja()"
   >
     Voltar para a loja
   </button>
@@ -745,6 +849,10 @@ Todos </button>
 
 <script>
 
+  /* ==========================================
+     SUPABASE
+  ========================================== */
+
   const SUPABASE_URL =
     "https://lzihqkpscesurkfmcasb.supabase.co";
 
@@ -752,14 +860,32 @@ Todos </button>
     "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
 
 
+  /* ==========================================
+     VARIÁVEIS
+  ========================================== */
+
+  let produtos = [];
+
   let carrinho = [];
 
-  let todosProdutos = [];
+
+  /* ==========================================
+     DINHEIRO
+  ========================================== */
+
+  function dinheiro(valor) {
+
+    return "R$ " +
+      Number(valor || 0)
+        .toFixed(2)
+        .replace(".", ",");
+
+  }
 
 
-  /* =========================
-     PRODUTOS
-  ========================= */
+  /* ==========================================
+     CARREGAR PRODUTOS
+  ========================================== */
 
   async function carregarProdutos() {
 
@@ -778,67 +904,54 @@ Todos </button>
             headers: {
               "apikey": SUPABASE_KEY,
               "Authorization":
-                "Bearer " + SUPABASE_KEY
+                "Bearer " +
+                SUPABASE_KEY
             }
           }
         );
 
 
       if (!resposta.ok) {
-        throw new Error(
-          "Erro " + resposta.status
-        );
+
+        const texto =
+          await resposta.text();
+
+        throw new Error(texto);
+
       }
 
 
-      todosProdutos =
+      produtos =
         await resposta.json();
 
 
-      if (!todosProdutos.length) {
-
-        area.innerHTML =
-          `
-          <div class="loading">
-            Ainda não temos produtos cadastrados. 🍰
-          </div>
-          `;
-
-        return;
-
-      }
-
-
-      renderizarProdutos(
-        todosProdutos
-      );
-
+      mostrarProdutos(produtos);
 
     } catch (erro) {
 
-      console.error(erro);
+      console.error(
+        "Erro ao carregar produtos:",
+        erro
+      );
 
-      area.innerHTML =
-        `
+      area.innerHTML = `
         <div class="loading">
-
-          <strong>
-            Não conseguimos carregar os produtos.
-          </strong>
-
+          Não conseguimos carregar os produtos.
           <br><br>
-
           Verifique a configuração do Supabase.
-
         </div>
-        `;
+      `;
 
     }
 
   }
 
 
-  function renderizarProdutos(produtos) {
+  /* ==========================================
+     MOSTRAR PRODUTOS
+  ========================================== */
+
+  function mostrarProdutos(lista) {
 
     const area =
       document.getElementById("products");
@@ -846,40 +959,34 @@ Todos </button>
     area.innerHTML = "";
 
 
-    if (!produtos.length) {
+    if (!lista.length) {
 
-      area.innerHTML =
-        `
+      area.innerHTML = `
         <div class="loading">
-          Nenhum produto encontrado.
+          Ainda não temos produtos cadastrados. 🍰
         </div>
-        `;
+      `;
 
       return;
 
     }
 
 
-    produtos.forEach(produto => {
+    lista.forEach(produto => {
 
       const nome =
         produto.name ||
-        produto.nome ||
-        produto.title ||
         "Produto Lá Dociê";
 
 
       const descricao =
         produto.description ||
-        produto.descricao ||
         "";
 
 
       const preco =
         Number(
-          produto.price ||
-          produto.preco ||
-          0
+          produto.price || 0
         );
 
 
@@ -893,13 +1000,12 @@ Todos </button>
       const card =
         document.createElement("div");
 
-
       card.className =
         "product";
 
 
-      card.innerHTML =
-        `
+      card.innerHTML = `
+
         <div class="product-image">
 
           ${
@@ -918,35 +1024,41 @@ Todos </button>
 
         <div class="product-info">
 
-          <h3>${nome}</h3>
+          <h3>
+            ${nome}
+          </h3>
 
-          <p>${descricao}</p>
+          <p>
+            ${descricao}
+          </p>
 
           <div class="price">
-            R$ ${preco.toFixed(2).replace(".", ",")}
+            ${dinheiro(preco)}
           </div>
 
-          <button class="add">
+          <button
+            class="add-button"
+          >
             Adicionar ao carrinho
           </button>
 
         </div>
-        `;
+
+      `;
 
 
-      card.querySelector(".add")
-        .onclick = () => {
+      card
+        .querySelector(".add-button")
+        .onclick =
+        function() {
 
-          adicionarCarrinho({
+          adicionarAoCarrinho({
 
-            id:
-              produto.id,
+            id: produto.id,
 
-            nome:
-              nome,
+            nome: nome,
 
-            preco:
-              preco
+            preco: preco
 
           });
 
@@ -960,15 +1072,20 @@ Todos </button>
   }
 
 
-  function filtrarCategoria(
+  /* ==========================================
+     FILTROS
+  ========================================== */
+
+  function filtrarProdutos(
     categoria,
     botao
   ) {
 
     document
       .querySelectorAll(".category")
-      .forEach(b =>
-        b.classList.remove("active")
+      .forEach(
+        item =>
+          item.classList.remove("active")
       );
 
 
@@ -977,9 +1094,7 @@ Todos </button>
 
     if (categoria === "Todos") {
 
-      renderizarProdutos(
-        todosProdutos
-      );
+      mostrarProdutos(produtos);
 
       return;
 
@@ -987,34 +1102,34 @@ Todos </button>
 
 
     const filtrados =
-      todosProdutos.filter(produto => {
+      produtos.filter(produto => {
 
         const cat =
-          produto.category ||
-          produto.categoria ||
-          "";
+          String(
+            produto.category || ""
+          ).toLowerCase();
 
-        return cat
-          .toLowerCase()
-          .includes(
-            categoria.toLowerCase()
-          );
+        return cat.includes(
+          categoria.toLowerCase()
+        );
 
       });
 
 
-    renderizarProdutos(
+    mostrarProdutos(
       filtrados
     );
 
   }
 
 
-  /* =========================
-     CARRINHO
-  ========================= */
+  /* ==========================================
+     ADICIONAR AO CARRINHO
+  ========================================== */
 
-  function adicionarCarrinho(produto) {
+  function adicionarAoCarrinho(
+    produto
+  ) {
 
     const existente =
       carrinho.find(
@@ -1038,7 +1153,7 @@ Todos </button>
           produto.nome,
 
         preco:
-          produto.preco,
+          Number(produto.preco),
 
         quantidade:
           1
@@ -1050,15 +1165,26 @@ Todos </button>
 
     atualizarCarrinho();
 
+
+    alert(
+      produto.nome +
+      " foi adicionado ao carrinho! 🍰"
+    );
+
   }
 
+
+  /* ==========================================
+     ATUALIZAR CARRINHO
+  ========================================== */
 
   function atualizarCarrinho() {
 
     const quantidade =
       carrinho.reduce(
         (total, item) =>
-          total + item.quantidade,
+          total +
+          item.quantidade,
         0
       );
 
@@ -1079,21 +1205,9 @@ Todos </button>
     return carrinho.reduce(
       (total, item) =>
         total +
-        item.preco *
-        item.quantidade,
+        Number(item.preco) *
+        Number(item.quantidade),
       0
-    );
-
-  }
-
-
-  function dinheiro(valor) {
-
-    return (
-      "R$ " +
-      Number(valor)
-        .toFixed(2)
-        .replace(".", ",")
     );
 
   }
@@ -1109,22 +1223,12 @@ Todos </button>
 
     if (!carrinho.length) {
 
-      area.innerHTML =
-        `
-        <div class="empty">
-
-          🛒
-
-          <h3>
-            Seu carrinho está vazio.
-          </h3>
-
-          <p>
-            Escolha uma delícia da Lá Dociê!
-          </p>
-
+      area.innerHTML = `
+        <div class="loading">
+          🛒<br><br>
+          Seu carrinho está vazio.
         </div>
-        `;
+      `;
 
       document
         .getElementById("cartTotal")
@@ -1150,8 +1254,8 @@ Todos </button>
           "cart-item";
 
 
-        div.innerHTML =
-          `
+        div.innerHTML = `
+
           <div class="cart-item-top">
 
             <div>
@@ -1170,7 +1274,7 @@ Todos </button>
               class="remove"
               onclick="removerItem(${index})"
             >
-              🗑️ Remover
+              Remover
             </button>
 
           </div>
@@ -1194,7 +1298,12 @@ Todos </button>
               +
             </button>
 
-            <span style="margin-left:auto;font-weight:bold;">
+            <span
+              style="
+                margin-left:auto;
+                font-weight:bold;
+              "
+            >
               ${dinheiro(
                 item.preco *
                 item.quantidade
@@ -1202,7 +1311,8 @@ Todos </button>
             </span>
 
           </div>
-          `;
+
+        `;
 
 
         area.appendChild(div);
@@ -1254,12 +1364,17 @@ Todos </button>
       1
     );
 
+
     atualizarCarrinho();
 
   }
 
 
-  function mostrarCarrinho() {
+  /* ==========================================
+     ABRIR CARRINHO
+  ========================================== */
+
+  function abrirCarrinho() {
 
     renderizarCarrinho();
 
@@ -1279,9 +1394,9 @@ Todos </button>
   }
 
 
-  /* =========================
+  /* ==========================================
      CHECKOUT
-  ========================= */
+  ========================================== */
 
   function abrirCheckout() {
 
@@ -1319,6 +1434,10 @@ Todos </button>
       ).padStart(2, "0");
 
 
+    const dataHoje =
+      `${ano}-${mes}-${dia}`;
+
+
     const campoData =
       document.getElementById(
         "pedidoData"
@@ -1326,16 +1445,20 @@ Todos </button>
 
 
     campoData.min =
-      `${ano}-${mes}-${dia}`;
+      dataHoje;
 
 
-    campoData.value =
-      `${ano}-${mes}-${dia}`;
+    if (!campoData.value) {
+
+      campoData.value =
+        dataHoje;
+
+    }
 
 
     document
       .getElementById(
-        "checkoutTotalValue"
+        "checkoutTotal"
       )
       .textContent =
       dinheiro(
@@ -1345,9 +1468,20 @@ Todos </button>
 
     document
       .getElementById(
+        "checkoutErro"
+      )
+      .classList.add(
+        "hidden"
+      );
+
+
+    document
+      .getElementById(
         "checkoutModal"
       )
-      .classList.add("show");
+      .classList.add(
+        "show"
+      );
 
   }
 
@@ -1358,12 +1492,14 @@ Todos </button>
       .getElementById(
         "checkoutModal"
       )
-      .classList.remove("show");
+      .classList.remove(
+        "show"
+      );
 
   }
 
 
-  function alterarTipoEntrega() {
+  function alterarEntrega() {
 
     const tipo =
       document.querySelector(
@@ -1379,20 +1515,51 @@ Todos </button>
 
     if (tipo === "entrega") {
 
-      area.classList.remove("hidden");
+      area.classList.remove(
+        "hidden"
+      );
 
     } else {
 
-      area.classList.add("hidden");
+      area.classList.add(
+        "hidden"
+      );
 
     }
 
   }
 
 
-  /* =========================
+  /* ==========================================
+     MOSTRAR ERRO
+  ========================================== */
+
+  function mostrarErro(
+    mensagem
+  ) {
+
+    const erro =
+      document.getElementById(
+        "checkoutErro"
+      );
+
+
+    erro.innerHTML =
+      "<strong>Não foi possível finalizar o pedido.</strong>" +
+      "<br><br>" +
+      mensagem;
+
+
+    erro.classList.remove(
+      "hidden"
+    );
+
+  }
+
+
+  /* ==========================================
      FINALIZAR PEDIDO
-  ========================= */
+  ========================================== */
 
   async function finalizarPedido() {
 
@@ -1401,14 +1568,25 @@ Todos </button>
         "checkoutErro"
       );
 
+    const botao =
+      document.getElementById(
+        "confirmarPedido"
+      );
 
-    erro.textContent = "";
+
+    erro.classList.add(
+      "hidden"
+    );
+
+    erro.textContent =
+      "";
 
 
     if (!carrinho.length) {
 
-      erro.textContent =
-        "Seu carrinho está vazio.";
+      mostrarErro(
+        "Seu carrinho está vazio."
+      );
 
       return;
 
@@ -1417,21 +1595,27 @@ Todos </button>
 
     const nome =
       document
-        .getElementById("clienteNome")
+        .getElementById(
+          "clienteNome"
+        )
         .value
         .trim();
 
 
     const telefone =
       document
-        .getElementById("clienteTelefone")
+        .getElementById(
+          "clienteTelefone"
+        )
         .value
         .trim();
 
 
     const email =
       document
-        .getElementById("clienteEmail")
+        .getElementById(
+          "clienteEmail"
+        )
         .value
         .trim();
 
@@ -1444,20 +1628,26 @@ Todos </button>
 
     const endereco =
       document
-        .getElementById("clienteEndereco")
+        .getElementById(
+          "clienteEndereco"
+        )
         .value
         .trim();
 
 
     const data =
       document
-        .getElementById("pedidoData")
+        .getElementById(
+          "pedidoData"
+        )
         .value;
 
 
     const horario =
       document
-        .getElementById("pedidoHorario")
+        .getElementById(
+          "pedidoHorario"
+        )
         .value;
 
 
@@ -1469,15 +1659,20 @@ Todos </button>
 
     const observacoes =
       document
-        .getElementById("pedidoObservacoes")
+        .getElementById(
+          "pedidoObservacoes"
+        )
         .value
         .trim();
 
 
+    /* VALIDAÇÕES */
+
     if (!nome) {
 
-      erro.textContent =
-        "Digite seu nome.";
+      mostrarErro(
+        "Digite seu nome."
+      );
 
       return;
 
@@ -1486,8 +1681,9 @@ Todos </button>
 
     if (!telefone) {
 
-      erro.textContent =
-        "Digite seu WhatsApp.";
+      mostrarErro(
+        "Digite seu WhatsApp."
+      );
 
       return;
 
@@ -1499,8 +1695,9 @@ Todos </button>
       !endereco
     ) {
 
-      erro.textContent =
-        "Digite o endereço de entrega.";
+      mostrarErro(
+        "Digite o endereço de entrega."
+      );
 
       return;
 
@@ -1509,8 +1706,9 @@ Todos </button>
 
     if (!data) {
 
-      erro.textContent =
-        "Escolha a data.";
+      mostrarErro(
+        "Escolha a data."
+      );
 
       return;
 
@@ -1519,8 +1717,9 @@ Todos </button>
 
     if (!horario) {
 
-      erro.textContent =
-        "Escolha o horário.";
+      mostrarErro(
+        "Escolha o horário."
+      );
 
       return;
 
@@ -1531,73 +1730,8 @@ Todos </button>
       calcularTotal();
 
 
-    /*
-      CAMPOS AJUSTADOS
-      PARA A ESTRUTURA REAL
-      DA TABELA ORDERS
-    */
-
-    const pedido = {
-
-      customer_id: null,
-
-      customer_name:
-        nome,
-
-      customer_phone:
-        telefone,
-
-      customer_email:
-        email || null,
-
-      type:
-        tipoEntrega,
-
-      scheduled_date:
-        data,
-
-      scheduled_time:
-        horario,
-
-      total:
-        total,
-
-      status:
-        "pendente",
-
-      payment_method:
-        pagamento,
-
-      payment_status:
-        "pendente",
-
-      delivery_type:
-        tipoEntrega,
-
-      delivery_address:
-        tipoEntrega === "entrega"
-          ? endereco
-          : null,
-
-      notes:
-        observacoes || null,
-
-      order_date:
-        data,
-
-      order_time:
-        horario
-
-    };
-
-
-    const botao =
-      document.getElementById(
-        "confirmarPedido"
-      );
-
-
-    botao.disabled = true;
+    botao.disabled =
+      true;
 
     botao.textContent =
       "Enviando pedido...";
@@ -1605,11 +1739,69 @@ Todos </button>
 
     try {
 
-      /*
-        CRIA O PEDIDO
-      */
+      /* ======================================
+         CRIAR PEDIDO
+      ====================================== */
 
-      const resposta =
+      const pedido = {
+
+        customer_name:
+          nome,
+
+        customer_phone:
+          telefone,
+
+        customer_email:
+          email || null,
+
+        type:
+          tipoEntrega,
+
+        scheduled_date:
+          data,
+
+        scheduled_time:
+          horario,
+
+        total:
+          total,
+
+        status:
+          "novo",
+
+        payment_method:
+          pagamento,
+
+        payment_status:
+          "pending",
+
+        delivery_type:
+          tipoEntrega,
+
+        delivery_address:
+          tipoEntrega === "entrega"
+            ? endereco
+            : null,
+
+        notes:
+          observacoes || null,
+
+        order_date:
+          data,
+
+        order_time:
+          horario
+
+      };
+
+
+      console.log(
+        "PEDIDO:",
+        pedido
+      );
+
+
+      const respostaPedido =
         await fetch(
           SUPABASE_URL +
           "/rest/v1/orders",
@@ -1643,30 +1835,71 @@ Todos </button>
         );
 
 
-      if (!resposta.ok) {
+      const textoPedido =
+        await respostaPedido.text();
 
-        const texto =
-          await resposta.text();
 
-        console.error(
-          "Erro orders:",
-          texto
-        );
+      console.log(
+        "RESPOSTA DO PEDIDO:",
+        textoPedido
+      );
+
+
+      if (!respostaPedido.ok) {
+
+        let mensagem =
+          textoPedido;
+
+
+        try {
+
+          const json =
+            JSON.parse(
+              textoPedido
+            );
+
+
+          mensagem =
+            json.message ||
+            json.details ||
+            json.hint ||
+            textoPedido;
+
+        } catch {}
+
 
         throw new Error(
-          texto ||
-          "Não foi possível criar o pedido."
+          mensagem
         );
 
       }
 
 
-      const pedidosCriados =
-        await resposta.json();
+      let dadosPedido;
+
+
+      try {
+
+        dadosPedido =
+          JSON.parse(
+            textoPedido
+          );
+
+      } catch {
+
+        throw new Error(
+          "O pedido foi enviado, mas o banco não retornou o ID."
+        );
+
+      }
 
 
       const pedidoCriado =
-        pedidosCriados[0];
+        Array.isArray(
+          dadosPedido
+        )
+          ? dadosPedido[0]
+          : dadosPedido;
 
 
       if (
@@ -1675,37 +1908,49 @@ Todos </button>
       ) {
 
         throw new Error(
-          "O pedido não retornou um ID."
+          "Não conseguimos identificar o número do pedido."
         );
 
       }
 
 
-      /*
-        CRIA OS ITENS DO PEDIDO
-      */
+      const pedidoId =
+        pedidoCriado.id;
+
+
+      /* ======================================
+         CRIAR ITENS DO PEDIDO
+      ====================================== */
 
       const itens =
-        carrinho.map(
-          item => ({
+        carrinho.map(item => ({
 
-            order_id:
-              pedidoCriado.id,
+          order_id:
+            pedidoId,
 
-            product_id:
-              item.id || null,
+          product_id:
+            item.id || null,
 
-            name:
-              item.nome,
+          name:
+            item.nome,
 
-            qty:
-              item.quantidade,
+          qty:
+            Number(
+              item.quantidade || 1
+            ),
 
-            price:
-              item.preco
+          price:
+            Number(
+              item.preco || 0
+            )
 
-          })
-        );
+        }));
+
+
+      console.log(
+        "ITENS:",
+        itens
+      );
 
 
       const respostaItens =
@@ -1726,7 +1971,10 @@ Todos </button>
 
               "Authorization":
                 "Bearer " +
-                SUPABASE_KEY
+                SUPABASE_KEY,
+
+              "Prefer":
+                "return=minimal"
 
             },
 
@@ -1739,68 +1987,98 @@ Todos </button>
         );
 
 
+      const textoItens =
+        await respostaItens.text();
+
+
+      console.log(
+        "RESPOSTA DOS ITENS:",
+        textoItens
+      );
+
+
       if (!respostaItens.ok) {
 
-        const texto =
-          await respostaItens.text();
+        let mensagem =
+          textoItens;
 
-        console.error(
-          "Erro order_items:",
-          texto
-        );
+
+        try {
+
+          const json =
+            JSON.parse(
+              textoItens
+            );
+
+
+          mensagem =
+            json.message ||
+            json.details ||
+            json.hint ||
+            textoItens;
+
+        } catch {}
+
 
         throw new Error(
-          texto ||
-          "Não foi possível salvar os itens."
+          "Pedido criado, mas houve um erro ao salvar os produtos: " +
+          mensagem
         );
 
       }
 
 
-      /*
-        PEDIDO FINALIZADO
-      */
+      /* ======================================
+         SUCESSO
+      ====================================== */
 
       mostrarSucesso(
-        pedidoCriado.id,
-        nome,
-        telefone
+        pedidoId,
+        nome
       );
 
 
-    } catch (e) {
+    } catch (erroFinal) {
 
-      console.error(e);
+      console.error(
+        "ERRO FINAL DO PEDIDO:",
+        erroFinal
+      );
 
-      erro.textContent =
-        "Não conseguimos finalizar o pedido. " +
-        "Verifique os dados e tente novamente.";
+
+      mostrarErro(
+        erroFinal.message ||
+        "Não foi possível finalizar o pedido."
+      );
+
+
+    } finally {
+
+      botao.disabled =
+        false;
+
+      botao.textContent =
+        "✅ Confirmar pedido";
 
     }
-
-
-    botao.disabled = false;
-
-    botao.textContent =
-      "✅ Confirmar pedido";
 
   }
 
 
-  /* =========================
+  /* ==========================================
      SUCESSO
-  ========================= */
+  ========================================== */
 
   function mostrarSucesso(
-    id,
-    nome,
-    telefone
+    numeroPedido,
+    nome
   ) {
 
     fecharCheckout();
 
 
     carrinho = [];
+
 
     atualizarCarrinho();
 
@@ -1810,26 +2088,31 @@ Todos </button>
         "numeroPedido"
       )
       .textContent =
-      "Pedido #" +
-      id;
+      "Pedido nº " +
+      numeroPedido;
+
+
+    /*
+      COLOQUE AQUI O WHATSAPP DA LÁ DOCIÊ
+      SEM ESPAÇOS OU SÍMBOLOS.
+
+      Exemplo:
+      const whatsapp = "5592999999999";
+    */
+
+    const whatsapp =
+      "5592999999999";
 
 
     const mensagem =
       encodeURIComponent(
         "Olá, Lá Dociê! 🍰\n\n" +
-        "Acabei de realizar um pedido pelo site.\n" +
-        "Cliente: " +
+        "Acabei de fazer um pedido pelo site.\n" +
+        "Nome: " +
         nome +
         "\n" +
-        "Pedido: #" +
-        id
-      );
-
-
-    const numero =
-      telefone.replace(
-        /\D/g,
-        ""
+        "Pedido nº: " +
+        numeroPedido
       );
 
 
@@ -1841,8 +2124,8 @@ Todos </button>
       function() {
 
         window.open(
-          "https://wa.me/55" +
-          numero +
+          "https://wa.me/" +
+          whatsapp +
           "?text=" +
           mensagem,
           "_blank"
@@ -1855,27 +2138,29 @@ Todos </button>
       .getElementById(
         "successModal"
       )
-      .classList.add("show");
+      .classList.add(
+        "show"
+      );
 
   }
 
 
-  function fecharTudo() {
+  function voltarLoja() {
 
     document
       .getElementById(
         "successModal"
       )
-      .classList.remove("show");
-
-
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    });
+      .classList.remove(
+        "show"
+      );
 
   }
 
+
+  /* ==========================================
+     INICIAR SITE
+  ========================================== */
 
   carregarProdutos();
 
@@ -1883,3 +2168,4 @@ Todos </button>
 
 </body>
 </html>
+```

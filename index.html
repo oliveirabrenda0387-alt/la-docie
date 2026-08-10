@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 
 <head>
@@ -7,6 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Lá Dociê | Confeitaria</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -23,17 +24,17 @@
     header {
       background: #4b281d;
       color: white;
-      padding: 16px 20px;
+      padding: 18px 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 20;
+      z-index: 100;
     }
 
     .logo {
-      font-size: 24px;
+      font-size: 25px;
       font-weight: bold;
     }
 
@@ -41,12 +42,12 @@
       color: #d9a441;
     }
 
-    .cart-button {
-      border: none;
-      border-radius: 30px;
-      padding: 12px 17px;
+    .cart {
       background: #e0b35b;
       color: #3d241c;
+      border: 0;
+      border-radius: 30px;
+      padding: 12px 18px;
       font-size: 15px;
       font-weight: bold;
       cursor: pointer;
@@ -54,13 +55,12 @@
 
     .hero {
       text-align: center;
-      padding: 55px 20px 30px;
+      padding: 60px 20px 35px;
     }
 
     .hero h1 {
-      margin: 0;
       font-size: 42px;
-      line-height: 1.1;
+      margin: 0;
     }
 
     .hero h1 span {
@@ -70,18 +70,18 @@
     .hero p {
       max-width: 650px;
       margin: 20px auto;
-      color: #765b51;
       font-size: 18px;
       line-height: 1.6;
+      color: #765b51;
     }
 
     .categories {
-      max-width: 1100px;
-      margin: auto;
       display: flex;
       gap: 10px;
       overflow-x: auto;
       padding: 10px 20px 25px;
+      max-width: 1100px;
+      margin: auto;
     }
 
     .category {
@@ -92,7 +92,6 @@
       background: white;
       color: #4b281d;
       cursor: pointer;
-      font-size: 15px;
     }
 
     .category.active {
@@ -103,7 +102,7 @@
     .products {
       max-width: 1100px;
       margin: auto;
-      padding: 10px 20px 40px;
+      padding: 20px;
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
       gap: 20px;
@@ -113,19 +112,19 @@
       background: white;
       border-radius: 18px;
       overflow: hidden;
-      border: 1px solid #eee1da;
       box-shadow: 0 4px 15px rgba(70, 35, 20, .10);
+      border: 1px solid #eee1da;
     }
 
     .product-image {
       width: 100%;
-      height: 200px;
+      height: 190px;
       background: #f3e7df;
       display: flex;
-      justify-content: center;
       align-items: center;
+      justify-content: center;
+      font-size: 55px;
       overflow: hidden;
-      font-size: 60px;
     }
 
     .product-image img {
@@ -138,52 +137,51 @@
       padding: 17px;
     }
 
-    .product-info h3 {
+    .product h3 {
       margin: 0 0 8px;
       font-size: 20px;
     }
 
-    .product-info p {
+    .product p {
       color: #765b51;
       min-height: 40px;
-      line-height: 1.4;
     }
 
     .price {
-      margin-top: 12px;
       color: #b47b20;
       font-size: 21px;
       font-weight: bold;
     }
 
-    .add-button,
-    .main-button {
+    .add,
+    .main-button,
+    .confirm-button {
       width: 100%;
-      border: none;
+      border: 0;
       border-radius: 12px;
       padding: 14px;
       margin-top: 12px;
       background: #4b281d;
       color: white;
       font-weight: bold;
-      font-size: 16px;
+      font-size: 15px;
       cursor: pointer;
     }
 
-    .add-button:active,
-    .main-button:active {
-      transform: scale(.98);
+    .add:hover,
+    .main-button:hover,
+    .confirm-button:hover {
+      opacity: .9;
     }
 
     .loading {
-      grid-column: 1 / -1;
       text-align: center;
       padding: 50px 20px;
-      color: #765b51;
+      font-size: 18px;
     }
 
     footer {
-      margin-top: 40px;
+      margin-top: 60px;
       padding: 40px 20px;
       text-align: center;
       background: #4b281d;
@@ -195,13 +193,14 @@
     /* MODAIS */
 
     .modal {
+      display: none;
       position: fixed;
       inset: 0;
       background: rgba(0, 0, 0, .55);
-      display: none;
-      align-items: flex-end;
+      z-index: 9999;
+      align-items: center;
       justify-content: center;
-      z-index: 100;
+      padding: 15px;
     }
 
     .modal.show {
@@ -209,19 +208,21 @@
     }
 
     .modal-content {
-      width: 100%;
-      max-width: 650px;
-      max-height: 95vh;
-      overflow-y: auto;
-      padding: 22px;
       background: #fffaf7;
-      border-radius: 24px 24px 0 0;
+      width: 100%;
+      max-width: 600px;
+      max-height: 92vh;
+      overflow-y: auto;
+      border-radius: 20px;
+      padding: 22px;
+      position: relative;
     }
 
     .modal-title {
       display: flex;
       align-items: center;
       justify-content: space-between;
+      gap: 10px;
       margin-bottom: 15px;
     }
 
@@ -232,69 +233,58 @@
     .close {
       width: 40px;
       height: 40px;
-      border: none;
+      border: 0;
       border-radius: 50%;
-      background: #eadbd3;
+      background: #eee0d9;
       color: #4b281d;
-      font-size: 18px;
+      font-size: 20px;
       cursor: pointer;
     }
 
-    /* CARRINHO */
-
     .cart-item {
       background: white;
-      border: 1px solid #eee1da;
-      border-radius: 14px;
-      padding: 15px;
-      margin: 10px 0;
-    }
-
-    .cart-item-top {
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 10px;
       display: flex;
+      align-items: center;
       justify-content: space-between;
       gap: 10px;
     }
 
-    .quantity {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-top: 12px;
+    .cart-item-info {
+      flex: 1;
     }
 
-    .quantity button {
-      width: 35px;
-      height: 35px;
-      border: none;
-      border-radius: 50%;
-      background: #4b281d;
-      color: white;
-      font-size: 18px;
-      cursor: pointer;
+    .cart-item-name {
+      font-weight: bold;
+    }
+
+    .cart-item-price {
+      color: #b47b20;
+      margin-top: 5px;
     }
 
     .remove {
-      border: none;
-      background: none;
-      color: #a33d3d;
-      font-weight: bold;
+      width: auto;
+      margin: 0;
+      padding: 8px 12px;
+      background: #9b3d3d;
+      border: 0;
+      color: white;
+      border-radius: 8px;
       cursor: pointer;
     }
 
-    .total {
+    .cart-total {
       display: flex;
       justify-content: space-between;
-      margin-top: 15px;
-      padding: 17px;
-      border-radius: 14px;
-      background: #4b281d;
-      color: white;
       font-size: 20px;
       font-weight: bold;
+      margin-top: 20px;
+      padding-top: 15px;
+      border-top: 1px solid #ddd;
     }
-
-    /* FORMULÁRIO */
 
     label {
       display: block;
@@ -304,15 +294,15 @@
     }
 
     input,
-    select,
-    textarea {
+    textarea,
+    select {
       width: 100%;
       padding: 13px;
-      border: 1px solid #d9ccc5;
+      border: 1px solid #d8cbc4;
       border-radius: 10px;
-      background: white;
-      font-family: Arial, sans-serif;
       font-size: 16px;
+      background: white;
+      color: #4b281d;
     }
 
     textarea {
@@ -320,76 +310,58 @@
       resize: vertical;
     }
 
-    .radio-box {
+    .option-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .option {
       background: white;
-      border: 1px solid #ddd0c9;
+      border: 1px solid #d8cbc4;
       border-radius: 10px;
-      padding: 13px;
-      margin-top: 8px;
-    }
-
-    .radio-box label {
-      margin: 0;
-      font-weight: normal;
-    }
-
-    .radio-box input {
-      width: auto;
-      margin-right: 8px;
-    }
-
-    .secondary-button {
-      width: 100%;
-      border: none;
-      border-radius: 12px;
-      padding: 13px;
-      margin-top: 10px;
-      background: #dbc6bb;
-      color: #4b281d;
+      padding: 12px;
       cursor: pointer;
-      font-weight: bold;
+    }
+
+    .option input {
+      width: auto;
+      margin-right: 5px;
     }
 
     .error {
-      margin-top: 12px;
-      padding: 13px;
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
       border-radius: 10px;
-      background: #ffe4e0;
-      color: #8d2929;
-      word-break: break-word;
-      line-height: 1.5;
+      background: #ffe5e5;
+      color: #8b2525;
     }
 
     .success {
       text-align: center;
-      padding: 25px 5px;
+      padding: 30px 10px;
     }
 
-    .success-icon {
-      font-size: 65px;
-    }
-
-    .hidden {
-      display: none !important;
+    .success h2 {
+      color: #4b281d;
     }
 
     @media (max-width: 500px) {
 
       .hero h1 {
-        font-size: 35px;
+        font-size: 34px;
       }
 
       .hero p {
         font-size: 16px;
       }
 
-      .modal-content {
-        padding: 18px;
+      .option-group {
+        grid-template-columns: 1fr;
       }
-
     }
   </style>
-
 </head>
 
 <body>
@@ -400,28 +372,19 @@
     LÁ <span>DOCIÊ</span>
   </div>
 
-<button
-class="cart-button"
-onclick="abrirCarrinho()"
-
->
-
-
-🛒 Carrinho
-
-
-
-<span id="cartCount">0</span>
-
-
+  <button class="cart" onclick="mostrarCarrinho()">
+    🛒 Carrinho
+    <span id="cartCount">0</span>
   </button>
 
 </header>
 
+
 <section class="hero">
 
   <h1>
-    Momentos mais <span>doces</span>
+    Momentos mais
+    <span>doces</span>
   </h1>
 
   <p>
@@ -431,62 +394,29 @@ onclick="abrirCarrinho()"
 
 </section>
 
+
 <div class="categories">
 
-<button
-class="category active"
-onclick="filtrarProdutos('Todos', this)"
-
->
-
-
-Todos
-
-
+  <button class="category active" onclick="filtrarProdutos('todos', this)">
+    Todos
   </button>
 
-<button
-class="category"
-onclick="filtrarProdutos('Bolos', this)"
-
->
-
-
-🎂 Bolos
-
-
+  <button class="category" onclick="filtrarProdutos('bolos', this)">
+    🎂 Bolos
   </button>
 
-<button
-class="category"
-onclick="filtrarProdutos('Doces', this)"
-
->
-
-
-🍫 Doces
-
-
+  <button class="category" onclick="filtrarProdutos('doces', this)">
+    🍫 Doces
   </button>
 
-<button
-class="category"
-onclick="filtrarProdutos('Kits', this)"
-
->
-
-
-🎁 Kits
-
-
+  <button class="category" onclick="filtrarProdutos('kits', this)">
+    🎁 Kits
   </button>
 
 </div>
 
-<section
-  id="products"
-  class="products"
->
+
+<section id="products" class="products">
 
   <div class="loading">
     Carregando nossos produtos... 🍰
@@ -494,703 +424,280 @@ onclick="filtrarProdutos('Kits', this)"
 
 </section>
 
+
 <footer>
   LÁ DOCIÊ
 </footer>
 
-<!-- ==========================================
-     CARRINHO
-========================================== -->
 
-<div
-  id="cartModal"
-  class="modal"
->
+<!-- ================================
+     MODAL CARRINHO
+================================ -->
+
+<div id="cartModal" class="modal">
 
   <div class="modal-content">
 
+    <div class="modal-title">
 
-<div class="modal-title">
+      <h2>🛒 Seu carrinho</h2>
 
-  <h2>🛒 Seu carrinho</h2>
+      <button
+        class="close"
+        onclick="fecharCarrinho()"
+      >
+        ×
+      </button>
 
-  <button
-    class="close"
-    onclick="fecharCarrinho()"
-  >
-    ✕
-  </button>
+    </div>
 
-</div>
 
-<div id="cartItems"></div>
+    <div id="cartItems"></div>
 
-<div class="total">
 
-  <span>Total</span>
+    <div class="cart-total">
 
-  <span id="cartTotal">
-    R$ 0,00
-  </span>
+      <span>Total</span>
 
-</div>
+      <span id="cartTotal">
+        R$ 0,00
+      </span>
 
-<button
-  class="main-button"
-  onclick="abrirCheckout()"
->
-  Continuar pedido
-</button>
+    </div>
 
+
+    <button
+      class="main-button"
+      onclick="abrirCheckout()"
+    >
+      Continuar pedido
+    </button>
 
   </div>
 
 </div>
 
-<!-- ==========================================
+
+<!-- ================================
      CHECKOUT
-========================================== -->
+================================ -->
 
-<div
-  id="checkoutModal"
-  class="modal"
->
+<div id="checkoutModal" class="modal">
 
   <div class="modal-content">
 
-`
-    
-<div class="modal-title">
+    <div class="modal-title">
 
-  <h2>📝 Finalizar pedido</h2>
+      <h2>📝 Finalizar pedido</h2>
 
-  <button
-    class="close"
-    onclick="fecharCheckout()"
-  >
-    ✕
-  </button>
+      <button
+        class="close"
+        onclick="fecharCheckout()"
+      >
+        ×
+      </button>
 
-</div>
+    </div>
 
 
-<label>
-  Nome completo
-</label>
-
-<input
-  id="clienteNome"
-  type="text"
-  placeholder="Seu nome"
->
-
-
-<label>
-  WhatsApp
-</label>
-
-<input
-  id="clienteTelefone"
-  type="tel"
-  placeholder="(92) 99999-9999"
->
-
-
-<label>
-  E-mail
-</label>
-
-<input
-  id="clienteEmail"
-  type="email"
-  placeholder="seuemail@email.com"
->
-
-
-<label>
-  Como deseja receber?
-</label>
-
-
-<div class="radio-box">
-
-  <label>
+    <label>
+      Nome completo
+    </label>
 
     <input
-      type="radio"
-      name="entrega"
-      value="retirada"
-      checked
-      onchange="alterarEntrega()"
+      type="text"
+      id="clienteNome"
+      placeholder="Digite seu nome"
     >
 
-    🏪 Retirar na Lá Dociê
 
-  </label>
-
-</div>
-
-
-<div class="radio-box">
-
-  <label>
+    <label>
+      WhatsApp
+    </label>
 
     <input
-      type="radio"
-      name="entrega"
-      value="entrega"
-      onchange="alterarEntrega()"
+      type="tel"
+      id="clienteTelefone"
+      placeholder="(92) 99999-9999"
     >
 
-    🏠 Receber por entrega
 
-  </label>
-
-</div>
-
-
-<div
-  id="enderecoArea"
-  class="hidden"
->
-
-  <label>
-    Endereço de entrega
-  </label>
-
-  <textarea
-    id="clienteEndereco"
-    placeholder="Rua, número, bairro e complemento"
-  ></textarea>
-
-</div>
-
-
-<label>
-  Data do pedido
-</label>
-
-<input
-  id="pedidoData"
-  type="date"
->
-
-
-<label>
-  Horário
-</label>
-
-<select id="pedidoHorario">
-
-  <option value="">
-    Selecione o horário
-  </option>
-
-
-  <option value="14:00">14:00</option>
-  <option value="15:00">15:00</option>
-  <option value="16:00">16:00</option>
-  <option value="17:00">17:00</option>
-  <option value="18:00">18:00</option>
-  <option value="19:00">19:00</option>
-  <option value="20:00">20:00</option>
-  <option value="21:00">21:00</option>
-
-</select>
-
-
-<label>
-  Forma de pagamento
-</label>
-
-
-<div class="radio-box">
-
-  <label>
+    <label>
+      E-mail
+    </label>
 
     <input
-      type="radio"
-      name="pagamento"
-      value="Pix"
-      checked
+      type="email"
+      id="clienteEmail"
+      placeholder="seuemail@email.com"
     >
 
-    💚 Pix
 
-  </label>
+    <label>
+      Como deseja receber?
+    </label>
 
-</div>
+    <div class="option-group">
+
+      <label class="option">
+
+        <input
+          type="radio"
+          name="entrega"
+          value="retirada"
+          checked
+          onchange="alterarEntrega()"
+        >
+
+        Retirada
+      </label>
 
 
-<div class="radio-box">
+      <label class="option">
 
-  <label>
+        <input
+          type="radio"
+          name="entrega"
+          value="entrega"
+          onchange="alterarEntrega()"
+        >
+
+        Entrega
+      </label>
+
+    </div>
+
+
+    <div id="enderecoArea" style="display:none;">
+
+      <label>
+        Endereço de entrega
+      </label>
+
+      <textarea
+        id="clienteEndereco"
+        placeholder="Rua, número, bairro e complemento"
+      ></textarea>
+
+    </div>
+
+
+    <label>
+      Data do pedido
+    </label>
 
     <input
-      type="radio"
-      name="pagamento"
-      value="Cartão"
+      type="date"
+      id="pedidoData"
     >
 
-    💳 Cartão
 
-  </label>
-
-</div>
-
-
-<div class="radio-box">
-
-  <label>
+    <label>
+      Horário
+    </label>
 
     <input
-      type="radio"
-      name="pagamento"
-      value="Dinheiro"
+      type="time"
+      id="pedidoHorario"
     >
 
-    💵 Dinheiro
 
-  </label>
+    <label>
+      Forma de pagamento
+    </label>
 
-</div>
+    <select id="pedidoPagamento">
 
+      <option value="">
+        Selecione
+      </option>
 
-<label>
-  Observações
-</label>
+      <option value="pix">
+        Pix
+      </option>
 
-<textarea
-  id="pedidoObservacoes"
-  placeholder="Alguma observação sobre o pedido?"
-></textarea>
+      <option value="cartao">
+        Cartão
+      </option>
 
+      <option value="dinheiro">
+        Dinheiro
+      </option>
 
-<div class="total">
+    </select>
 
-  <span>Total</span>
-  
-  async function finalizarPedido() {
 
-  const erro =
-    document.getElementById("checkoutErro");
+    <label>
+      Observações
+    </label>
 
-  const botao =
-    document.getElementById("confirmarPedido");
+    <textarea
+      id="pedidoObservacoes"
+      placeholder="Alguma observação sobre o pedido?"
+    ></textarea>
 
 
-  erro.classList.add("hidden");
-  erro.textContent = "";
+    <div id="checkoutErro" class="error"></div>
 
 
-  if (!carrinho || carrinho.length === 0) {
-
-    mostrarErro(
-      "Seu carrinho está vazio."
-    );
-
-    return;
-  }
-
-
-  const nome =
-    document
-      .getElementById("clienteNome")
-      .value
-      .trim();
-
-
-  const telefone =
-    document
-      .getElementById("clienteTelefone")
-      .value
-      .trim();
-
-
-  const email =
-    document
-      .getElementById("clienteEmail")
-      .value
-      .trim();
-
-
-  const tipoEntrega =
-    document.querySelector(
-      'input[name="entrega"]:checked'
-    ).value;
-
-
-  const endereco =
-    document
-      .getElementById("clienteEndereco")
-      .value
-      .trim();
-
-
-  const data =
-    document
-      .getElementById("pedidoData")
-      .value;
-
-
-  const horario =
-    document
-      .getElementById("pedidoHorario")
-      .value;
-
-
-  const pagamento =
-    document.querySelector(
-      'input[name="pagamento"]:checked'
-    ).value;
-
-
-  const observacoes =
-    document
-      .getElementById("pedidoObservacoes")
-      .value
-      .trim();
-
-
-  /* ==========================
-     VALIDAÇÕES
-  ========================== */
-
-  if (!nome) {
-
-    mostrarErro(
-      "Digite seu nome."
-    );
-
-    return;
-  }
-
-
-  if (!telefone) {
-
-    mostrarErro(
-      "Digite seu WhatsApp."
-    );
-
-    return;
-  }
-
-
-  if (
-    tipoEntrega === "entrega" &&
-    !endereco
-  ) {
-
-    mostrarErro(
-      "Digite o endereço de entrega."
-    );
-
-    return;
-  }
-
-
-  if (!data) {
-
-    mostrarErro(
-      "Escolha a data do pedido."
-    );
-
-    return;
-  }
-
-
-  if (!horario) {
-
-    mostrarErro(
-      "Escolha o horário do pedido."
-    );
-
-    return;
-  }
-
-
-  const total =
-    calcularTotal();
-
-
-  /* ==========================
-     PREPARAR ITENS
-  ========================== */
-
-  const itens =
-    carrinho.map(item => ({
-
-      product_id:
-        item.id
-        ? String(item.id)
-        : null,
-
-      name:
-        String(item.nome),
-
-      qty:
-        Number(item.quantidade || 1),
-
-      price:
-        Number(item.preco || 0)
-
-    }));
-
-
-  botao.disabled = true;
-
-  botao.textContent =
-    "Enviando pedido...";
-
-
-  try {
-
-    /* ==========================
-       CHAMAR FUNÇÃO DO SUPABASE
-    ========================== */
-
-    const resposta =
-      await fetch(
-        SUPABASE_URL +
-        "/rest/v1/rpc/criar_pedido",
-        {
-
-          method: "POST",
-
-          headers: {
-
-            "Content-Type":
-              "application/json",
-
-            "apikey":
-              SUPABASE_KEY,
-
-            "Authorization":
-              "Bearer " +
-              SUPABASE_KEY
-
-          },
-
-          body:
-            JSON.stringify({
-
-              p_customer_name:
-                nome,
-
-              p_customer_phone:
-                telefone,
-
-              p_customer_email:
-                email || null,
-
-              p_type:
-                tipoEntrega,
-
-              p_scheduled_date:
-                data,
-
-              p_scheduled_time:
-                horario,
-
-              p_total:
-                total,
-
-              p_payment_method:
-                pagamento,
-
-              p_delivery_type:
-                tipoEntrega,
-
-              p_delivery_address:
-                tipoEntrega === "entrega"
-                  ? endereco
-                  : null,
-
-              p_notes:
-                observacoes || null,
-
-              p_items:
-                itens
-
-            })
-
-        }
-      );
-
-
-    const texto =
-      await resposta.text();
-
-
-    console.log(
-      "RESPOSTA DO SUPABASE:",
-      texto
-    );
-
-
-    if (!resposta.ok) {
-
-      let mensagem =
-        texto;
-
-
-      try {
-
-        const json =
-          JSON.parse(texto);
-
-
-        mensagem =
-          json.message ||
-          json.details ||
-          json.hint ||
-          texto;
-
-      } catch (e) {}
-
-
-      throw new Error(
-        mensagem
-      );
-    }
-
-
-    /* ==========================
-       PEGAR ID DO PEDIDO
-    ========================== */
-
-    let pedidoId;
-
-
-    try {
-
-      pedidoId =
-        JSON.parse(texto);
-
-    } catch (e) {
-
-      pedidoId =
-        texto;
-
-    }
-
-
-    /* ==========================
-       SUCESSO
-    ========================== */
-
-    carrinho = [];
-
-    atualizarCarrinho();
-
-
-    fecharCheckout();
-
-
-    document
-      .getElementById("numeroPedido")
-      .textContent =
-      "Pedido nº " +
-      pedidoId;
-
-
-    document
-      .getElementById("successModal")
-      .classList.add("show");
-
-
-  } catch (erroFinal) {
-
-    console.error(
-      "ERRO AO FINALIZAR:",
-      erroFinal
-    );
-
-
-    mostrarErro(
-      "Não foi possível finalizar o pedido." +
-      "<br><br>" +
-      "<strong>Detalhes:</strong><br>" +
-      (erroFinal.message ||
-        "Erro desconhecido.")
-    );
-
-
-  } finally {
-
-    botao.disabled = false;
-
-    botao.textContent =
-      "✅ Confirmar pedido";
-
-}
-<button
-  id="confirmarPedido"
-  class="main-button"
-  onclick="finalizarPedido()"
->
-  ✅ Confirmar pedido
-</button>
-```
+    <button
+      id="confirmarPedido"
+      class="confirm-button"
+      onclick="finalizarPedido()"
+    >
+      ✅ Confirmar pedido
+    </button>
 
   </div>
 
 </div>
 
-<!-- ==========================================
+
+<!-- ================================
      SUCESSO
-========================================== -->
+================================ -->
 
-<div
-  id="successModal"
-  class="modal"
->
+<div id="successModal" class="modal">
 
   <div class="modal-content">
 
-```
-<div class="success">
+    <div class="success">
 
-  <div class="success-icon">
-    🎉
-  </div>
+      <div style="font-size:60px;">
+        🎉
+      </div>
 
-  <h2>
-    Pedido realizado!
-  </h2>
+      <h2>
+        Pedido realizado!
+      </h2>
 
-  <p>
-    Obrigada por escolher a Lá Dociê! ❤️
-  </p>
+      <p>
+        Recebemos seu pedido com sucesso.
+      </p>
 
-  <p id="numeroPedido"></p>
+      <p>
+        <strong id="numeroPedido"></strong>
+      </p>
 
-  <button
-    id="whatsappButton"
-    class="main-button"
-  >
-    📱 Falar com a Lá Dociê
-  </button>
+      <button
+        class="main-button"
+        onclick="fecharSucesso()"
+      >
+        Voltar para a loja
+      </button>
 
-  <button
-    class="secondary-button"
-    onclick="voltarLoja()"
-  >
-    Voltar para a loja
-  </button>
-
-</div>
-```
+    </div>
 
   </div>
 
 </div>
+
 
 <script>
 
-  /* ==========================================
+  /* ==================================
      SUPABASE
-  ========================================== */
+  ================================== */
 
   const SUPABASE_URL =
     "https://lzihqkpscesurkfmcasb.supabase.co";
@@ -1199,37 +706,48 @@ onclick="filtrarProdutos('Kits', this)"
     "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
 
 
-  /* ==========================================
-     VARIÁVEIS
-  ========================================== */
+  /* ==================================
+     CLIENTE SUPABASE
+  ================================== */
 
-  let produtos = [];
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  /* ==================================
+     VARIÁVEIS
+  ================================== */
 
   let carrinho = [];
 
+  let todosProdutos = [];
 
-  /* ==========================================
-     DINHEIRO
-  ========================================== */
 
-  function dinheiro(valor) {
+  /* ==================================
+     FORMATAR PREÇO
+  ================================== */
 
-    return "R$ " +
-      Number(valor || 0)
-        .toFixed(2)
-        .replace(".", ",");
+  function formatarPreco(valor) {
+
+    return Number(valor || 0)
+      .toFixed(2)
+      .replace(".", ",");
 
   }
 
 
-  /* ==========================================
+  /* ==================================
      CARREGAR PRODUTOS
-  ========================================== */
+  ================================== */
 
   async function carregarProdutos() {
 
     const area =
       document.getElementById("products");
+
 
     try {
 
@@ -1243,8 +761,7 @@ onclick="filtrarProdutos('Kits', this)"
             headers: {
               "apikey": SUPABASE_KEY,
               "Authorization":
-                "Bearer " +
-                SUPABASE_KEY
+                "Bearer " + SUPABASE_KEY
             }
           }
         );
@@ -1252,32 +769,43 @@ onclick="filtrarProdutos('Kits', this)"
 
       if (!resposta.ok) {
 
-        const texto =
-          await resposta.text();
-
-        throw new Error(texto);
+        throw new Error(
+          "Erro ao carregar produtos: " +
+          resposta.status
+        );
 
       }
 
 
-      produtos =
+      const produtos =
         await resposta.json();
 
 
-      mostrarProdutos(produtos);
+      todosProdutos =
+        Array.isArray(produtos)
+          ? produtos
+          : [];
+
+
+      renderizarProdutos(
+        todosProdutos
+      );
+
 
     } catch (erro) {
 
-      console.error(
-        "Erro ao carregar produtos:",
-        erro
-      );
+      console.error(erro);
+
 
       area.innerHTML = `
         <div class="loading">
-          Não conseguimos carregar os produtos.
+          <strong>
+            Não conseguimos carregar os produtos.
+          </strong>
+
           <br><br>
-          Verifique a configuração do Supabase.
+
+          Tente novamente.
         </div>
       `;
 
@@ -1286,19 +814,19 @@ onclick="filtrarProdutos('Kits', this)"
   }
 
 
-  /* ==========================================
-     MOSTRAR PRODUTOS
-  ========================================== */
+  /* ==================================
+     RENDERIZAR PRODUTOS
+  ================================== */
 
-  function mostrarProdutos(lista) {
+  function renderizarProdutos(
+    produtos
+  ) {
 
     const area =
       document.getElementById("products");
 
-    area.innerHTML = "";
 
-
-    if (!lista.length) {
+    if (!produtos.length) {
 
       area.innerHTML = `
         <div class="loading">
@@ -1307,25 +835,32 @@ onclick="filtrarProdutos('Kits', this)"
       `;
 
       return;
-
     }
 
 
-    lista.forEach(produto => {
+    area.innerHTML = "";
+
+
+    produtos.forEach(produto => {
 
       const nome =
         produto.name ||
+        produto.nome ||
+        produto.title ||
         "Produto Lá Dociê";
 
 
       const descricao =
         produto.description ||
+        produto.descricao ||
         "";
 
 
       const preco =
         Number(
-          produto.price || 0
+          produto.price ||
+          produto.preco ||
+          0
         );
 
 
@@ -1336,8 +871,17 @@ onclick="filtrarProdutos('Kits', this)"
         "";
 
 
+      const categoria =
+        String(
+          produto.category ||
+          produto.categoria ||
+          ""
+        ).toLowerCase();
+
+
       const card =
         document.createElement("div");
+
 
       card.className =
         "product";
@@ -1349,13 +893,17 @@ onclick="filtrarProdutos('Kits', this)"
 
           ${
             imagem
-              ? `
-                <img
-                  src="${imagem}"
-                  alt="${nome}"
-                >
-              `
-              : "🍰"
+
+            ?
+
+            `<img
+              src="${imagem}"
+              alt="${nome}"
+            >`
+
+            :
+
+            "🍰"
           }
 
         </div>
@@ -1372,12 +920,10 @@ onclick="filtrarProdutos('Kits', this)"
           </p>
 
           <div class="price">
-            ${dinheiro(preco)}
+            R$ ${formatarPreco(preco)}
           </div>
 
-          <button
-            class="add-button"
-          >
+          <button class="add">
             Adicionar ao carrinho
           </button>
 
@@ -1387,18 +933,14 @@ onclick="filtrarProdutos('Kits', this)"
 
 
       card
-        .querySelector(".add-button")
-        .onclick =
-        function() {
+        .querySelector(".add")
+        .onclick = function() {
 
-          adicionarAoCarrinho({
-
-            id: produto.id,
-
+          adicionarCarrinho({
+            id: produto.id || null,
             nome: nome,
-
-            preco: preco
-
+            preco: preco,
+            quantidade: 1
           });
 
         };
@@ -1411,9 +953,9 @@ onclick="filtrarProdutos('Kits', this)"
   }
 
 
-  /* ==========================================
-     FILTROS
-  ========================================== */
+  /* ==================================
+     FILTRO
+  ================================== */
 
   function filtrarProdutos(
     categoria,
@@ -1422,58 +964,64 @@ onclick="filtrarProdutos('Kits', this)"
 
     document
       .querySelectorAll(".category")
-      .forEach(
-        item =>
-          item.classList.remove("active")
-      );
+      .forEach(item => {
+
+        item.classList.remove("active");
+
+      });
 
 
     botao.classList.add("active");
 
 
-    if (categoria === "Todos") {
+    if (categoria === "todos") {
 
-      mostrarProdutos(produtos);
+      renderizarProdutos(
+        todosProdutos
+      );
 
       return;
-
     }
 
 
     const filtrados =
-      produtos.filter(produto => {
+      todosProdutos.filter(produto => {
 
         const cat =
           String(
-            produto.category || ""
+            produto.category ||
+            produto.categoria ||
+            ""
           ).toLowerCase();
 
+
         return cat.includes(
-          categoria.toLowerCase()
+          categoria
         );
 
       });
 
 
-    mostrarProdutos(
+    renderizarProdutos(
       filtrados
     );
 
   }
 
 
-  /* ==========================================
+  /* ==================================
      ADICIONAR AO CARRINHO
-  ========================================== */
+  ================================== */
 
-  function adicionarAoCarrinho(
+  function adicionarCarrinho(
     produto
   ) {
 
     const existente =
       carrinho.find(
         item =>
-          item.id === produto.id
+          item.id === produto.id &&
+          item.nome === produto.nome
       );
 
 
@@ -1483,21 +1031,7 @@ onclick="filtrarProdutos('Kits', this)"
 
     } else {
 
-      carrinho.push({
-
-        id:
-          produto.id,
-
-        nome:
-          produto.nome,
-
-        preco:
-          Number(produto.preco),
-
-        quantidade:
-          1
-
-      });
+      carrinho.push(produto);
 
     }
 
@@ -1513,9 +1047,31 @@ onclick="filtrarProdutos('Kits', this)"
   }
 
 
-  /* ==========================================
+  /* ==================================
+     TOTAL
+  ================================== */
+
+  function calcularTotal() {
+
+    return carrinho.reduce(
+      (total, item) => {
+
+        return total +
+          (
+            Number(item.preco || 0) *
+            Number(item.quantidade || 1)
+          );
+
+      },
+      0
+    );
+
+  }
+
+
+  /* ==================================
      ATUALIZAR CARRINHO
-  ========================================== */
+  ================================== */
 
   function atualizarCarrinho() {
 
@@ -1523,7 +1079,7 @@ onclick="filtrarProdutos('Kits', this)"
       carrinho.reduce(
         (total, item) =>
           total +
-          item.quantidade,
+          Number(item.quantidade || 1),
         0
       );
 
@@ -1534,25 +1090,16 @@ onclick="filtrarProdutos('Kits', this)"
       quantidade;
 
 
-    renderizarCarrinho();
-
-  }
-
-
-  function calcularTotal() {
-
-    return carrinho.reduce(
-      (total, item) =>
-        total +
-        Number(item.preco) *
-        Number(item.quantidade),
-      0
-    );
-
-  }
+    const total =
+      calcularTotal();
 
 
-  function renderizarCarrinho() {
+    document
+      .getElementById("cartTotal")
+      .textContent =
+      "R$ " +
+      formatarPreco(total);
+
 
     const area =
       document.getElementById(
@@ -1564,15 +1111,9 @@ onclick="filtrarProdutos('Kits', this)"
 
       area.innerHTML = `
         <div class="loading">
-          🛒<br><br>
-          Seu carrinho está vazio.
+          Seu carrinho está vazio. 🛒
         </div>
       `;
-
-      document
-        .getElementById("cartTotal")
-        .textContent =
-        "R$ 0,00";
 
       return;
 
@@ -1595,61 +1136,34 @@ onclick="filtrarProdutos('Kits', this)"
 
         div.innerHTML = `
 
-          <div class="cart-item-top">
+          <div class="cart-item-info">
 
-            <div>
-
-              <strong>
-                ${item.nome}
-              </strong>
-
-              <br>
-
-              ${dinheiro(item.preco)}
-
+            <div class="cart-item-name">
+              ${item.nome}
             </div>
 
-            <button
-              class="remove"
-              onclick="removerItem(${index})"
-            >
-              Remover
-            </button>
-
-          </div>
-
-
-          <div class="quantity">
-
-            <button
-              onclick="alterarQuantidade(${index}, -1)"
-            >
-              −
-            </button>
-
-            <strong>
+            <div>
+              Quantidade:
               ${item.quantidade}
-            </strong>
+            </div>
 
-            <button
-              onclick="alterarQuantidade(${index}, 1)"
-            >
-              +
-            </button>
-
-            <span
-              style="
-                margin-left:auto;
-                font-weight:bold;
-              "
-            >
-              ${dinheiro(
+            <div class="cart-item-price">
+              R$
+              ${formatarPreco(
                 item.preco *
                 item.quantidade
               )}
-            </span>
+            </div>
 
           </div>
+
+
+          <button
+            class="remove"
+            onclick="removerCarrinho(${index})"
+          >
+            Remover
+          </button>
 
         `;
 
@@ -1659,44 +1173,16 @@ onclick="filtrarProdutos('Kits', this)"
       }
     );
 
-
-    document
-      .getElementById("cartTotal")
-      .textContent =
-      dinheiro(
-        calcularTotal()
-      );
-
   }
 
 
-  function alterarQuantidade(
-    index,
-    quantidade
+  /* ==================================
+     REMOVER
+  ================================== */
+
+  function removerCarrinho(
+    index
   ) {
-
-    carrinho[index].quantidade +=
-      quantidade;
-
-
-    if (
-      carrinho[index].quantidade <= 0
-    ) {
-
-      carrinho.splice(
-        index,
-        1
-      );
-
-    }
-
-
-    atualizarCarrinho();
-
-  }
-
-
-  function removerItem(index) {
 
     carrinho.splice(
       index,
@@ -1709,13 +1195,14 @@ onclick="filtrarProdutos('Kits', this)"
   }
 
 
-  /* ==========================================
+  /* ==================================
      ABRIR CARRINHO
-  ========================================== */
+  ================================== */
 
-  function abrirCarrinho() {
+  function mostrarCarrinho() {
 
-    renderizarCarrinho();
+    atualizarCarrinho();
+
 
     document
       .getElementById("cartModal")
@@ -1723,6 +1210,10 @@ onclick="filtrarProdutos('Kits', this)"
 
   }
 
+
+  /* ==================================
+     FECHAR CARRINHO
+  ================================== */
 
   function fecharCarrinho() {
 
@@ -1733,16 +1224,16 @@ onclick="filtrarProdutos('Kits', this)"
   }
 
 
-  /* ==========================================
-     CHECKOUT
-  ========================================== */
+  /* ==================================
+     ABRIR CHECKOUT
+  ================================== */
 
   function abrirCheckout() {
 
     if (!carrinho.length) {
 
       alert(
-        "Seu carrinho está vazio. 🛒"
+        "Seu carrinho está vazio. 🍰"
       );
 
       return;
@@ -1753,97 +1244,36 @@ onclick="filtrarProdutos('Kits', this)"
     fecharCarrinho();
 
 
-    const hoje =
-      new Date();
-
-
-    const ano =
-      hoje.getFullYear();
-
-
-    const mes =
-      String(
-        hoje.getMonth() + 1
-      ).padStart(2, "0");
-
-
-    const dia =
-      String(
-        hoje.getDate()
-      ).padStart(2, "0");
-
-
-    const dataHoje =
-      `${ano}-${mes}-${dia}`;
-
-
-    const campoData =
-      document.getElementById(
-        "pedidoData"
-      );
-
-
-    campoData.min =
-      dataHoje;
-
-
-    if (!campoData.value) {
-
-      campoData.value =
-        dataHoje;
-
-    }
-
-
     document
-      .getElementById(
-        "checkoutTotal"
-      )
-      .textContent =
-      dinheiro(
-        calcularTotal()
-      );
-
-
-    document
-      .getElementById(
-        "checkoutErro"
-      )
-      .classList.add(
-        "hidden"
-      );
-
-
-    document
-      .getElementById(
-        "checkoutModal"
-      )
-      .classList.add(
-        "show"
-      );
+      .getElementById("checkoutModal")
+      .classList.add("show");
 
   }
 
+
+  /* ==================================
+     FECHAR CHECKOUT
+  ================================== */
 
   function fecharCheckout() {
 
     document
-      .getElementById(
-        "checkoutModal"
-      )
-      .classList.remove(
-        "show"
-      );
+      .getElementById("checkoutModal")
+      .classList.remove("show");
 
   }
 
 
+  /* ==================================
+     ENTREGA / RETIRADA
+  ================================== */
+
   function alterarEntrega() {
 
-    const tipo =
+    const selecionado =
       document.querySelector(
         'input[name="entrega"]:checked'
-      ).value;
+      );
 
 
     const area =
@@ -1852,53 +1282,57 @@ onclick="filtrarProdutos('Kits', this)"
       );
 
 
-    if (tipo === "entrega") {
+    if (
+      selecionado &&
+      selecionado.value === "entrega"
+    ) {
 
-      area.classList.remove(
-        "hidden"
-      );
+      area.style.display =
+        "block";
 
     } else {
 
-      area.classList.add(
-        "hidden"
-      );
+      area.style.display =
+        "none";
+
+      document
+        .getElementById(
+          "clienteEndereco"
+        )
+        .value = "";
 
     }
 
   }
 
 
-  /* ==========================================
+  /* ==================================
      MOSTRAR ERRO
-  ========================================== */
+  ================================== */
 
   function mostrarErro(
     mensagem
   ) {
 
-    const erro =
+    const area =
       document.getElementById(
         "checkoutErro"
       );
 
 
-    erro.innerHTML =
-      "<strong>Não foi possível finalizar o pedido.</strong>" +
-      "<br><br>" +
+    area.innerHTML =
       mensagem;
 
 
-    erro.classList.remove(
-      "hidden"
-    );
+    area.style.display =
+      "block";
 
   }
 
 
-  /* ==========================================
+  /* ==================================
      FINALIZAR PEDIDO
-  ========================================== */
+  ================================== */
 
   async function finalizarPedido() {
 
@@ -1907,18 +1341,15 @@ onclick="filtrarProdutos('Kits', this)"
         "checkoutErro"
       );
 
+
     const botao =
       document.getElementById(
         "confirmarPedido"
       );
 
 
-    erro.classList.add(
-      "hidden"
-    );
-
-    erro.textContent =
-      "";
+    erro.style.display =
+      "none";
 
 
     if (!carrinho.length) {
@@ -1959,19 +1390,10 @@ onclick="filtrarProdutos('Kits', this)"
         .trim();
 
 
-    const tipoEntrega =
+    const entrega =
       document.querySelector(
         'input[name="entrega"]:checked'
-      ).value;
-
-
-    const endereco =
-      document
-        .getElementById(
-          "clienteEndereco"
-        )
-        .value
-        .trim();
+      );
 
 
     const data =
@@ -1991,9 +1413,20 @@ onclick="filtrarProdutos('Kits', this)"
 
 
     const pagamento =
-      document.querySelector(
-        'input[name="pagamento"]:checked'
-      ).value;
+      document
+        .getElementById(
+          "pedidoPagamento"
+        )
+        .value;
+
+
+    const endereco =
+      document
+        .getElementById(
+          "clienteEndereco"
+        )
+        .value
+        .trim();
 
 
     const observacoes =
@@ -2029,24 +1462,10 @@ onclick="filtrarProdutos('Kits', this)"
     }
 
 
-    if (
-      tipoEntrega === "entrega" &&
-      !endereco
-    ) {
-
-      mostrarErro(
-        "Digite o endereço de entrega."
-      );
-
-      return;
-
-    }
-
-
     if (!data) {
 
       mostrarErro(
-        "Escolha a data."
+        "Escolha a data do pedido."
       );
 
       return;
@@ -2065,9 +1484,38 @@ onclick="filtrarProdutos('Kits', this)"
     }
 
 
-    const total =
-      calcularTotal();
+    if (!pagamento) {
 
+      mostrarErro(
+        "Escolha a forma de pagamento."
+      );
+
+      return;
+
+    }
+
+
+    const tipoEntrega =
+      entrega
+        ? entrega.value
+        : "retirada";
+
+
+    if (
+      tipoEntrega === "entrega" &&
+      !endereco
+    ) {
+
+      mostrarErro(
+        "Digite o endereço de entrega."
+      );
+
+      return;
+
+    }
+
+
+    /* DESABILITAR BOTÃO */
 
     botao.disabled =
       true;
@@ -2078,197 +1526,13 @@ onclick="filtrarProdutos('Kits', this)"
 
     try {
 
-      /* ======================================
-         CRIAR PEDIDO
-      ====================================== */
-
-      const pedido = {
-
-        customer_name:
-          nome,
-
-        customer_phone:
-          telefone,
-
-        customer_email:
-          email || null,
-
-        type:
-          tipoEntrega,
-
-        scheduled_date:
-          data,
-
-        scheduled_time:
-          horario,
-
-        total:
-          total,
-
-        status:
-          "novo",
-
-        payment_method:
-          pagamento,
-
-        payment_status:
-          "pending",
-
-        delivery_type:
-          tipoEntrega,
-
-        delivery_address:
-          tipoEntrega === "entrega"
-            ? endereco
-            : null,
-
-        notes:
-          observacoes || null,
-
-        order_date:
-          data,
-
-        order_time:
-          horario
-
-      };
-
-
-      console.log(
-        "PEDIDO:",
-        pedido
-      );
-
-
-      const respostaPedido =
-        await fetch(
-          SUPABASE_URL +
-          "/rest/v1/orders",
-          {
-
-            method: "POST",
-
-            headers: {
-
-              "Content-Type":
-                "application/json",
-
-              "apikey":
-                SUPABASE_KEY,
-
-              "Authorization":
-                "Bearer " +
-                SUPABASE_KEY,
-
-              "Prefer":
-                "return=representation"
-
-            },
-
-            body:
-              JSON.stringify(
-                pedido
-              )
-
-          }
-        );
-
-
-      const textoPedido =
-        await respostaPedido.text();
-
-
-      console.log(
-        "RESPOSTA DO PEDIDO:",
-        textoPedido
-      );
-
-
-      if (!respostaPedido.ok) {
-
-        let mensagem =
-          textoPedido;
-
-
-        try {
-
-          const json =
-            JSON.parse(
-              textoPedido
-            );
-
-
-          mensagem =
-            json.message ||
-            json.details ||
-            json.hint ||
-            textoPedido;
-
-        } catch {}
-
-
-        throw new Error(
-          mensagem
-        );
-
-      }
-
-
-      let dadosPedido;
-
-
-      try {
-
-        dadosPedido =
-          JSON.parse(
-            textoPedido
-          );
-
-      } catch {
-
-        throw new Error(
-          "O pedido foi enviado, mas o banco não retornou o ID."
-        );
-
-      }
-
-
-      const pedidoCriado =
-        Array.isArray(
-          dadosPedido
-        )
-          ? dadosPedido[0]
-          : dadosPedido;
-
-
-      if (
-        !pedidoCriado ||
-        !pedidoCriado.id
-      ) {
-
-        throw new Error(
-          "Não conseguimos identificar o número do pedido."
-        );
-
-      }
-
-
-      const pedidoId =
-        pedidoCriado.id;
-
-
-      /* ======================================
-         CRIAR ITENS DO PEDIDO
-      ====================================== */
-
       const itens =
         carrinho.map(item => ({
 
-          order_id:
-            pedidoId,
-
           product_id:
-            item.id || null,
+            item.id
+              ? String(item.id)
+              : null,
 
           name:
             item.nome,
@@ -2286,16 +1550,16 @@ onclick="filtrarProdutos('Kits', this)"
         }));
 
 
-      console.log(
-        "ITENS:",
-        itens
-      );
+      const total =
+        calcularTotal();
 
 
-      const respostaItens =
+      /* CHAMAR FUNÇÃO DO SUPABASE */
+
+      const resposta =
         await fetch(
           SUPABASE_URL +
-          "/rest/v1/order_items",
+          "/rest/v1/rpc/criar_pedido",
           {
 
             method: "POST",
@@ -2310,70 +1574,207 @@ onclick="filtrarProdutos('Kits', this)"
 
               "Authorization":
                 "Bearer " +
-                SUPABASE_KEY,
-
-              "Prefer":
-                "return=minimal"
+                SUPABASE_KEY
 
             },
 
             body:
-              JSON.stringify(
-                itens
-              )
+              JSON.stringify({
+
+                p_customer_name:
+                  nome,
+
+                p_customer_phone:
+                  telefone,
+
+                p_customer_email:
+                  email || null,
+
+                p_type:
+                  tipoEntrega,
+
+                p_scheduled_date:
+                  data,
+
+                p_scheduled_time:
+                  horario,
+
+                p_total:
+                  total,
+
+                p_payment_method:
+                  pagamento,
+
+                p_delivery_type:
+                  tipoEntrega,
+
+                p_delivery_address:
+                  tipoEntrega === "entrega"
+                    ? endereco
+                    : null,
+
+                p_notes:
+                  observacoes || null,
+
+                p_items:
+                  itens
+
+              })
 
           }
         );
 
 
-      const textoItens =
-        await respostaItens.text();
+      const texto =
+        await resposta.text();
 
 
       console.log(
-        "RESPOSTA DOS ITENS:",
-        textoItens
+        "RESPOSTA DO PEDIDO:",
+        texto
       );
 
 
-      if (!respostaItens.ok) {
+      if (!resposta.ok) {
 
         let mensagem =
-          textoItens;
+          texto;
 
 
         try {
 
           const json =
-            JSON.parse(
-              textoItens
-            );
+            JSON.parse(texto);
 
 
           mensagem =
             json.message ||
             json.details ||
             json.hint ||
-            textoItens;
+            texto;
 
-        } catch {}
+        } catch (e) {}
 
 
         throw new Error(
-          "Pedido criado, mas houve um erro ao salvar os produtos: " +
           mensagem
         );
 
       }
 
 
-      /* ======================================
-         SUCESSO
-      ====================================== */
+      let pedidoId;
 
-      mostrarSucesso(
-        pedidoId,
-        nome
+
+      try {
+
+        pedidoId =
+          JSON.parse(texto);
+
+      } catch (e) {
+
+        pedidoId =
+          texto;
+
+      }
+
+
+      /* LIMPAR CARRINHO */
+
+      carrinho = [];
+
+
+      atualizarCarrinho();
+
+
+      fecharCheckout();
+
+
+      /* MOSTRAR SUCESSO */
+
+      document
+        .getElementById(
+          "numeroPedido"
+        )
+        .textContent =
+        "Pedido nº " +
+        pedidoId;
+
+
+      document
+        .getElementById(
+          "successModal"
+        )
+        .classList.add("show");
+
+
+      /* LIMPAR FORMULÁRIO */
+
+      document
+        .getElementById(
+          "clienteNome"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "clienteTelefone"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "clienteEmail"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "clienteEndereco"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "pedidoData"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "pedidoHorario"
+        )
+        .value = "";
+
+
+      document
+        .getElementById(
+          "pedidoObservacoes"
+        )
+        .value = "";
+
+
+    } catch (erroFinal) {
+
+      console.error(
+        "ERRO AO FINALIZAR PEDIDO:",
+        erroFinal
+      );
+
+
+      mostrarErro(
+        "Não foi possível finalizar o pedido." +
+        "<br><br>" +
+        "<strong>Detalhes:</strong><br>" +
+        (
+          erroFinal.message ||
+          "Erro desconhecido."
+        )
       );
 
 
@@ -2390,136 +1791,70 @@ onclick="filtrarProdutos('Kits', this)"
   }
 
 
-  /* ==========================================
-     SUCESSO
-  ========================================== */
+  /* ==================================
+     FECHAR SUCESSO
+  ================================== */
 
-  function mostrarSucesso(
-    numeroPedido,
-    nome
-  ) {
-
-    fecharCheckout();
-
-
-    carrinho = [];
-
-
-    atualizarCarrinho();
-
-
-    document
-      .getElementById(
-        "numeroPedido"
-      )
-      .textContent =
-      "Pedido nº " +
-      numeroPedido;
-
-
-    /*
-      COLOQUE AQUI O WHATSAPP DA LÁ DOCIÊ
-      SEM ESPAÇOS OU SÍMBOLOS.
-
-      Exemplo:
-      const whatsapp = "5592999999999";
-    */
-
-    const whatsapp =
-      "5592999999999";
-
-
-    const mensagem =
-      encodeURIComponent(
-        "Olá, Lá Dociê! 🍰\n\n" +
-        "Acabei de fazer um pedido pelo site.\n" +
-        "Nome: " +
-        nome +
-        "\n" +
-        "Pedido nº: " +
-        numeroPedido
-      );
-
-
-    document
-      .getElementById(
-        "whatsappButton"
-      )
-      .onclick =
-      function() {
-
-        window.open(
-          "https://wa.me/" +
-          whatsapp +
-          "?text=" +
-          mensagem,
-          "_blank"
-        );
-
-      };
-
+  function fecharSucesso() {
 
     document
       .getElementById(
         "successModal"
       )
-      .classList.add(
-        "show"
-      );
+      .classList.remove("show");
 
   }
 
 
-  function voltarLoja() {
+  /* ==================================
+     DATA MÍNIMA = HOJE
+  ================================== */
 
-    document
-      .getElementById(
-        "successModal"
-      )
-      .classList.remove(
-        "show"
+  function configurarData() {
+
+    const campo =
+      document.getElementById(
+        "pedidoData"
       );
+
+
+    const hoje =
+      new Date();
+
+
+    const ano =
+      hoje.getFullYear();
+
+
+    const mes =
+      String(
+        hoje.getMonth() + 1
+      ).padStart(2, "0");
+
+
+    const dia =
+      String(
+        hoje.getDate()
+      ).padStart(2, "0");
+
+
+    campo.min =
+      `${ano}-${mes}-${dia}`;
 
   }
 
 
-  /* ==========================================
-     INICIAR SITE
-  ========================================== */
+  /* ==================================
+     INICIAR
+  ================================== */
 
   carregarProdutos();
 
+  atualizarCarrinho();
+
+  configurarData();
+
 </script>
-<script>
-function abrirCheckout() {
-  const modal = document.getElementById("checkoutModal");
 
-  if (!modal) {
-    alert("Erro: a tela de checkout não foi encontrada.");
-    return;
-  }
-
-  if (typeof carrinho === "undefined" || carrinho.length === 0) {
-    alert("Seu carrinho está vazio. 🍰");
-    return;
-  }
-
-  modal.style.display = "flex";
-  modal.classList.add("show");
-}
-
-
-function fecharCheckout() {
-  const modal = document.getElementById("checkoutModal");
-
-  if (!modal) {
-    return;
-  }
-
-  modal.style.display = "none";
-  modal.classList.remove("show");
-}
-</script>
 </body>
 </html>
-

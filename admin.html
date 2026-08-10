@@ -38,7 +38,7 @@
     }
 
     .container {
-      max-width: 600px;
+      max-width: 750px;
       margin: auto;
       padding: 20px;
     }
@@ -55,13 +55,21 @@
       margin-top: 0;
     }
 
-    input {
+    input,
+    select,
+    textarea {
       width: 100%;
       padding: 14px;
       margin: 8px 0;
       border: 1px solid #ddd;
       border-radius: 10px;
       font-size: 16px;
+      font-family: inherit;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
     }
 
     button {
@@ -81,7 +89,7 @@
     }
 
     .hidden {
-      display: none;
+      display: none !important;
     }
 
     .menu {
@@ -93,12 +101,20 @@
 
     .menu button {
       margin: 0;
-      min-height: 90px;
+      min-height: 100px;
     }
 
-    .logout {
+    .logout,
+    .danger {
       background: #9b3d3d;
-      margin-top: 25px;
+    }
+
+    .secondary {
+      background: #8b6b5c;
+    }
+
+    .success {
+      background: #587b55;
     }
 
     .message {
@@ -110,6 +126,76 @@
 
     .welcome {
       text-align: center;
+    }
+
+    .topo {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .topo button {
+      width: auto;
+      margin: 0;
+    }
+
+    .produto,
+    .pedido {
+      border: 1px solid #eee;
+      border-radius: 14px;
+      padding: 15px;
+      margin-top: 15px;
+      background: #fffaf7;
+    }
+
+    .produto img {
+      width: 100%;
+      max-height: 230px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .acoes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .acoes button {
+      margin-top: 8px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 7px 10px;
+      border-radius: 20px;
+      background: #eadbd3;
+      margin: 5px 0;
+      font-size: 13px;
+    }
+
+    .pedido-item {
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .pedido-item:last-child {
+      border-bottom: 0;
+    }
+
+    .vazio {
+      text-align: center;
+      padding: 25px 10px;
+      color: #777;
+    }
+
+    label {
+      display: block;
+      margin-top: 12px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -124,6 +210,7 @@
 <div class="container">
 
   <!-- LOGIN -->
+
   <div id="loginArea" class="card">
 
     <h2>🔐 Entrar</h2>
@@ -154,6 +241,7 @@
 
 
   <!-- PAINEL -->
+
   <div id="painel" class="hidden">
 
     <div class="card welcome">
@@ -168,28 +256,30 @@
     </div>
 
 
-    <div class="card">
+    <!-- MENU -->
+
+    <div id="menuArea" class="card">
 
       <h2>📋 Administração</h2>
 
       <div class="menu">
 
-        <button onclick="alert('A área de produtos será ativada na próxima etapa.')">
+        <button onclick="abrirProdutos()">
           🍰<br>
           Produtos
         </button>
 
-        <button onclick="alert('A área de pedidos será ativada na próxima etapa.')">
+        <button onclick="abrirPedidos()">
           📦<br>
           Pedidos
         </button>
 
-        <button onclick="alert('As configurações serão ativadas na próxima etapa.')">
+        <button onclick="abrirConfiguracoes()">
           ⚙️<br>
           Configurações
         </button>
 
-        <button onclick="alert('O cadastro de produtos será ativado na próxima etapa.')">
+        <button onclick="abrirCadastroProduto()">
           ➕<br>
           Novo produto
         </button>
@@ -199,6 +289,197 @@
       <button class="logout" onclick="sair()">
         Sair
       </button>
+
+    </div>
+
+
+    <!-- PRODUTOS -->
+
+    <div id="produtosArea" class="card hidden">
+
+      <div class="topo">
+
+        <h2>🍰 Produtos</h2>
+
+        <button class="secondary" onclick="abrirMenu()">
+          Voltar
+        </button>
+
+      </div>
+
+      <button onclick="abrirCadastroProduto()">
+        ➕ Cadastrar novo produto
+      </button>
+
+      <button class="secondary" onclick="carregarProdutos()">
+        🔄 Atualizar produtos
+      </button>
+
+      <div id="listaProdutos">
+        Carregando...
+      </div>
+
+    </div>
+
+
+    <!-- CADASTRO DE PRODUTO -->
+
+    <div id="cadastroArea" class="card hidden">
+
+      <h2 id="tituloFormulario">
+        ➕ Novo produto
+      </h2>
+
+      <input
+        type="hidden"
+        id="produtoId"
+      >
+
+      <label>Nome do produto</label>
+
+      <input
+        type="text"
+        id="produtoNome"
+        placeholder="Ex.: Mini bolo"
+      >
+
+      <label>Categoria</label>
+
+      <input
+        type="text"
+        id="produtoCategoria"
+        placeholder="Ex.: Bolos"
+      >
+
+      <label>Imagem</label>
+
+      <input
+        type="text"
+        id="produtoImagem"
+        placeholder="Cole o link da imagem"
+      >
+
+      <button onclick="salvarProduto()">
+        💾 Salvar produto
+      </button>
+
+      <button class="secondary" onclick="abrirProdutos()">
+        Voltar
+      </button>
+
+      <div id="produtoMessage"></div>
+
+    </div>
+
+
+    <!-- PEDIDOS -->
+
+    <div id="pedidosArea" class="card hidden">
+
+      <div class="topo">
+
+        <h2>📦 Pedidos</h2>
+
+        <button class="secondary" onclick="abrirMenu()">
+          Voltar
+        </button>
+
+      </div>
+
+      <button class="secondary" onclick="carregarPedidos()">
+        🔄 Atualizar pedidos
+      </button>
+
+      <div id="listaPedidos">
+        Carregando pedidos...
+      </div>
+
+    </div>
+
+
+    <!-- CONFIGURAÇÕES -->
+
+    <div id="configArea" class="card hidden">
+
+      <div class="topo">
+
+        <h2>⚙️ Configurações</h2>
+
+        <button class="secondary" onclick="abrirMenu()">
+          Voltar
+        </button>
+
+      </div>
+
+      <label>Nome da loja</label>
+
+      <input
+        id="configNome"
+        type="text"
+      >
+
+      <label>Descrição</label>
+
+      <textarea
+        id="configDescricao"
+      ></textarea>
+
+      <label>Telefone</label>
+
+      <input
+        id="configTelefone"
+        type="text"
+      >
+
+      <label>WhatsApp</label>
+
+      <input
+        id="configWhatsapp"
+        type="text"
+      >
+
+      <label>Chave Pix</label>
+
+      <input
+        id="configPix"
+        type="text"
+      >
+
+      <label>Taxa de entrega</label>
+
+      <input
+        id="configTaxa"
+        type="number"
+        step="0.01"
+      >
+
+      <label>Horário de funcionamento</label>
+
+      <textarea
+        id="configHorario"
+        placeholder="Ex.: Terça a sexta: 14h às 22h"
+      ></textarea>
+
+      <label>Endereço</label>
+
+      <input
+        id="configEndereco"
+        type="text"
+      >
+
+      <label>Instagram</label>
+
+      <input
+        id="configInstagram"
+        type="text"
+        placeholder="@ladocie"
+      >
+
+      <button onclick="salvarConfiguracoes()">
+        💾 Salvar configurações
+      </button>
+
+      <div id="configMessage"></div>
 
     </div>
 
@@ -215,13 +496,16 @@
   const SUPABASE_KEY =
     "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
 
-
   const supabaseClient =
     supabase.createClient(
       SUPABASE_URL,
       SUPABASE_KEY
     );
 
+
+  /* =========================
+     LOGIN
+  ========================= */
 
   async function entrar() {
 
@@ -234,9 +518,7 @@
     const mensagem =
       document.getElementById("loginMessage");
 
-
     mensagem.innerHTML = "";
-
 
     if (!email || !password) {
 
@@ -246,13 +528,11 @@
       return;
     }
 
-
     const { data, error } =
       await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
+        email,
+        password
       });
-
 
     if (error) {
 
@@ -262,9 +542,7 @@
       return;
     }
 
-
     const user = data.user;
-
 
     const { data: admin, error: adminError } =
       await supabaseClient
@@ -272,7 +550,6 @@
         .select("user_id")
         .eq("user_id", user.id)
         .maybeSingle();
-
 
     if (adminError || !admin) {
 
@@ -284,7 +561,6 @@
       return;
     }
 
-
     document
       .getElementById("loginArea")
       .classList.add("hidden");
@@ -295,6 +571,10 @@
 
   }
 
+
+  /* =========================
+     SAIR
+  ========================= */
 
   async function sair() {
 
@@ -310,7 +590,783 @@
 
   }
 
+
+  /* =========================
+     NAVEGAÇÃO
+  ========================= */
+
+  function esconderAreas() {
+
+    document
+      .getElementById("menuArea")
+      .classList.add("hidden");
+
+    document
+      .getElementById("produtosArea")
+      .classList.add("hidden");
+
+    document
+      .getElementById("cadastroArea")
+      .classList.add("hidden");
+
+    document
+      .getElementById("pedidosArea")
+      .classList.add("hidden");
+
+    document
+      .getElementById("configArea")
+      .classList.add("hidden");
+
+  }
+
+
+  function abrirMenu() {
+
+    esconderAreas();
+
+    document
+      .getElementById("menuArea")
+      .classList.remove("hidden");
+
+  }
+
+
+  /* =========================
+     PRODUTOS
+  ========================= */
+
+  async function abrirProdutos() {
+
+    esconderAreas();
+
+    document
+      .getElementById("produtosArea")
+      .classList.remove("hidden");
+
+    await carregarProdutos();
+
+  }
+
+
+  function abrirCadastroProduto() {
+
+    esconderAreas();
+
+    document
+      .getElementById("cadastroArea")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("tituloFormulario")
+      .innerText = "➕ Novo produto";
+
+    document
+      .getElementById("produtoId")
+      .value = "";
+
+    document
+      .getElementById("produtoNome")
+      .value = "";
+
+    document
+      .getElementById("produtoCategoria")
+      .value = "";
+
+    document
+      .getElementById("produtoImagem")
+      .value = "";
+
+    document
+      .getElementById("produtoMessage")
+      .innerHTML = "";
+
+  }
+
+
+  async function carregarProdutos() {
+
+    const lista =
+      document.getElementById("listaProdutos");
+
+    lista.innerHTML = "Carregando produtos...";
+
+    const { data, error } =
+      await supabaseClient
+        .from("products")
+        .select("*")
+        .order("name", { ascending: true });
+
+    if (error) {
+
+      lista.innerHTML =
+        '<div class="message">Erro ao carregar produtos.</div>';
+
+      console.error(error);
+
+      return;
+    }
+
+    if (!data || data.length === 0) {
+
+      lista.innerHTML =
+        '<div class="vazio">Nenhum produto cadastrado.</div>';
+
+      return;
+    }
+
+    lista.innerHTML = "";
+
+    data.forEach(produto => {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "produto";
+
+      if (produto.image) {
+
+        const img =
+          document.createElement("img");
+
+        img.src = produto.image;
+
+        img.alt = produto.name || "Produto";
+
+        div.appendChild(img);
+
+      }
+
+      const titulo =
+        document.createElement("h3");
+
+      titulo.innerText =
+        produto.name || "Sem nome";
+
+      div.appendChild(titulo);
+
+      const categoria =
+        document.createElement("p");
+
+      categoria.innerHTML =
+        "<strong>Categoria:</strong> " +
+        (produto.category || "Sem categoria");
+
+      div.appendChild(categoria);
+
+      const acoes =
+        document.createElement("div");
+
+      acoes.className = "acoes";
+
+      const editar =
+        document.createElement("button");
+
+      editar.innerText = "✏️ Editar";
+
+      editar.onclick = function() {
+        editarProduto(produto);
+      };
+
+      const excluir =
+        document.createElement("button");
+
+      excluir.innerText = "🗑️ Excluir";
+
+      excluir.className = "danger";
+
+      excluir.onclick = function() {
+        excluirProduto(produto.id);
+      };
+
+      acoes.appendChild(editar);
+
+      acoes.appendChild(excluir);
+
+      div.appendChild(acoes);
+
+      lista.appendChild(div);
+
+    });
+
+  }
+
+
+  async function salvarProduto() {
+
+    const id =
+      document.getElementById("produtoId").value;
+
+    const nome =
+      document.getElementById("produtoNome").value.trim();
+
+    const categoria =
+      document.getElementById("produtoCategoria").value.trim();
+
+    const imagem =
+      document.getElementById("produtoImagem").value.trim();
+
+    const mensagem =
+      document.getElementById("produtoMessage");
+
+    mensagem.innerHTML = "";
+
+    if (!nome) {
+
+      mensagem.innerHTML =
+        '<div class="message">Digite o nome do produto.</div>';
+
+      return;
+    }
+
+    const produto = {
+      name: nome,
+      category: categoria || null,
+      image: imagem || null
+    };
+
+    let resultado;
+
+    if (id) {
+
+      resultado =
+        await supabaseClient
+          .from("products")
+          .update(produto)
+          .eq("id", id);
+
+    } else {
+
+      resultado =
+        await supabaseClient
+          .from("products")
+          .insert(produto);
+
+    }
+
+    if (resultado.error) {
+
+      console.error(resultado.error);
+
+      mensagem.innerHTML =
+        '<div class="message">Erro ao salvar produto: ' +
+        resultado.error.message +
+        '</div>';
+
+      return;
+    }
+
+    mensagem.innerHTML =
+      '<div class="message">Produto salvo com sucesso! 🍰</div>';
+
+    setTimeout(() => {
+
+      abrirProdutos();
+
+    }, 700);
+
+  }
+
+
+  function editarProduto(produto) {
+
+    esconderAreas();
+
+    document
+      .getElementById("cadastroArea")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("tituloFormulario")
+      .innerText = "✏️ Editar produto";
+
+    document
+      .getElementById("produtoId")
+      .value = produto.id || "";
+
+    document
+      .getElementById("produtoNome")
+      .value = produto.name || "";
+
+    document
+      .getElementById("produtoCategoria")
+      .value = produto.category || "";
+
+    document
+      .getElementById("produtoImagem")
+      .value = produto.image || "";
+
+  }
+
+
+  async function excluirProduto(id) {
+
+    if (!confirm("Tem certeza que deseja excluir este produto?")) {
+      return;
+    }
+
+    const { error } =
+      await supabaseClient
+        .from("products")
+        .delete()
+        .eq("id", id);
+
+    if (error) {
+
+      alert(
+        "Não foi possível excluir: " +
+        error.message
+      );
+
+      return;
+    }
+
+    alert("Produto excluído com sucesso! 🍰");
+
+    await carregarProdutos();
+
+  }
+
+
+  /* =========================
+     PEDIDOS
+  ========================= */
+
+  async function abrirPedidos() {
+
+    esconderAreas();
+
+    document
+      .getElementById("pedidosArea")
+      .classList.remove("hidden");
+
+    await carregarPedidos();
+
+  }
+
+
+  async function carregarPedidos() {
+
+    const lista =
+      document.getElementById("listaPedidos");
+
+    lista.innerHTML =
+      "Carregando pedidos...";
+
+    const { data, error } =
+      await supabaseClient
+        .from("orders")
+        .select("*")
+        .order("created_at", {
+          ascending: false
+        });
+
+    if (error) {
+
+      lista.innerHTML =
+        '<div class="message">Erro ao carregar pedidos: ' +
+        error.message +
+        '</div>';
+
+      return;
+    }
+
+    if (!data || data.length === 0) {
+
+      lista.innerHTML =
+        '<div class="vazio">Nenhum pedido recebido ainda.</div>';
+
+      return;
+    }
+
+    lista.innerHTML = "";
+
+    for (const pedido of data) {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "pedido";
+
+      const dataPedido =
+        pedido.created_at
+          ? new Date(pedido.created_at).toLocaleString("pt-BR")
+          : "";
+
+      div.innerHTML = `
+        <h3>📦 Pedido</h3>
+
+        <p>
+          <strong>Cliente:</strong>
+          ${pedido.customer_name || "Não informado"}
+        </p>
+
+        <p>
+          <strong>Telefone:</strong>
+          ${pedido.customer_phone || "Não informado"}
+        </p>
+
+        <p>
+          <strong>Pagamento:</strong>
+          ${pedido.payment_method || "Não informado"}
+        </p>
+
+        <p>
+          <strong>Entrega:</strong>
+          ${pedido.delivery_type || "Retirada"}
+        </p>
+
+        <p>
+          <strong>Endereço:</strong>
+          ${pedido.delivery_address || "Não informado"}
+        </p>
+
+        <p>
+          <strong>Total:</strong>
+          R$ ${Number(pedido.total || 0).toFixed(2).replace(".", ",")}
+        </p>
+
+        <p>
+          <strong>Data:</strong>
+          ${dataPedido}
+        </p>
+
+        <p>
+          <strong>Status:</strong>
+          <span class="status">
+            ${pedido.status || "pendente"}
+          </span>
+        </p>
+
+        <label>Alterar status</label>
+
+        <select
+          onchange="alterarStatusPedido('${pedido.id}', this.value)"
+        >
+          <option value="pendente" ${pedido.status === "pendente" ? "selected" : ""}>
+            Pendente
+          </option>
+
+          <option value="confirmado" ${pedido.status === "confirmado" ? "selected" : ""}>
+            Confirmado
+          </option>
+
+          <option value="em_preparo" ${pedido.status === "em_preparo" ? "selected" : ""}>
+            Em preparo
+          </option>
+
+          <option value="pronto" ${pedido.status === "pronto" ? "selected" : ""}>
+            Pronto
+          </option>
+
+          <option value="entregue" ${pedido.status === "entregue" ? "selected" : ""}>
+            Entregue
+          </option>
+
+          <option value="cancelado" ${pedido.status === "cancelado" ? "selected" : ""}>
+            Cancelado
+          </option>
+        </select>
+
+        <div id="itens-${pedido.id}">
+          Carregando itens...
+        </div>
+
+        <button
+          class="danger"
+          onclick="cancelarPedido('${pedido.id}')"
+        >
+          ❌ Cancelar pedido
+        </button>
+      `;
+
+      lista.appendChild(div);
+
+      carregarItensPedido(
+        pedido.id
+      );
+
+    }
+
+  }
+
+
+  async function carregarItensPedido(orderId) {
+
+    const area =
+      document.getElementById(
+        "itens-" + orderId
+      );
+
+    if (!area) return;
+
+    const { data, error } =
+      await supabaseClient
+        .from("order_items")
+        .select("*")
+        .eq("order_id", orderId);
+
+    if (error) {
+
+      area.innerHTML =
+        "<p>Não foi possível carregar os itens.</p>";
+
+      return;
+    }
+
+    if (!data || data.length === 0) {
+
+      area.innerHTML =
+        "<p><strong>Itens:</strong> Não informados.</p>";
+
+      return;
+    }
+
+    area.innerHTML =
+      "<p><strong>Itens:</strong></p>";
+
+    data.forEach(item => {
+
+      const div =
+        document.createElement("div");
+
+      div.className = "pedido-item";
+
+      div.innerText =
+        `${item.quantity}x ${item.product_name} — R$ ${Number(item.subtotal || 0).toFixed(2).replace(".", ",")}`;
+
+      area.appendChild(div);
+
+    });
+
+  }
+
+
+  async function alterarStatusPedido(
+    id,
+    status
+  ) {
+
+    const { error } =
+      await supabaseClient
+        .from("orders")
+        .update({ status })
+        .eq("id", id);
+
+    if (error) {
+
+      alert(
+        "Erro ao alterar status: " +
+        error.message
+      );
+
+      return;
+    }
+
+    alert(
+      "Status atualizado! 📦"
+    );
+
+    await carregarPedidos();
+
+  }
+
+
+  async function cancelarPedido(id) {
+
+    if (
+      !confirm(
+        "Deseja realmente cancelar este pedido?"
+      )
+    ) {
+      return;
+    }
+
+    const { error } =
+      await supabaseClient
+        .from("orders")
+        .update({
+          status: "cancelado"
+        })
+        .eq("id", id);
+
+    if (error) {
+
+      alert(
+        "Erro ao cancelar pedido: " +
+        error.message
+      );
+
+      return;
+    }
+
+    alert(
+      "Pedido cancelado."
+    );
+
+    await carregarPedidos();
+
+  }
+
+
+  /* =========================
+     CONFIGURAÇÕES
+  ========================= */
+
+  async function abrirConfiguracoes() {
+
+    esconderAreas();
+
+    document
+      .getElementById("configArea")
+      .classList.remove("hidden");
+
+    await carregarConfiguracoes();
+
+  }
+
+
+  async function carregarConfiguracoes() {
+
+    const { data, error } =
+      await supabaseClient
+        .from("store_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+
+      document
+        .getElementById("configMessage")
+        .innerHTML =
+        '<div class="message">Erro ao carregar configurações: ' +
+        error.message +
+        '</div>';
+
+      return;
+    }
+
+    if (!data) return;
+
+    document.getElementById("configNome").value =
+      data.store_name || "";
+
+    document.getElementById("configDescricao").value =
+      data.description || "";
+
+    document.getElementById("configTelefone").value =
+      data.phone || "";
+
+    document.getElementById("configWhatsapp").value =
+      data.whatsapp || "";
+
+    document.getElementById("configPix").value =
+      data.pix_key || "";
+
+    document.getElementById("configTaxa").value =
+      data.delivery_fee || 0;
+
+    document.getElementById("configHorario").value =
+      data.opening_hours || "";
+
+    document.getElementById("configEndereco").value =
+      data.address || "";
+
+    document.getElementById("configInstagram").value =
+      data.instagram || "";
+
+  }
+
+
+  async function salvarConfiguracoes() {
+
+    const mensagem =
+      document.getElementById("configMessage");
+
+    mensagem.innerHTML =
+      "Salvando...";
+
+    const { data: existente } =
+      await supabaseClient
+        .from("store_settings")
+        .select("id")
+        .limit(1)
+        .maybeSingle();
+
+    const configuracao = {
+
+      store_name:
+        document.getElementById("configNome").value.trim(),
+
+      description:
+        document.getElementById("configDescricao").value.trim(),
+
+      phone:
+        document.getElementById("configTelefone").value.trim(),
+
+      whatsapp:
+        document.getElementById("configWhatsapp").value.trim(),
+
+      pix_key:
+        document.getElementById("configPix").value.trim(),
+
+      delivery_fee:
+        Number(
+          document.getElementById("configTaxa").value || 0
+        ),
+
+      opening_hours:
+        document.getElementById("configHorario").value.trim(),
+
+      address:
+        document.getElementById("configEndereco").value.trim(),
+
+      instagram:
+        document.getElementById("configInstagram").value.trim(),
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    let resultado;
+
+    if (existente) {
+
+      resultado =
+        await supabaseClient
+          .from("store_settings")
+          .update(configuracao)
+          .eq("id", existente.id);
+
+    } else {
+
+      resultado =
+        await supabaseClient
+          .from("store_settings")
+          .insert(configuracao);
+
+    }
+
+
+    if (resultado.error) {
+
+      mensagem.innerHTML =
+        '<div class="message">Erro ao salvar: ' +
+        resultado.error.message +
+        '</div>';
+
+      return;
+    }
+
+
+    mensagem.innerHTML =
+      '<div class="message">Configurações salvas com sucesso! ⚙️</div>';
+
+  }
+
 </script>
 
 </body>
-</html>
+  </html>

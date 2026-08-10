@@ -1,1 +1,400 @@
-sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG
+const SUPABASE_KEY =
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Lá Dociê | Confeitaria</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fffaf7;
+      color: #4b281d;
+    }
+
+    header {
+      background: #4b281d;
+      color: white;
+      padding: 18px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .logo {
+      font-size: 25px;
+      font-weight: bold;
+    }
+
+    .logo span {
+      color: #d9a441;
+    }
+
+    .cart {
+      background: #e0b35b;
+      color: #3d241c;
+      border: 0;
+      border-radius: 30px;
+      padding: 13px 18px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 65px 20px 35px;
+    }
+
+    .hero h1 {
+      font-size: 43px;
+      margin: 0;
+      line-height: 1.1;
+    }
+
+    .hero h1 span {
+      color: #d09a39;
+    }
+
+    .hero p {
+      max-width: 650px;
+      margin: 25px auto;
+      font-size: 19px;
+      line-height: 1.6;
+      color: #765b51;
+    }
+
+    .categories {
+      display: flex;
+      gap: 12px;
+      overflow-x: auto;
+      padding: 10px 20px 25px;
+    }
+
+    .category {
+      white-space: nowrap;
+      padding: 14px 24px;
+      border: 1px solid #dccfc8;
+      border-radius: 30px;
+      background: white;
+      color: #4b281d;
+      font-size: 16px;
+    }
+
+    .category.active {
+      background: #4b281d;
+      color: white;
+    }
+
+    .products {
+      max-width: 1100px;
+      margin: auto;
+      padding: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+
+    .product {
+      background: white;
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 4px 15px rgba(70, 35, 20, .10);
+      border: 1px solid #eee1da;
+    }
+
+    .product-image {
+      width: 100%;
+      height: 190px;
+      background: #f3e7df;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 55px;
+    }
+
+    .product-info {
+      padding: 17px;
+    }
+
+    .product h3 {
+      margin: 0 0 8px;
+      font-size: 20px;
+    }
+
+    .product p {
+      color: #765b51;
+      min-height: 40px;
+    }
+
+    .price {
+      color: #b47b20;
+      font-size: 21px;
+      font-weight: bold;
+    }
+
+    .add {
+      width: 100%;
+      border: 0;
+      border-radius: 12px;
+      padding: 13px;
+      margin-top: 12px;
+      background: #4b281d;
+      color: white;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 50px 20px;
+      font-size: 18px;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding: 40px 20px;
+      text-align: center;
+      background: #4b281d;
+      color: #e0b35b;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    @media (max-width: 500px) {
+      .hero h1 {
+        font-size: 36px;
+      }
+
+      .hero p {
+        font-size: 17px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">LÁ <span>DOCIÊ</span></div>
+  <button class="cart" onclick="mostrarCarrinho()">
+    🛒 Carrinho <span id="cartCount">0</span>
+  </button>
+</header>
+
+<section class="hero">
+  <h1>Momentos mais <span>doces</span></h1>
+
+  <p>
+    Bolos, brigadeiros, cupcakes e kits preparados com carinho
+    para tornar sua comemoração inesquecível.
+  </p>
+</section>
+
+<div class="categories">
+  <button class="category active">Todos</button>
+  <button class="category">🎂 Bolos</button>
+  <button class="category">🍫 Doces</button>
+  <button class="category">🎁 Kits</button>
+</div>
+
+<section id="products" class="products">
+  <div class="loading">
+    Carregando nossos produtos... 🍰
+  </div>
+</section>
+
+<footer>
+  LÁ DOCIÊ
+</footer>
+
+<script>
+  /*
+    CONFIGURAÇÃO DO SUPABASE
+
+    NÃO coloque aqui uma service_role key.
+    Use somente a Publishable Key.
+  */
+
+  const SUPABASE_URL =
+    "https://lzihqkpscesurkfmcasb.supabase.co";
+
+  const SUPABASE_KEY =
+    "COLE_AQUI_SUA_PUBLISHABLE_KEY";
+
+
+  let carrinho = [];
+
+
+  async function carregarProdutos() {
+
+    const area = document.getElementById("products");
+
+    try {
+
+      const resposta = await fetch(
+        SUPABASE_URL + "/rest/v1/products?select=*",
+        {
+          method: "GET",
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY
+          }
+        }
+      );
+
+      if (!resposta.ok) {
+        throw new Error("Erro " + resposta.status);
+      }
+
+      const produtos = await resposta.json();
+
+      if (!produtos.length) {
+        area.innerHTML = `
+          <div class="loading">
+            Ainda não temos produtos cadastrados. 🍰
+          </div>
+        `;
+        return;
+      }
+
+      area.innerHTML = "";
+
+      produtos.forEach(produto => {
+
+        const nome =
+          produto.name ||
+          produto.nome ||
+          produto.title ||
+          "Produto Lá Dociê";
+
+        const descricao =
+          produto.description ||
+          produto.descricao ||
+          "";
+
+        const preco =
+          produto.price ||
+          produto.preco ||
+          0;
+
+        const imagem =
+          produto.image_url ||
+          produto.image ||
+          produto.imagem_url ||
+          "";
+
+        const card = document.createElement("div");
+
+        card.className = "product";
+
+        card.innerHTML = `
+          <div class="product-image">
+            ${
+              imagem
+              ? `<img src="${imagem}" style="width:100%;height:100%;object-fit:cover;">`
+              : "🍰"
+            }
+          </div>
+
+          <div class="product-info">
+
+            <h3>${nome}</h3>
+
+            <p>${descricao}</p>
+
+            <div class="price">
+              R$ ${Number(preco).toFixed(2).replace(".", ",")}
+            </div>
+
+            <button class="add">
+              Adicionar ao carrinho
+            </button>
+
+          </div>
+        `;
+
+        card.querySelector(".add").onclick = () => {
+          adicionarCarrinho({
+            nome: nome,
+            preco: Number(preco)
+          });
+        };
+
+        area.appendChild(card);
+      });
+
+    } catch (erro) {
+
+      console.error(erro);
+
+      area.innerHTML = `
+        <div class="loading">
+          <strong>Não conseguimos carregar os produtos.</strong>
+          <br><br>
+          Verifique a configuração do Supabase.
+        </div>
+      `;
+    }
+  }
+
+
+  function adicionarCarrinho(produto) {
+
+    carrinho.push(produto);
+
+    document.getElementById("cartCount").textContent =
+      carrinho.length;
+
+    alert(
+      produto.nome + " foi adicionado ao carrinho! 🍰"
+    );
+  }
+
+
+  function mostrarCarrinho() {
+
+    if (carrinho.length === 0) {
+      alert("Seu carrinho está vazio. 🛒");
+      return;
+    }
+
+    let mensagem = "Seu carrinho Lá Dociê:\\n\\n";
+
+    let total = 0;
+
+    carrinho.forEach((item, index) => {
+
+      mensagem +=
+        (index + 1) +
+        ". " +
+        item.nome +
+        " - R$ " +
+        item.preco.toFixed(2).replace(".", ",") +
+        "\\n";
+
+      total += item.preco;
+    });
+
+    mensagem +=
+      "\\nTotal: R$ " +
+      total.toFixed(2).replace(".", ",");
+
+    alert(mensagem);
+  }
+
+
+  carregarProdutos();
+</script>
+
+</body>
+</html>

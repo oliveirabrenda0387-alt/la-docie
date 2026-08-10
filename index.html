@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,6 +9,7 @@
   <title>Lá Dociê | Confeitaria</title>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -202,24 +204,12 @@
       overflow-y: auto;
       border-radius: 24px 24px 0 0;
       padding: 22px;
-      animation: subir .25s ease;
-    }
-
-    @keyframes subir {
-      from {
-        transform: translateY(100%);
-      }
-
-      to {
-        transform: translateY(0);
-      }
     }
 
     .modal-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 10px;
     }
 
     .close {
@@ -258,7 +248,6 @@
       width: 36px;
       height: 36px;
       padding: 0;
-      margin: 0;
       border: 0;
       border-radius: 50%;
       background: #4b281d;
@@ -317,7 +306,6 @@
       padding: 13px;
       border-radius: 10px;
       margin-top: 8px;
-      cursor: pointer;
     }
 
     .option input {
@@ -363,10 +351,6 @@
       font-size: 65px;
     }
 
-    .success-box h2 {
-      font-size: 26px;
-    }
-
     .error {
       color: #a53d3d;
       margin-top: 10px;
@@ -392,7 +376,9 @@
       .modal-content {
         padding: 18px;
       }
+
     }
+
   </style>
 
 </head>
@@ -415,8 +401,7 @@
 <section class="hero">
 
   <h1>
-    Momentos mais
-    <span>doces</span>
+    Momentos mais <span>doces</span>
   </h1>
 
   <p>
@@ -428,21 +413,21 @@
 
 <div class="categories">
 
-  <button class="category active" onclick="filtrarCategoria('Todos', this)">
-    Todos
-  </button>
+<button class="category active"
+ onclick="filtrarCategoria('Todos', this)">
+Todos </button>
 
-  <button class="category" onclick="filtrarCategoria('Bolos', this)">
-    🎂 Bolos
-  </button>
+<button class="category"
+ onclick="filtrarCategoria('Bolos', this)">
+🎂 Bolos </button>
 
-  <button class="category" onclick="filtrarCategoria('Doces', this)">
-    🍫 Doces
-  </button>
+<button class="category"
+ onclick="filtrarCategoria('Doces', this)">
+🍫 Doces </button>
 
-  <button class="category" onclick="filtrarCategoria('Kits', this)">
-    🎁 Kits
-  </button>
+<button class="category"
+ onclick="filtrarCategoria('Kits', this)">
+🎁 Kits </button>
 
 </div>
 
@@ -458,7 +443,7 @@
   LÁ DOCIÊ
 </footer>
 
-<!-- MODAL DO CARRINHO -->
+<!-- CARRINHO -->
 
 <div id="cartModal" class="modal">
 
@@ -469,7 +454,8 @@
 
   <h2>🛒 Seu carrinho</h2>
 
-  <button class="close" onclick="fecharCarrinho()">
+  <button class="close"
+    onclick="fecharCarrinho()">
     ✕
   </button>
 
@@ -487,10 +473,8 @@
 
 </div>
 
-<button
-  class="main-button"
-  onclick="abrirCheckout()"
->
+<button class="main-button"
+  onclick="abrirCheckout()">
   Continuar pedido
 </button>
 ```
@@ -499,7 +483,7 @@
 
 </div>
 
-<!-- MODAL CHECKOUT -->
+<!-- CHECKOUT -->
 
 <div id="checkoutModal" class="modal">
 
@@ -510,7 +494,8 @@
 
   <h2>📝 Finalizar pedido</h2>
 
-  <button class="close" onclick="fecharCheckout()">
+  <button class="close"
+    onclick="fecharCheckout()">
     ✕
   </button>
 
@@ -548,7 +533,7 @@
 
 <div class="option">
 
-  <label style="margin:0; font-weight:normal;">
+  <label style="margin:0;font-weight:normal;">
 
     <input
       type="radio"
@@ -567,7 +552,7 @@
 
 <div class="option">
 
-  <label style="margin:0; font-weight:normal;">
+  <label style="margin:0;font-weight:normal;">
 
     <input
       type="radio"
@@ -595,7 +580,7 @@
 </div>
 
 
-<label>Data do pedido</label>
+<label>Data</label>
 
 <input
   id="pedidoData"
@@ -611,53 +596,18 @@
     Selecione o horário
   </option>
 
-  <option value="10:00">
-    10:00
-  </option>
-
-  <option value="11:00">
-    11:00
-  </option>
-
-  <option value="12:00">
-    12:00
-  </option>
-
-  <option value="13:00">
-    13:00
-  </option>
-
-  <option value="14:00">
-    14:00
-  </option>
-
-  <option value="15:00">
-    15:00
-  </option>
-
-  <option value="16:00">
-    16:00
-  </option>
-
-  <option value="17:00">
-    17:00
-  </option>
-
-  <option value="18:00">
-    18:00
-  </option>
-
-  <option value="19:00">
-    19:00
-  </option>
-
-  <option value="20:00">
-    20:00
-  </option>
-
-  <option value="21:00">
-    21:00
-  </option>
+  <option value="10:00">10:00</option>
+  <option value="11:00">11:00</option>
+  <option value="12:00">12:00</option>
+  <option value="13:00">13:00</option>
+  <option value="14:00">14:00</option>
+  <option value="15:00">15:00</option>
+  <option value="16:00">16:00</option>
+  <option value="17:00">17:00</option>
+  <option value="18:00">18:00</option>
+  <option value="19:00">19:00</option>
+  <option value="20:00">20:00</option>
+  <option value="21:00">21:00</option>
 
 </select>
 
@@ -666,7 +616,7 @@
 
 <div class="option">
 
-  <label style="margin:0; font-weight:normal;">
+  <label style="margin:0;font-weight:normal;">
 
     <input
       type="radio"
@@ -684,7 +634,7 @@
 
 <div class="option">
 
-  <label style="margin:0; font-weight:normal;">
+  <label style="margin:0;font-weight:normal;">
 
     <input
       type="radio"
@@ -701,7 +651,7 @@
 
 <div class="option">
 
-  <label style="margin:0; font-weight:normal;">
+  <label style="margin:0;font-weight:normal;">
 
     <input
       type="radio"
@@ -720,23 +670,28 @@
 
 <textarea
   id="pedidoObservacoes"
-  placeholder="Alguma informação importante sobre o pedido?"
+  placeholder="Alguma informação importante?"
 ></textarea>
 
 
-<div id="checkoutTotal" class="total">
+<div class="total">
 
   <span>Total</span>
 
-  <span>R$ 0,00</span>
+  <span id="checkoutTotalValue">
+    R$ 0,00
+  </span>
 
 </div>
 
 
-<div id="checkoutErro" class="error"></div>
+<div id="checkoutErro"
+  class="error">
+</div>
 
 
 <button
+  id="confirmarPedido"
   class="main-button"
   onclick="finalizarPedido()"
 >
@@ -748,7 +703,7 @@
 
 </div>
 
-<!-- MODAL SUCESSO -->
+<!-- SUCESSO -->
 
 <div id="successModal" class="modal">
 
@@ -826,7 +781,6 @@
 
             headers: {
               "apikey": SUPABASE_KEY,
-
               "Authorization":
                 "Bearer " + SUPABASE_KEY
             }
@@ -835,11 +789,9 @@
 
 
       if (!resposta.ok) {
-
         throw new Error(
           "Erro " + resposta.status
         );
-
       }
 
 
@@ -942,12 +894,6 @@
         "";
 
 
-      const categoria =
-        produto.category ||
-        produto.categoria ||
-        "";
-
-
       const card =
         document.createElement("div");
 
@@ -962,15 +908,13 @@
 
           ${
             imagem
-
-            ? `
-              <img
-                src="${imagem}"
-                alt="${nome}"
-              >
+              ? `
+                <img
+                  src="${imagem}"
+                  alt="${nome}"
+                >
               `
-
-            : "🍰"
+              : "🍰"
           }
 
         </div>
@@ -978,34 +922,23 @@
 
         <div class="product-info">
 
-          <h3>
-            ${nome}
-          </h3>
+          <h3>${nome}</h3>
 
-          <p>
-            ${descricao}
-          </p>
+          <p>${descricao}</p>
 
           <div class="price">
-
-            R$
-            ${preco.toFixed(2).replace(".", ",")}
-
+            R$ ${preco.toFixed(2).replace(".", ",")}
           </div>
 
-
           <button class="add">
-
             Adicionar ao carrinho
-
           </button>
 
         </div>
         `;
 
 
-      card
-        .querySelector(".add")
+      card.querySelector(".add")
         .onclick = () => {
 
           adicionarCarrinho({
@@ -1038,23 +971,15 @@
 
     document
       .querySelectorAll(".category")
-      .forEach(b => {
-
-        b.classList.remove(
-          "active"
-        );
-
-      });
+      .forEach(b =>
+        b.classList.remove("active")
+      );
 
 
-    botao.classList.add(
-      "active"
-    );
+    botao.classList.add("active");
 
 
-    if (
-      categoria === "Todos"
-    ) {
+    if (categoria === "Todos") {
 
       renderizarProdutos(
         todosProdutos
@@ -1066,22 +991,20 @@
 
 
     const filtrados =
-      todosProdutos.filter(
-        produto => {
+      todosProdutos.filter(produto => {
 
-          const cat =
-            produto.category ||
-            produto.categoria ||
-            "";
+        const cat =
+          produto.category ||
+          produto.categoria ||
+          "";
 
-          return cat
-            .toLowerCase()
-            .includes(
-              categoria.toLowerCase()
-            );
+        return cat
+          .toLowerCase()
+          .includes(
+            categoria.toLowerCase()
+          );
 
-        }
-      );
+      });
 
 
     renderizarProdutos(
@@ -1095,9 +1018,7 @@
      CARRINHO
   ========================= */
 
-  function adicionarCarrinho(
-    produto
-  ) {
+  function adicionarCarrinho(produto) {
 
     const existente =
       carrinho.find(
@@ -1147,9 +1068,7 @@
 
 
     document
-      .getElementById(
-        "cartCount"
-      )
+      .getElementById("cartCount")
       .textContent =
       quantidade;
 
@@ -1164,10 +1083,8 @@
     return carrinho.reduce(
       (total, item) =>
         total +
-        (
-          item.preco *
-          item.quantidade
-        ),
+        item.preco *
+        item.quantidade,
       0
     );
 
@@ -1213,6 +1130,11 @@
         </div>
         `;
 
+      document
+        .getElementById("cartTotal")
+        .textContent =
+        "R$ 0,00";
+
       return;
 
     }
@@ -1225,9 +1147,7 @@
       (item, index) => {
 
         const div =
-          document.createElement(
-            "div"
-          );
+          document.createElement("div");
 
 
         div.className =
@@ -1246,12 +1166,9 @@
 
               <br>
 
-              ${dinheiro(
-                item.preco
-              )}
+              ${dinheiro(item.preco)}
 
             </div>
-
 
             <button
               class="remove"
@@ -1271,18 +1188,15 @@
               −
             </button>
 
-
             <strong>
               ${item.quantidade}
             </strong>
-
 
             <button
               onclick="alterarQuantidade(${index}, 1)"
             >
               +
             </button>
-
 
             <span style="margin-left:auto;font-weight:bold;">
               ${dinheiro(
@@ -1302,9 +1216,7 @@
 
 
     document
-      .getElementById(
-        "cartTotal"
-      )
+      .getElementById("cartTotal")
       .textContent =
       dinheiro(
         calcularTotal()
@@ -1356,12 +1268,8 @@
     renderizarCarrinho();
 
     document
-      .getElementById(
-        "cartModal"
-      )
-      .classList.add(
-        "show"
-      );
+      .getElementById("cartModal")
+      .classList.add("show");
 
   }
 
@@ -1369,12 +1277,8 @@
   function fecharCarrinho() {
 
     document
-      .getElementById(
-        "cartModal"
-      )
-      .classList.remove(
-        "show"
-      );
+      .getElementById("cartModal")
+      .classList.remove("show");
 
   }
 
@@ -1410,42 +1314,33 @@
     const mes =
       String(
         hoje.getMonth() + 1
-      ).padStart(
-        2,
-        "0"
-      );
+      ).padStart(2, "0");
 
 
     const dia =
       String(
         hoje.getDate()
-      ).padStart(
-        2,
-        "0"
+      ).padStart(2, "0");
+
+
+    const campoData =
+      document.getElementById(
+        "pedidoData"
       );
 
 
-    document
-      .getElementById(
-        "pedidoData"
-      )
-      .min =
+    campoData.min =
+      `${ano}-${mes}-${dia}`;
+
+
+    campoData.value =
       `${ano}-${mes}-${dia}`;
 
 
     document
       .getElementById(
-        "pedidoData"
+        "checkoutTotalValue"
       )
-      .value =
-      `${ano}-${mes}-${dia}`;
-
-
-    document
-      .getElementById(
-        "checkoutTotal"
-      )
-      .querySelector("span:last-child")
       .textContent =
       dinheiro(
         calcularTotal()
@@ -1456,9 +1351,7 @@
       .getElementById(
         "checkoutModal"
       )
-      .classList.add(
-        "show"
-      );
+      .classList.add("show");
 
   }
 
@@ -1469,9 +1362,7 @@
       .getElementById(
         "checkoutModal"
       )
-      .classList.remove(
-        "show"
-      );
+      .classList.remove("show");
 
   }
 
@@ -1490,19 +1381,13 @@
       );
 
 
-    if (
-      tipo === "entrega"
-    ) {
+    if (tipo === "entrega") {
 
-      area.classList.remove(
-        "hidden"
-      );
+      area.classList.remove("hidden");
 
     } else {
 
-      area.classList.add(
-        "hidden"
-      );
+      area.classList.add("hidden");
 
     }
 
@@ -1536,27 +1421,21 @@
 
     const nome =
       document
-        .getElementById(
-          "clienteNome"
-        )
+        .getElementById("clienteNome")
         .value
         .trim();
 
 
     const telefone =
       document
-        .getElementById(
-          "clienteTelefone"
-        )
+        .getElementById("clienteTelefone")
         .value
         .trim();
 
 
     const email =
       document
-        .getElementById(
-          "clienteEmail"
-        )
+        .getElementById("clienteEmail")
         .value
         .trim();
 
@@ -1569,26 +1448,20 @@
 
     const endereco =
       document
-        .getElementById(
-          "clienteEndereco"
-        )
+        .getElementById("clienteEndereco")
         .value
         .trim();
 
 
     const data =
       document
-        .getElementById(
-          "pedidoData"
-        )
+        .getElementById("pedidoData")
         .value;
 
 
     const horario =
       document
-        .getElementById(
-          "pedidoHorario"
-        )
+        .getElementById("pedidoHorario")
         .value;
 
 
@@ -1600,9 +1473,7 @@
 
     const observacoes =
       document
-        .getElementById(
-          "pedidoObservacoes"
-        )
+        .getElementById("pedidoObservacoes")
         .value
         .trim();
 
@@ -1628,8 +1499,7 @@
 
 
     if (
-      tipoEntrega ===
-      "entrega" &&
+      tipoEntrega === "entrega" &&
       !endereco
     ) {
 
@@ -1665,7 +1535,15 @@
       calcularTotal();
 
 
+    /*
+      CAMPOS AJUSTADOS
+      PARA A ESTRUTURA REAL
+      DA TABELA ORDERS
+    */
+
     const pedido = {
+
+      customer_id: null,
 
       customer_name:
         nome,
@@ -1676,23 +1554,34 @@
       customer_email:
         email || null,
 
-      delivery_type:
+      type:
         tipoEntrega,
 
-      delivery_address:
-        tipoEntrega ===
-        "entrega"
-          ? endereco
-          : null,
+      scheduled_date:
+        data,
 
-      payment_method:
-        pagamento,
+      scheduled_time:
+        horario,
 
       total:
         total,
 
       status:
         "pendente",
+
+      payment_method:
+        pagamento,
+
+      payment_status:
+        "pendente",
+
+      delivery_type:
+        tipoEntrega,
+
+      delivery_address:
+        tipoEntrega === "entrega"
+          ? endereco
+          : null,
 
       notes:
         observacoes || null,
@@ -1707,13 +1596,12 @@
 
 
     const botao =
-      document.querySelector(
-        "#checkoutModal .main-button"
+      document.getElementById(
+        "confirmarPedido"
       );
 
 
-    botao.disabled =
-      true;
+    botao.disabled = true;
 
     botao.textContent =
       "Enviando pedido...";
@@ -1721,14 +1609,17 @@
 
     try {
 
+      /*
+        CRIA O PEDIDO
+      */
+
       const resposta =
         await fetch(
           SUPABASE_URL +
           "/rest/v1/orders",
           {
 
-            method:
-              "POST",
+            method: "POST",
 
             headers: {
 
@@ -1761,6 +1652,11 @@
         const texto =
           await resposta.text();
 
+        console.error(
+          "Erro orders:",
+          texto
+        );
+
         throw new Error(
           texto ||
           "Não foi possível criar o pedido."
@@ -1789,6 +1685,10 @@
       }
 
 
+      /*
+        CRIA OS ITENS DO PEDIDO
+      */
+
       const itens =
         carrinho.map(
           item => ({
@@ -1799,18 +1699,14 @@
             product_id:
               item.id || null,
 
-            product_name:
+            name:
               item.nome,
 
-            quantity:
+            qty:
               item.quantidade,
 
-            unit_price:
-              item.preco,
-
-            subtotal:
-              item.preco *
-              item.quantidade
+            price:
+              item.preco
 
           })
         );
@@ -1822,8 +1718,7 @@
           "/rest/v1/order_items",
           {
 
-            method:
-              "POST",
+            method: "POST",
 
             headers: {
 
@@ -1853,13 +1748,22 @@
         const texto =
           await respostaItens.text();
 
+        console.error(
+          "Erro order_items:",
+          texto
+        );
+
         throw new Error(
           texto ||
-          "Pedido criado, mas não foi possível salvar os itens."
+          "Não foi possível salvar os itens."
         );
 
       }
 
+
+      /*
+        PEDIDO FINALIZADO
+      */
 
       mostrarSucesso(
         pedidoCriado.id,
@@ -1874,13 +1778,12 @@
 
       erro.textContent =
         "Não conseguimos finalizar o pedido. " +
-        "Verifique sua conexão e tente novamente.";
+        "Verifique os dados e tente novamente.";
 
     }
 
 
-    botao.disabled =
-      false;
+    botao.disabled = false;
 
     botao.textContent =
       "✅ Confirmar pedido";
@@ -1912,10 +1815,7 @@
       )
       .textContent =
       "Pedido #" +
-      String(id).substring(
-        0,
-        8
-      );
+      id;
 
 
     const mensagem =
@@ -1926,10 +1826,7 @@
         nome +
         "\n" +
         "Pedido: #" +
-        String(id).substring(
-          0,
-          8
-        )
+        id
       );
 
 
@@ -1962,9 +1859,7 @@
       .getElementById(
         "successModal"
       )
-      .classList.add(
-        "show"
-      );
+      .classList.add("show");
 
   }
 
@@ -1975,9 +1870,8 @@
       .getElementById(
         "successModal"
       )
-      .classList.remove(
-        "show"
-      );
+      .classList.remove("show");
+
 
     window.scrollTo({
       top: 0,
@@ -1986,10 +1880,6 @@
 
   }
 
-
-  /* =========================
-     INICIAR
-  ========================= */
 
   carregarProdutos();
 

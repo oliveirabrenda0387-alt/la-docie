@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Painel Lá Dociê</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #fffaf7;
+      color: #4b281d;
+    }
+
+    header {
+      background: #4b281d;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    header p {
+      margin: 6px 0 0;
+      opacity: .85;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 16px;
+      padding: 22px;
+      margin-top: 20px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.08);
+    }
+
+    h2 {
+      margin-top: 0;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px;
+      margin: 8px 0;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      margin-top: 10px;
+      border: 0;
+      border-radius: 10px;
+      background: #4b281d;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: .9;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .menu {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .menu button {
+      margin: 0;
+      min-height: 90px;
+    }
+
+    .logout {
+      background: #9b3d3d;
+      margin-top: 25px;
+    }
+
+    .message {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 8px;
+      background: #fff1eb;
+    }
+
+    .welcome {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>🍰 LÁ DOCIÊ</h1>
+  <p>Painel Administrativo</p>
+</header>
+
+<div class="container">
+
+  <!-- LOGIN -->
+  <div id="loginArea" class="card">
+
+    <h2>🔐 Entrar</h2>
+
+    <p>Acesso exclusivo da administração.</p>
+
+    <input
+      type="email"
+      id="email"
+      placeholder="Seu e-mail"
+      autocomplete="email"
+    >
+
+    <input
+      type="password"
+      id="password"
+      placeholder="Sua senha"
+      autocomplete="current-password"
+    >
+
+    <button onclick="entrar()">
+      Entrar no painel
+    </button>
+
+    <div id="loginMessage"></div>
+
+  </div>
+
+
+  <!-- PAINEL -->
+  <div id="painel" class="hidden">
+
+    <div class="card welcome">
+
+      <h2>Olá! 👋</h2>
+
+      <p>
+        Bem-vinda ao painel da
+        <strong>Lá Dociê</strong>.
+      </p>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>📋 Administração</h2>
+
+      <div class="menu">
+
+        <button onclick="alert('A área de produtos será ativada na próxima etapa.')">
+          🍰<br>
+          Produtos
+        </button>
+
+        <button onclick="alert('A área de pedidos será ativada na próxima etapa.')">
+          📦<br>
+          Pedidos
+        </button>
+
+        <button onclick="alert('As configurações serão ativadas na próxima etapa.')">
+          ⚙️<br>
+          Configurações
+        </button>
+
+        <button onclick="alert('O cadastro de produtos será ativado na próxima etapa.')">
+          ➕<br>
+          Novo produto
+        </button>
+
+      </div>
+
+      <button class="logout" onclick="sair()">
+        Sair
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+  const SUPABASE_URL =
+    "https://lzihqkpscesurkfmcasb.supabase.co";
+
+  const SUPABASE_KEY =
+    "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
+
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_KEY
+    );
+
+
+  async function entrar() {
+
+    const email =
+      document.getElementById("email").value.trim();
+
+    const password =
+      document.getElementById("password").value;
+
+    const mensagem =
+      document.getElementById("loginMessage");
+
+
+    mensagem.innerHTML = "";
+
+
+    if (!email || !password) {
+
+      mensagem.innerHTML =
+        '<div class="message">Preencha e-mail e senha.</div>';
+
+      return;
+    }
+
+
+    const { data, error } =
+      await supabaseClient.auth.signInWithPassword({
+        email: email,
+        password: password
+      });
+
+
+    if (error) {
+
+      mensagem.innerHTML =
+        '<div class="message">E-mail ou senha incorretos.</div>';
+
+      return;
+    }
+
+
+    const user = data.user;
+
+
+    const { data: admin, error: adminError } =
+      await supabaseClient
+        .from("admin_users")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+
+    if (adminError || !admin) {
+
+      await supabaseClient.auth.signOut();
+
+      mensagem.innerHTML =
+        '<div class="message">Esta conta não possui acesso administrativo.</div>';
+
+      return;
+    }
+
+
+    document
+      .getElementById("loginArea")
+      .classList.add("hidden");
+
+    document
+      .getElementById("painel")
+      .classList.remove("hidden");
+
+  }
+
+
+  async function sair() {
+
+    await supabaseClient.auth.signOut();
+
+    document
+      .getElementById("painel")
+      .classList.add("hidden");
+
+    document
+      .getElementById("loginArea")
+      .classList.remove("hidden");
+
+  }
+
+</script>
+
+</body>
+</html>

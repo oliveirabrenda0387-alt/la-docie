@@ -771,20 +771,361 @@ onclick="filtrarProdutos('Kits', this)"
 <div class="total">
 
   <span>Total</span>
+  
+  async function finalizarPedido() {
 
-  <span id="checkoutTotal">
-    R$ 0,00
-  </span>
+  const erro =
+    document.getElementById("checkoutErro");
 
-</div>
-
-
-<div
-  id="checkoutErro"
-  class="error hidden"
-></div>
+  const botao =
+    document.getElementById("confirmarPedido");
 
 
+  erro.classList.add("hidden");
+  erro.textContent = "";
+
+
+  if (!carrinho || carrinho.length === 0) {
+
+    mostrarErro(
+      "Seu carrinho está vazio."
+    );
+
+    return;
+  }
+
+
+  const nome =
+    document
+      .getElementById("clienteNome")
+      .value
+      .trim();
+
+
+  const telefone =
+    document
+      .getElementById("clienteTelefone")
+      .value
+      .trim();
+
+
+  const email =
+    document
+      .getElementById("clienteEmail")
+      .value
+      .trim();
+
+
+  const tipoEntrega =
+    document.querySelector(
+      'input[name="entrega"]:checked'
+    ).value;
+
+
+  const endereco =
+    document
+      .getElementById("clienteEndereco")
+      .value
+      .trim();
+
+
+  const data =
+    document
+      .getElementById("pedidoData")
+      .value;
+
+
+  const horario =
+    document
+      .getElementById("pedidoHorario")
+      .value;
+
+
+  const pagamento =
+    document.querySelector(
+      'input[name="pagamento"]:checked'
+    ).value;
+
+
+  const observacoes =
+    document
+      .getElementById("pedidoObservacoes")
+      .value
+      .trim();
+
+
+  /* ==========================
+     VALIDAÇÕES
+  ========================== */
+
+  if (!nome) {
+
+    mostrarErro(
+      "Digite seu nome."
+    );
+
+    return;
+  }
+
+
+  if (!telefone) {
+
+    mostrarErro(
+      "Digite seu WhatsApp."
+    );
+
+    return;
+  }
+
+
+  if (
+    tipoEntrega === "entrega" &&
+    !endereco
+  ) {
+
+    mostrarErro(
+      "Digite o endereço de entrega."
+    );
+
+    return;
+  }
+
+
+  if (!data) {
+
+    mostrarErro(
+      "Escolha a data do pedido."
+    );
+
+    return;
+  }
+
+
+  if (!horario) {
+
+    mostrarErro(
+      "Escolha o horário do pedido."
+    );
+
+    return;
+  }
+
+
+  const total =
+    calcularTotal();
+
+
+  /* ==========================
+     PREPARAR ITENS
+  ========================== */
+
+  const itens =
+    carrinho.map(item => ({
+
+      product_id:
+        item.id
+        ? String(item.id)
+        : null,
+
+      name:
+        String(item.nome),
+
+      qty:
+        Number(item.quantidade || 1),
+
+      price:
+        Number(item.preco || 0)
+
+    }));
+
+
+  botao.disabled = true;
+
+  botao.textContent =
+    "Enviando pedido...";
+
+
+  try {
+
+    /* ==========================
+       CHAMAR FUNÇÃO DO SUPABASE
+    ========================== */
+
+    const resposta =
+      await fetch(
+        SUPABASE_URL +
+        "/rest/v1/rpc/criar_pedido",
+        {
+
+          method: "POST",
+
+          headers: {
+
+            "Content-Type":
+              "application/json",
+
+            "apikey":
+              SUPABASE_KEY,
+
+            "Authorization":
+              "Bearer " +
+              SUPABASE_KEY
+
+          },
+
+          body:
+            JSON.stringify({
+
+              p_customer_name:
+                nome,
+
+              p_customer_phone:
+                telefone,
+
+              p_customer_email:
+                email || null,
+
+              p_type:
+                tipoEntrega,
+
+              p_scheduled_date:
+                data,
+
+              p_scheduled_time:
+                horario,
+
+              p_total:
+                total,
+
+              p_payment_method:
+                pagamento,
+
+              p_delivery_type:
+                tipoEntrega,
+
+              p_delivery_address:
+                tipoEntrega === "entrega"
+                  ? endereco
+                  : null,
+
+              p_notes:
+                observacoes || null,
+
+              p_items:
+                itens
+
+            })
+
+        }
+      );
+
+
+    const texto =
+      await resposta.text();
+
+
+    console.log(
+      "RESPOSTA DO SUPABASE:",
+      texto
+    );
+
+
+    if (!resposta.ok) {
+
+      let mensagem =
+        texto;
+
+
+      try {
+
+        const json =
+          JSON.parse(texto);
+
+
+        mensagem =
+          json.message ||
+          json.details ||
+          json.hint ||
+          texto;
+
+      } catch (e) {}
+
+
+      throw new Error(
+        mensagem
+      );
+    }
+
+
+    /* ==========================
+       PEGAR ID DO PEDIDO
+    ========================== */
+
+    let pedidoId;
+
+
+    try {
+
+      pedidoId =
+        JSON.parse(texto);
+
+    } catch (e) {
+
+      pedidoId =
+        texto;
+
+    }
+
+
+    /* ==========================
+       SUCESSO
+    ========================== */
+
+    carrinho = [];
+
+    atualizarCarrinho();
+
+
+    fecharCheckout();
+
+
+    document
+      .getElementById("numeroPedido")
+      .textContent =
+      "Pedido nº " +
+      pedidoId;
+
+
+    document
+      .getElementById("successModal")
+      .classList.add("show");
+
+
+  } catch (erroFinal) {
+
+    console.error(
+      "ERRO AO FINALIZAR:",
+      erroFinal
+    );
+
+
+    mostrarErro(
+      "Não foi possível finalizar o pedido." +
+      "<br><br>" +
+      "<strong>Detalhes:</strong><br>" +
+      (erroFinal.message ||
+        "Erro desconhecido.")
+    );
+
+
+  } finally {
+
+    botao.disabled = false;
+
+    botao.textContent =
+      "✅ Confirmar pedido";
+
+}
 <button
   id="confirmarPedido"
   class="main-button"

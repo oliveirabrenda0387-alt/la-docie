@@ -154,6 +154,98 @@ header{
   font-weight:800;
 }
 
+/* BANNERS */
+
+.banner-area{
+  max-width:1180px;
+  margin:auto;
+  padding:8px 20px;
+}
+
+.banner-slot{
+  width:100%;
+  min-height:150px;
+  border-radius:20px;
+  overflow:hidden;
+  background:linear-gradient(135deg,#4b281d,#765548);
+  border:1px solid var(--borda);
+  box-shadow:var(--sombra);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+}
+
+.banner-slot img{
+  width:100%;
+  height:100%;
+  min-height:150px;
+  object-fit:cover;
+  display:block;
+}
+
+.banner-placeholder{
+  color:#fff;
+  text-align:center;
+  padding:28px;
+}
+
+.banner-placeholder strong{
+  display:block;
+  color:var(--dourado);
+  font-size:20px;
+  margin-bottom:6px;
+}
+
+.banner-placeholder span{
+  font-size:13px;
+  opacity:.9;
+}
+
+/* AGENDAMENTO */
+
+.schedule-card{
+  background:linear-gradient(135deg,#fff,#f7eee7);
+  border:1px solid var(--borda);
+  border-radius:22px;
+  padding:24px;
+  box-shadow:var(--sombra);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+}
+
+.schedule-card h2{margin:0 0 7px}
+.schedule-card p{margin:0;color:var(--marrom-claro);line-height:1.5}
+.schedule-button{
+  flex:0 0 auto;
+  border:0;
+  border-radius:12px;
+  padding:14px 18px;
+  background:var(--marrom);
+  color:#fff;
+  font-weight:800;
+}
+
+.category-section{margin-top:24px}
+.category-section:first-child{margin-top:0}
+.category-heading{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:0 0 12px;
+}
+.category-heading h3{margin:0;font-size:20px}
+.category-heading span{color:var(--marrom-claro);font-size:13px}
+
+@media(max-width:700px){
+  .banner-area{padding:6px 12px}
+  .banner-slot,.banner-slot img{min-height:110px}
+  .schedule-card{flex-direction:column;align-items:stretch}
+  .schedule-button{width:100%}
+}
+
 /* INFO */
 
 .info-bar{
@@ -872,6 +964,10 @@ footer{
         👤 Minha conta
       </button>
 
+      <button class="icon-btn" onclick="abrirAgendamento()">
+        📅 Agendar
+      </button>
+
       <button class="icon-btn" onclick="abrirHorarios()">
         🕐
       </button>
@@ -928,6 +1024,34 @@ footer{
 
 </div>
 
+<div class="banner-area">
+  <div class="banner-slot" id="bannerPrincipal">
+    <div class="banner-placeholder">
+      <strong>🍰 Banner principal</strong>
+      <span>Espaço reservado para sua próxima campanha</span>
+    </div>
+  </div>
+</div>
+
+<section class="section">
+  <div class="schedule-card">
+    <div>
+      <h2>📅 Faça seu pedido por agendamento</h2>
+      <p>Escolha seus produtos e informe a data e o horário em que deseja receber ou retirar.</p>
+    </div>
+    <button class="schedule-button" onclick="abrirAgendamento()">Agendar meu pedido</button>
+  </div>
+</section>
+
+<div class="banner-area">
+  <div class="banner-slot" id="bannerPromocao">
+    <div class="banner-placeholder">
+      <strong>✨ Banner promocional</strong>
+      <span>Espaço reservado para promoções e novidades</span>
+    </div>
+  </div>
+</div>
+
 <section class="section">
 
   <div class="section-title">
@@ -973,6 +1097,15 @@ footer{
   </div>
 
 </section>
+
+<div class="banner-area">
+  <div class="banner-slot" id="bannerCategorias">
+    <div class="banner-placeholder">
+      <strong>🎁 Banner de destaque</strong>
+      <span>Espaço reservado para kits, datas especiais e lançamentos</span>
+    </div>
+  </div>
+</div>
 
 <section class="section" id="produtosSection">
 
@@ -1045,6 +1178,15 @@ footer{
   </div>
 
 </section>
+
+<div class="banner-area">
+  <div class="banner-slot" id="bannerFinal">
+    <div class="banner-placeholder">
+      <strong>💛 Banner Lá Dociê</strong>
+      <span>Espaço reservado para uma última divulgação antes do rodapé</span>
+    </div>
+  </div>
+</div>
 
 </main>
 
@@ -1231,6 +1373,33 @@ footer{
 </div>
 
 
+<!-- AGENDAMENTO -->
+<div id="scheduleModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-title">
+      <h2>📅 Pedido por agendamento</h2>
+      <button class="close" onclick="fecharAgendamento()">×</button>
+    </div>
+
+    <p style="color:var(--marrom-claro);line-height:1.5">
+      Monte seu pedido normalmente e, na próxima etapa, informe a data e o horário desejados.
+    </p>
+
+    <div class="banner-slot" style="margin:15px 0;min-height:110px">
+      <div class="banner-placeholder">
+        <strong>📅 Agende com antecedência</strong>
+        <span>Escolha os produtos abaixo para começar.</span>
+      </div>
+    </div>
+
+    <div id="scheduleProducts" class="products" style="grid-template-columns:repeat(2,1fr)"></div>
+
+    <button class="main-button" onclick="continuarAgendamento()">
+      Continuar agendamento
+    </button>
+  </div>
+</div>
+
 <!-- CARRINHO -->
 
 <div id="cartModal" class="modal">
@@ -1329,7 +1498,7 @@ footer{
 
     <div class="modal-title">
 
-      <h2>📝 Finalizar pedido</h2>
+      <h2 id="checkoutTitle">📝 Finalizar pedido</h2>
 
       <button
         class="close"
@@ -1549,6 +1718,7 @@ let configuracoes = {};
 let pedidoAtualId = null;
 let descontoCupom = 0;
 let clienteLogado = null;
+let modoAgendamento = false;
 
 
 /* =========================================================
@@ -1635,6 +1805,8 @@ async function carregarConfiguracoes(){
 
     }
 
+    carregarBanners();
+
     if(data.instagram){
 
       document.getElementById("footerInstagram")
@@ -1656,165 +1828,175 @@ async function carregarConfiguracoes(){
 
 
 /* =========================================================
+   BANNERS
+========================================================= */
+
+function colocarBanner(id,url,titulo){
+  const area=document.getElementById(id);
+  if(!area) return;
+  if(url){
+    area.innerHTML=`<img src="${escapeHTML(url)}" alt="${escapeHTML(titulo)}" loading="lazy">`;
+  }
+}
+
+function carregarBanners(){
+  // Se futuramente forem adicionadas estas colunas ao store_settings,
+  // os banners passam a aparecer automaticamente sem alterar o HTML.
+  colocarBanner("bannerPrincipal",configuracoes.banner_1,"Banner principal Lá Dociê");
+  colocarBanner("bannerPromocao",configuracoes.banner_2,"Banner promocional Lá Dociê");
+  colocarBanner("bannerCategorias",configuracoes.banner_3,"Banner de destaque Lá Dociê");
+  colocarBanner("bannerFinal",configuracoes.banner_4,"Banner Lá Dociê");
+}
+
+/* =========================================================
    PRODUTOS
 ========================================================= */
 
 async function carregarProdutos(){
 
-  const area =
-    document.getElementById("products");
+  const area = document.getElementById("products");
 
-  area.innerHTML =
-    '<div class="loading">Carregando nossos produtos... 🍰</div>';
+  area.innerHTML = '<div class="loading">Carregando nossos produtos... 🍰</div>';
 
   try{
 
-    const {data,error} =
-      await supabaseClient
+    // Primeiro tenta a consulta padrão usada pelo painel.
+    let {data,error} = await supabaseClient
+      .from("products")
+      .select("*")
+      .eq("active",true)
+      .order("name",{ascending:true});
+
+    // Se houver algum problema com a coluna active, tenta carregar a tabela
+    // e filtrar no navegador. Isso evita que o catálogo fique vazio por causa
+    // de uma diferença pequena na estrutura da tabela.
+    if(error){
+      console.warn("Consulta com active falhou. Tentando consulta alternativa.",error);
+      const tentativa = await supabaseClient
         .from("products")
         .select("*")
-        .eq("active",true)
         .order("name",{ascending:true});
+      if(tentativa.error) throw tentativa.error;
+      data = (tentativa.data || []).filter(p => p.active !== false);
+    }
 
-    if(error) throw error;
+    todosProdutos = Array.isArray(data) ? data : [];
 
-    todosProdutos =
-      Array.isArray(data)
-        ? data
-        : [];
-
-    renderizarProdutos(todosProdutos);
+    renderizarProdutosOrganizados(todosProdutos);
+    renderizarProdutosAgendamento(todosProdutos);
 
   }catch(error){
 
-    console.error(error);
+    console.error("Produtos:",error);
 
-    area.innerHTML =
-      '<div class="empty">Não conseguimos carregar os produtos.</div>';
+    area.innerHTML = `
+      <div class="empty">
+        Não conseguimos carregar os produtos agora.
+        <br><small style="opacity:.8">Verifique se os produtos estão ativos no painel administrativo.</small>
+      </div>`;
 
   }
-
 }
+
 
 
 /* =========================================================
    RENDER PRODUTOS
 ========================================================= */
 
+function categoriaNormalizada(valor){
+  const v = String(valor || "outros").toLowerCase().trim();
+  if(v.includes("bolo")) return "bolos";
+  if(v.includes("doce") || v.includes("brigadeiro")) return "doces";
+  if(v.includes("kit")) return "kits";
+  return "outros";
+}
+
+function iconeCategoria(categoria){
+  return {bolos:"🎂",doces:"🍫",kits:"🎁",outros:"✨"}[categoria] || "🍰";
+}
+
+function criarCardProduto(produto){
+  const card = document.createElement("div");
+  card.className = "product";
+
+  const nome = produto.name || "Produto Lá Dociê";
+  const preco = Number(produto.price || 0);
+  const imagem = produto.image || "";
+  const estoque = produto.stock !== undefined && produto.stock !== null ? Number(produto.stock) : null;
+  const indisponivel = estoque !== null && estoque <= 0;
+
+  card.innerHTML = `
+    <div class="product-image">
+      ${imagem ? `<img src="${escapeHTML(imagem)}" alt="${escapeHTML(nome)}" loading="lazy">` : "🍰"}
+      ${produto.featured ? `<div class="product-badge">⭐ Destaque</div>` : ""}
+    </div>
+    <div class="product-body">
+      <h3>${escapeHTML(nome)}</h3>
+      <div class="product-description">${escapeHTML(produto.description || "")}</div>
+      <div class="product-bottom">
+        <div>
+          <div class="price">R$ ${dinheiro(preco)}</div>
+          ${indisponivel ? `<div class="out-stock">Produto esgotado</div>` : ""}
+        </div>
+        ${indisponivel ? "" : `<button class="add-btn" aria-label="Adicionar ${escapeHTML(nome)}" onclick="adicionarCarrinhoPorId('${String(produto.id)}')">+</button>`}
+      </div>
+    </div>`;
+
+  return card;
+}
+
 function renderizarProdutos(produtos){
-
-  const area =
-    document.getElementById("products");
-
+  const area = document.getElementById("products");
+  area.innerHTML = "";
   if(!produtos.length){
-
-    area.innerHTML =
-      '<div class="empty">Nenhum produto disponível no momento. 🍰</div>';
-
+    area.innerHTML = '<div class="empty">Nenhum produto disponível nesta categoria. 🍰</div>';
     return;
-
   }
+  produtos.forEach(produto => area.appendChild(criarCardProduto(produto)));
+}
 
+function renderizarProdutosOrganizados(produtos){
+  const area = document.getElementById("products");
   area.innerHTML = "";
 
-  produtos.forEach(produto => {
+  const grupos = {bolos:[],doces:[],kits:[],outros:[]};
+  produtos.forEach(p => grupos[categoriaNormalizada(p.category)].push(p));
 
-    const card =
-      document.createElement("div");
+  const nomes = {bolos:"Bolos",doces:"Doces",kits:"Kits",outros:"Outros"};
 
-    card.className = "product";
-
-    const nome =
-      produto.name || "Produto Lá Dociê";
-
-    const preco =
-      Number(produto.price || 0);
-
-    const imagem =
-      produto.image || "";
-
-    const estoque =
-      produto.stock !== undefined &&
-      produto.stock !== null
-        ? Number(produto.stock)
-        : null;
-
-    const indisponivel =
-      estoque !== null &&
-      estoque <= 0;
-
-    card.innerHTML = `
-
-      <div class="product-image">
-
-        ${
-          imagem
-          ? `<img
-              src="${escapeHTML(imagem)}"
-              alt="${escapeHTML(nome)}">`
-          : "🍰"
-        }
-
-        ${
-          produto.featured
-          ? `<div class="product-badge">
-              ⭐ Destaque
-            </div>`
-          : ""
-        }
-
-      </div>
-
-      <div class="product-body">
-
-        <h3>
-          ${escapeHTML(nome)}
-        </h3>
-
-        <div class="product-description">
-          ${escapeHTML(produto.description || "")}
-        </div>
-
-        <div class="product-bottom">
-
-          <div>
-
-            <div class="price">
-              R$ ${dinheiro(preco)}
-            </div>
-
-            ${
-              indisponivel
-              ? `<div class="out-stock">
-                  Produto esgotado
-                </div>`
-              : ""
-            }
-
-          </div>
-
-          ${
-            indisponivel
-            ? ""
-            : `<button
-                class="add-btn"
-                aria-label="Adicionar ${escapeHTML(nome)}"
-                onclick="adicionarCarrinhoPorId('${String(produto.id)}')">
-                +
-              </button>`
-          }
-
-        </div>
-
-      </div>
-
-    `;
-
-    area.appendChild(card);
-
+  let quantidadeGrupos = 0;
+  Object.keys(grupos).forEach(cat => {
+    if(!grupos[cat].length) return;
+    quantidadeGrupos++;
+    const section = document.createElement("div");
+    section.className = "category-section";
+    section.dataset.categoria = cat;
+    section.innerHTML = `<div class="category-heading"><span>${iconeCategoria(cat)}</span><h3>${nomes[cat]}</h3><span>${grupos[cat].length} ${grupos[cat].length === 1 ? "produto" : "produtos"}</span></div>`;
+    const grid = document.createElement("div");
+    grid.className = "products";
+    grupos[cat].forEach(p => grid.appendChild(criarCardProduto(p)));
+    section.appendChild(grid);
+    area.appendChild(section);
   });
 
+  if(!quantidadeGrupos){
+    area.innerHTML = '<div class="empty">Nenhum produto disponível no momento. 🍰</div>';
+  }
 }
+
+function renderizarProdutosAgendamento(produtos){
+  const area = document.getElementById("scheduleProducts");
+  if(!area) return;
+  area.innerHTML = "";
+  const disponiveis = produtos.filter(p => p.active !== false);
+  if(!disponiveis.length){
+    area.innerHTML = '<div class="empty">Nenhum produto disponível para agendamento.</div>';
+    return;
+  }
+  disponiveis.forEach(produto => area.appendChild(criarCardProduto(produto)));
+}
+
 
 
 /* =========================================================
@@ -1822,40 +2004,19 @@ function renderizarProdutos(produtos){
 ========================================================= */
 
 function filtrarProdutos(categoria,botao){
-
-  document
-    .querySelectorAll(".category")
-    .forEach(item =>
-      item.classList.remove("active")
-    );
-
-  botao.classList.add("active");
+  document.querySelectorAll(".category").forEach(item => item.classList.remove("active"));
+  if(botao) botao.classList.add("active");
 
   if(categoria === "todos"){
-
-    renderizarProdutos(todosProdutos);
-
+    renderizarProdutosOrganizados(todosProdutos);
     return;
-
   }
 
-  const filtrados =
-    todosProdutos.filter(produto => {
-
-      const cat =
-        String(
-          produto.category || ""
-        ).toLowerCase();
-
-      return cat.includes(
-        categoria
-      );
-
-    });
-
+  const filtrados = todosProdutos.filter(produto => categoriaNormalizada(produto.category) === categoria);
   renderizarProdutos(filtrados);
-
+  document.getElementById("produtosSection").scrollIntoView({behavior:"smooth",block:"start"});
 }
+
 
 
 /* =========================================================
@@ -2189,6 +2350,28 @@ function aplicarCupom(){
 
 }
 
+
+/* =========================================================
+   AGENDAMENTO
+========================================================= */
+
+function abrirAgendamento(){
+  renderizarProdutosAgendamento(todosProdutos);
+  document.getElementById("scheduleModal").classList.add("show");
+}
+
+function fecharAgendamento(){
+  document.getElementById("scheduleModal").classList.remove("show");
+}
+
+function continuarAgendamento(){
+  if(!carrinho.length){
+    alert("Escolha pelo menos um produto para fazer o agendamento. 🍰");
+    return;
+  }
+  fecharAgendamento();
+  abrirCheckout(true);
+}
 
 /* =========================================================
    MODAL CARRINHO
@@ -2807,7 +2990,7 @@ function sairMinhaConta(){
    CHECKOUT
 ========================================================= */
 
-function abrirCheckout(){
+function abrirCheckout(agendamento=false){
 
   if(!carrinho.length){
 
@@ -2820,6 +3003,13 @@ function abrirCheckout(){
   }
 
   fecharCarrinho();
+
+  modoAgendamento = Boolean(agendamento);
+
+  const titulo = document.getElementById("checkoutTitle");
+  const textoBotao = document.getElementById("confirmarPedidoTexto");
+  if(titulo) titulo.textContent = modoAgendamento ? "📅 Agendar pedido" : "📝 Finalizar pedido";
+  if(textoBotao) textoBotao.textContent = modoAgendamento ? "Confirmar agendamento" : "Confirmar pedido";
 
   /*
     Se o cliente já estiver logado,
@@ -3090,7 +3280,9 @@ async function finalizarPedido(){
                 : null,
 
             p_notes:
-              observacoes || null,
+              modoAgendamento
+                ? ("[AGENDAMENTO] " + (observacoes || "")).trim()
+                : (observacoes || null),
 
             p_items:
               itens
@@ -3778,6 +3970,12 @@ function rolarParaProdutos(){
 
 function limparFormulario(){
 
+  modoAgendamento = false;
+  const titulo = document.getElementById("checkoutTitle");
+  const textoBotao = document.getElementById("confirmarPedidoTexto");
+  if(titulo) titulo.textContent = "📝 Finalizar pedido";
+  if(textoBotao) textoBotao.textContent = "Confirmar pedido";
+
   [
     "clienteNome",
     "clienteTelefone",
@@ -3837,4 +4035,4 @@ iniciar();
 </script>
 
 </body>
-</html>
+  </html>

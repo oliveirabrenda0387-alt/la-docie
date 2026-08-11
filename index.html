@@ -1,424 +1,462 @@
-```html
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>Lá Dociê | Confeitaria</title>
+<title>Lá Dociê | Confeitaria</title>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+*{
+  box-sizing:border-box;
+}
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fffaf7;
-      color: #4b281d;
-    }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#fffaf7;
+  color:#4b281d;
+}
 
-    header {
-      background: #4b281d;
-      color: white;
-      padding: 16px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
+button,
+input,
+select,
+textarea{
+  font-family:inherit;
+}
 
-    .header {
-      max-width: 1100px;
-      margin: auto;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-    }
+button{
+  cursor:pointer;
+}
 
-    .logo {
-      font-size: 24px;
-      font-weight: bold;
-    }
+header{
+  background:#4b281d;
+  color:#fff;
+  padding:16px 20px;
+  position:sticky;
+  top:0;
+  z-index:20;
+}
 
-    .cart {
-      background: #e0b35b;
-      color: #4b281d;
-      border: 0;
-      border-radius: 25px;
-      padding: 11px 17px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.header{
+  max-width:1100px;
+  margin:auto;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
 
-    .hero {
-      text-align: center;
-      padding: 55px 20px 35px;
-    }
+.logo{
+  font-size:24px;
+  font-weight:bold;
+}
 
-    .hero h1 {
-      font-size: 42px;
-      margin: 0 0 15px;
-    }
+.logo span{
+  color:#e0b35b;
+}
 
-    .hero h1 span {
-      color: #c89532;
-    }
+.cart{
+  background:#e0b35b;
+  color:#4b281d;
+  border:0;
+  border-radius:25px;
+  padding:11px 17px;
+  font-weight:bold;
+}
 
-    .hero p {
-      max-width: 650px;
-      margin: auto;
-      color: #765b51;
-      font-size: 17px;
-      line-height: 1.6;
-    }
+.hero{
+  text-align:center;
+  padding:55px 20px 35px;
+}
 
-    .info {
-      display: flex;
-      justify-content: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      padding: 0 20px 20px;
-    }
+.hero h1{
+  font-size:42px;
+  margin:0 0 15px;
+}
 
-    .info span {
-      background: white;
-      border: 1px solid #eaded7;
-      border-radius: 20px;
-      padding: 9px 14px;
-      font-size: 14px;
-    }
+.hero h1 span{
+  color:#c89532;
+}
 
-    .categories {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding: 10px 20px 20px;
-      max-width: 1100px;
-      margin: auto;
-    }
+.hero p{
+  max-width:650px;
+  margin:auto;
+  color:#765b51;
+  font-size:17px;
+  line-height:1.6;
+}
 
-    .category {
-      white-space: nowrap;
-      padding: 11px 18px;
-      border: 1px solid #dccfc8;
-      border-radius: 25px;
-      background: white;
-      color: #4b281d;
-      cursor: pointer;
-    }
+.info{
+  display:flex;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  padding:0 20px 20px;
+}
 
-    .category.active {
-      background: #4b281d;
-      color: white;
-    }
+.info span{
+  background:#fff;
+  border:1px solid #eaded7;
+  border-radius:20px;
+  padding:9px 14px;
+  font-size:14px;
+}
 
-    .products {
-      max-width: 1100px;
-      margin: auto;
-      padding: 10px 20px 40px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 20px;
-    }
+.categories{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  padding:10px 20px 20px;
+  max-width:1100px;
+  margin:auto;
+}
 
-    .product {
-      background: white;
-      border-radius: 18px;
-      overflow: hidden;
-      border: 1px solid #eee1da;
-      box-shadow: 0 4px 15px rgba(70,35,20,.08);
-      display: flex;
-      flex-direction: column;
-    }
+.category{
+  white-space:nowrap;
+  padding:11px 18px;
+  border:1px solid #dccfc8;
+  border-radius:25px;
+  background:#fff;
+  color:#4b281d;
+}
 
-    .product-image {
-      height: 210px;
-      background: #f3e7df;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 55px;
-      overflow: hidden;
-    }
+.category.active{
+  background:#4b281d;
+  color:white;
+}
 
-    .product-image img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      display: block;
-    }
+.products{
+  max-width:1100px;
+  margin:auto;
+  padding:10px 20px 40px;
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:20px;
+}
 
-    .product-info {
-      padding: 17px;
-      display: flex;
-      flex-direction: column;
-      flex: 1;
-    }
+.product{
+  background:white;
+  border-radius:18px;
+  overflow:hidden;
+  border:1px solid #eee1da;
+  box-shadow:0 4px 15px rgba(70,35,20,.08);
+}
 
-    .product h3 {
-      margin: 0 0 8px;
-    }
+.product-image{
+  height:210px;
+  background:#f3e7df;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:55px;
+}
 
-    .product p {
-      color: #765b51;
-      min-height: 42px;
-      line-height: 1.4;
-      margin: 0;
-    }
+.product-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
 
-    .price {
-      font-size: 21px;
-      font-weight: bold;
-      color: #b47b20;
-      margin-top: auto;
-      padding-top: 14px;
-    }
+.product-info{
+  padding:17px;
+}
 
-    .add,
-    .main-button,
-    .confirm-button {
-      width: 100%;
-      border: 0;
-      border-radius: 11px;
-      padding: 13px;
-      margin-top: 12px;
-      background: #4b281d;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.product h3{
+  margin:0 0 8px;
+}
 
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
+.product p{
+  color:#765b51;
+  min-height:42px;
+  line-height:1.4;
+}
 
-    .loading {
-      text-align: center;
-      padding: 45px 20px;
-      color: #765b51;
-      grid-column: 1 / -1;
-    }
+.price{
+  font-size:21px;
+  font-weight:bold;
+  color:#b47b20;
+}
 
-    footer {
-      background: #4b281d;
-      color: #e0b35b;
-      text-align: center;
-      padding: 35px 20px;
-    }
+.add{
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:13px;
+  margin-top:12px;
+  background:#4b281d;
+  color:white;
+  font-weight:bold;
+}
 
-    .footer-info {
-      color: white;
-      font-size: 14px;
-      line-height: 1.8;
-      margin-top: 10px;
-    }
+.loading{
+  text-align:center;
+  padding:45px 20px;
+  color:#765b51;
+}
 
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,.55);
-      z-index: 100;
-      align-items: center;
-      justify-content: center;
-      padding: 15px;
-    }
+.empty{
+  grid-column:1/-1;
+  text-align:center;
+  padding:50px 20px;
+  color:#765b51;
+}
 
-    .modal.show {
-      display: flex;
-    }
+footer{
+  background:#4b281d;
+  color:#e0b35b;
+  text-align:center;
+  padding:35px 20px;
+}
 
-    .modal-content {
-      background: #fffaf7;
-      width: 100%;
-      max-width: 600px;
-      max-height: 92vh;
-      overflow: auto;
-      border-radius: 20px;
-      padding: 22px;
-    }
+.footer-info{
+  color:white;
+  font-size:14px;
+  line-height:1.8;
+  margin-top:10px;
+}
 
-    .modal-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  z-index:100;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+}
 
-    .modal-title h2 {
-      margin: 0;
-    }
+.modal.show{
+  display:flex;
+}
 
-    .close {
-      border: 0;
-      background: #eaded7;
-      border-radius: 50%;
-      width: 38px;
-      height: 38px;
-      font-size: 20px;
-      cursor: pointer;
-      flex-shrink: 0;
-    }
+.modal-content{
+  background:#fffaf7;
+  width:100%;
+  max-width:600px;
+  max-height:92vh;
+  overflow:auto;
+  border-radius:20px;
+  padding:22px;
+}
 
-    .cart-item {
-      background: white;
-      border-radius: 12px;
-      padding: 14px;
-      margin: 10px 0;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-    }
+.modal-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
 
-    .remove {
-      background: #9b3d3d;
-      color: white;
-      border: 0;
-      border-radius: 8px;
-      padding: 8px;
-      cursor: pointer;
-    }
+.close{
+  border:0;
+  background:#eaded7;
+  border-radius:50%;
+  width:38px;
+  height:38px;
+  font-size:20px;
+}
 
-    .cart-total {
-      display: flex;
-      justify-content: space-between;
-      border-top: 1px solid #ddd;
-      padding-top: 15px;
-      margin-top: 15px;
-      font-weight: bold;
-      font-size: 20px;
-    }
+.cart-item{
+  background:white;
+  border-radius:12px;
+  padding:14px;
+  margin:10px 0;
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+}
 
-    label {
-      display: block;
-      margin-top: 14px;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
+.quantity{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+}
 
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 13px;
-      border: 1px solid #d8cbc4;
-      border-radius: 10px;
-      font-size: 16px;
-      background: white;
-      color: #4b281d;
-    }
+.quantity button{
+  width:32px;
+  height:32px;
+  border:0;
+  border-radius:8px;
+  background:#eaded7;
+  color:#4b281d;
+  font-weight:bold;
+}
 
-    textarea {
-      min-height: 85px;
-      resize: vertical;
-    }
+.remove{
+  background:#9b3d3d;
+  color:white;
+  border:0;
+  border-radius:8px;
+  padding:8px;
+}
 
-    .option-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
+.cart-total{
+  display:flex;
+  justify-content:space-between;
+  border-top:1px solid #ddd;
+  padding-top:15px;
+  margin-top:15px;
+  font-weight:bold;
+  font-size:20px;
+}
 
-    .option {
-      background: white;
-      border: 1px solid #d8cbc4;
-      border-radius: 10px;
-      padding: 12px;
-      cursor: pointer;
-    }
+.main-button,
+.confirm-button{
+  width:100%;
+  border:0;
+  border-radius:11px;
+  padding:13px;
+  margin-top:12px;
+  background:#4b281d;
+  color:white;
+  font-weight:bold;
+}
 
-    .option input {
-      width: auto;
-    }
+.main-button:disabled,
+.confirm-button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
 
-    .error {
-      display: none;
-      background: #ffe5e5;
-      color: #8b2525;
-      padding: 12px;
-      border-radius: 10px;
-      margin-top: 12px;
-    }
+label{
+  display:block;
+  margin-top:14px;
+  margin-bottom:6px;
+  font-weight:bold;
+}
 
-    .success {
-      text-align: center;
-      padding: 20px;
-    }
+input,
+select,
+textarea{
+  width:100%;
+  padding:13px;
+  border:1px solid #d8cbc4;
+  border-radius:10px;
+  font-size:16px;
+  background:white;
+  color:#4b281d;
+}
 
-    .status-message {
-      position: fixed;
-      right: 18px;
-      bottom: 18px;
-      background: #4b281d;
-      color: white;
-      padding: 12px 16px;
-      border-radius: 12px;
-      box-shadow: 0 5px 20px rgba(0,0,0,.2);
-      z-index: 200;
-      display: none;
-    }
+textarea{
+  min-height:85px;
+  resize:vertical;
+}
 
-    @media (max-width: 600px) {
-      .header {
-        flex-direction: row;
-      }
+.option-group{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
 
-      .logo {
-        font-size: 20px;
-      }
+.option{
+  background:white;
+  border:1px solid #d8cbc4;
+  border-radius:10px;
+  padding:12px;
+}
 
-      .cart {
-        padding: 10px 12px;
-      }
+.option input{
+  width:auto;
+}
 
-      .hero {
-        padding-top: 40px;
-      }
+.error{
+  display:none;
+  background:#ffe5e5;
+  color:#8b2525;
+  padding:12px;
+  border-radius:10px;
+  margin-top:12px;
+}
 
-      .hero h1 {
-        font-size: 34px;
-      }
+.success{
+  text-align:center;
+  padding:20px;
+}
 
-      .products {
-        grid-template-columns: 1fr;
-        padding-left: 15px;
-        padding-right: 15px;
-      }
+@media(max-width:600px){
 
-      .product-image {
-        height: 220px;
-      }
+  .hero h1{
+    font-size:34px;
+  }
 
-      .option-group {
-        grid-template-columns: 1fr;
-      }
+  .header{
+    align-items:center;
+  }
 
-      .cart-item {
-        align-items: flex-start;
-      }
-    }
-  </style>
+  .option-group{
+    grid-template-columns:1fr;
+  }
+
+  .products{
+    grid-template-columns:1fr 1fr;
+    gap:12px;
+    padding-left:12px;
+    padding-right:12px;
+  }
+
+  .product-image{
+    height:170px;
+  }
+
+  .product-info{
+    padding:13px;
+  }
+
+  .product h3{
+    font-size:16px;
+  }
+
+  .product p{
+    font-size:14px;
+  }
+
+  .price{
+    font-size:18px;
+  }
+
+  .add{
+    font-size:14px;
+    padding:11px 5px;
+  }
+}
+
+@media(max-width:390px){
+
+  .products{
+    grid-template-columns:1fr;
+  }
+
+}
+</style>
+
 </head>
 
 <body>
 
 <header>
   <div class="header">
-    <div class="logo" id="logo">LÁ DOCIÊ</div>
 
-    <button class="cart" onclick="mostrarCarrinho()">
-      🛒 Carrinho <span id="cartCount">0</span>
-    </button>
+```
+<div class="logo" id="logo">
+  LÁ <span>DOCIÊ</span>
+</div>
+
+<button class="cart" onclick="mostrarCarrinho()">
+  🛒 Carrinho
+  <span id="cartCount">0</span>
+</button>
+```
+
   </div>
 </header>
 
 <section class="hero">
+
   <h1 id="heroTitle">
     Momentos mais <span>doces</span>
   </h1>
@@ -426,48 +464,74 @@
   <p id="heroDescription">
     Bolos, brigadeiros, cupcakes e kits preparados com carinho para tornar sua comemoração inesquecível.
   </p>
+
 </section>
 
 <div class="info">
-  <span id="horarioInfo">🕐 Consulte nossos horários</span>
-  <span id="whatsappInfo">📱 WhatsApp</span>
+
+  <span id="horarioInfo">
+    🕐 Consulte nossos horários
+  </span>
+
+  <span id="whatsappInfo">
+    📱 WhatsApp
+  </span>
+
 </div>
 
 <div class="categories">
-  <button class="category active" onclick="filtrarProdutos('todos', this)">
-    Todos
-  </button>
 
-  <button class="category" onclick="filtrarProdutos('bolos', this)">
-    🎂 Bolos
-  </button>
+<button
+ class="category active"
+ onclick="filtrarProdutos('todos',this)">
+Todos </button>
 
-  <button class="category" onclick="filtrarProdutos('doces', this)">
-    🍫 Doces
-  </button>
+<button
+ class="category"
+ onclick="filtrarProdutos('bolos',this)">
+🎂 Bolos </button>
 
-  <button class="category" onclick="filtrarProdutos('kits', this)">
-    🎁 Kits
-  </button>
+<button
+ class="category"
+ onclick="filtrarProdutos('doces',this)">
+🍫 Doces </button>
+
+<button
+ class="category"
+ onclick="filtrarProdutos('kits',this)">
+🎁 Kits </button>
+
 </div>
 
 <section id="products" class="products">
+
   <div class="loading">
     Carregando nossos produtos... 🍰
   </div>
+
 </section>
 
 <footer>
-  <div id="footerName">LÁ DOCIÊ</div>
+
+  <div id="footerName">
+    LÁ DOCIÊ
+  </div>
 
   <div class="footer-info">
-    <div id="footerAddress"></div>
-    <div id="footerPhone"></div>
-    <div id="footerInstagram"></div>
-    <div id="footerHours"></div>
-  </div>
-</footer>
 
+```
+<div id="footerAddress"></div>
+
+<div id="footerPhone"></div>
+
+<div id="footerInstagram"></div>
+
+<div id="footerHours"></div>
+```
+
+  </div>
+
+</footer>
 
 <!-- CARRINHO -->
 
@@ -475,29 +539,41 @@
 
   <div class="modal-content">
 
-    <div class="modal-title">
-      <h2>🛒 Seu carrinho</h2>
+```
+<div class="modal-title">
 
-      <button class="close" onclick="fecharCarrinho()">
-        ×
-      </button>
-    </div>
+  <h2>🛒 Seu carrinho</h2>
 
-    <div id="cartItems"></div>
+  <button
+    class="close"
+    onclick="fecharCarrinho()">
+    ×
+  </button>
 
-    <div class="cart-total">
-      <span>Total</span>
-      <span id="cartTotal">R$ 0,00</span>
-    </div>
+</div>
 
-    <button class="main-button" onclick="abrirCheckout()">
-      Continuar pedido
-    </button>
+<div id="cartItems"></div>
+
+<div class="cart-total">
+
+  <span>Total</span>
+
+  <span id="cartTotal">
+    R$ 0,00
+  </span>
+
+</div>
+
+<button
+  class="main-button"
+  onclick="abrirCheckout()">
+  Continuar pedido
+</button>
+```
 
   </div>
 
 </div>
-
 
 <!-- CHECKOUT -->
 
@@ -505,116 +581,148 @@
 
   <div class="modal-content">
 
-    <div class="modal-title">
+```
+<div class="modal-title">
 
-      <h2>📝 Finalizar pedido</h2>
+  <h2>📝 Finalizar pedido</h2>
 
-      <button class="close" onclick="fecharCheckout()">
-        ×
-      </button>
+  <button
+    class="close"
+    onclick="fecharCheckout()">
+    ×
+  </button>
 
-    </div>
+</div>
 
-    <label>Nome completo</label>
+<label>Nome completo</label>
+
+<input
+  id="clienteNome"
+  type="text"
+  placeholder="Digite seu nome"
+>
+
+<label>WhatsApp</label>
+
+<input
+  id="clienteTelefone"
+  type="tel"
+  placeholder="(92) 99999-9999"
+>
+
+<label>E-mail</label>
+
+<input
+  id="clienteEmail"
+  type="email"
+  placeholder="seuemail@email.com"
+>
+
+<label>Como deseja receber?</label>
+
+<div class="option-group">
+
+  <label class="option">
 
     <input
-      id="clienteNome"
-      type="text"
-      placeholder="Digite seu nome"
+      type="radio"
+      name="entrega"
+      value="retirada"
+      checked
+      onchange="alterarEntrega()"
     >
 
-    <label>WhatsApp</label>
+    Retirada
+
+  </label>
+
+  <label class="option">
 
     <input
-      id="clienteTelefone"
-      type="tel"
-      placeholder="(92) 99999-9999"
+      type="radio"
+      name="entrega"
+      value="entrega"
+      onchange="alterarEntrega()"
     >
 
-    <label>E-mail</label>
+    Entrega
 
-    <input
-      id="clienteEmail"
-      type="email"
-      placeholder="seuemail@email.com"
-    >
+  </label>
 
-    <label>Como deseja receber?</label>
+</div>
 
-    <div class="option-group">
+<div id="enderecoArea" style="display:none">
 
-      <label class="option">
-        <input
-          type="radio"
-          name="entrega"
-          value="retirada"
-          checked
-          onchange="alterarEntrega()"
-        >
-        Retirada
-      </label>
+  <label>Endereço de entrega</label>
 
-      <label class="option">
-        <input
-          type="radio"
-          name="entrega"
-          value="entrega"
-          onchange="alterarEntrega()"
-        >
-        Entrega
-      </label>
+  <textarea
+    id="clienteEndereco"
+    placeholder="Rua, número, bairro e complemento">
+  </textarea>
 
-    </div>
+</div>
 
-    <div id="enderecoArea" style="display:none">
+<label>Data do pedido</label>
 
-      <label>Endereço de entrega</label>
+<input
+  id="pedidoData"
+  type="date"
+>
 
-      <textarea
-        id="clienteEndereco"
-        placeholder="Rua, número, bairro e complemento"
-      ></textarea>
+<label>Horário</label>
 
-    </div>
+<input
+  id="pedidoHorario"
+  type="time"
+>
 
-    <label>Data do pedido</label>
+<label>Forma de pagamento</label>
 
-    <input id="pedidoData" type="date">
+<select id="pedidoPagamento">
 
-    <label>Horário</label>
+  <option value="">
+    Selecione
+  </option>
 
-    <input id="pedidoHorario" type="time">
+  <option value="pix">
+    Pix
+  </option>
 
-    <label>Forma de pagamento</label>
+  <option value="cartao">
+    Cartão
+  </option>
 
-    <select id="pedidoPagamento">
-      <option value="">Selecione</option>
-      <option value="pix">Pix</option>
-      <option value="cartao">Cartão</option>
-      <option value="dinheiro">Dinheiro</option>
-    </select>
+  <option value="dinheiro">
+    Dinheiro
+  </option>
 
-    <label>Observações</label>
+</select>
 
-    <textarea
-      id="pedidoObservacoes"
-      placeholder="Alguma observação sobre o pedido?"
-    ></textarea>
+<label>Observações</label>
 
-    <div id="checkoutErro" class="error"></div>
+<textarea
+  id="pedidoObservacoes"
+  placeholder="Alguma observação sobre o pedido?">
+</textarea>
 
-    <button
-      id="confirmarPedido"
-      class="confirm-button"
-      onclick="finalizarPedido()"
-    >
-      ✅ Confirmar pedido
-    </button>
+<div
+  id="checkoutErro"
+  class="error">
+</div>
+
+<button
+  id="confirmarPedido"
+  class="confirm-button"
+  onclick="finalizarPedido()">
+
+  ✅ Confirmar pedido
+
+</button>
+```
 
   </div>
 
 </div>
-
 
 <!-- SUCESSO -->
 
@@ -622,44 +730,45 @@
 
   <div class="modal-content">
 
-    <div class="success">
+```
+<div class="success">
 
-      <div style="font-size:60px">
-        🎉
-      </div>
+  <div style="font-size:60px">
+    🎉
+  </div>
 
-      <h2>Pedido realizado!</h2>
+  <h2>
+    Pedido realizado!
+  </h2>
 
-      <p>
-        Recebemos seu pedido com sucesso.
-      </p>
+  <p>
+    Recebemos seu pedido com sucesso.
+  </p>
 
-      <p>
-        <strong id="numeroPedido"></strong>
-      </p>
+  <p>
+    <strong id="numeroPedido"></strong>
+  </p>
 
-      <button
-        class="main-button"
-        onclick="fecharSucesso()"
-      >
-        Voltar para a loja
-      </button>
+  <button
+    class="main-button"
+    onclick="fecharSucesso()">
 
-    </div>
+    Voltar para a loja
+
+  </button>
+
+</div>
+```
 
   </div>
 
 </div>
 
-
-<div id="statusMessage" class="status-message"></div>
-
-
 <script>
 
-/* =====================================================
+/* =========================================
    SUPABASE
-===================================================== */
+========================================= */
 
 const SUPABASE_URL =
   "https://lzihqkpscesurkfmcasb.supabase.co";
@@ -674,9 +783,9 @@ const supabaseClient =
   );
 
 
-/* =====================================================
+/* =========================================
    VARIÁVEIS
-===================================================== */
+========================================= */
 
 let carrinho = [];
 
@@ -684,72 +793,48 @@ let todosProdutos = [];
 
 let configuracoes = {};
 
-let categoriaAtual = "todos";
 
-
-/* =====================================================
+/* =========================================
    FORMATAÇÃO
-===================================================== */
+========================================= */
 
-function dinheiro(valor) {
+function dinheiro(valor){
 
   return Number(valor || 0)
     .toFixed(2)
-    .replace(".", ",");
+    .replace(".",",");
 
 }
 
 
-function escapeHTML(valor) {
+function escapeHTML(valor){
 
   return String(valor ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
 }
 
 
-/* =====================================================
-   MENSAGEM
-===================================================== */
-
-function mostrarMensagem(texto) {
-
-  const area =
-    document.getElementById("statusMessage");
-
-  area.textContent = texto;
-
-  area.style.display = "block";
-
-  setTimeout(() => {
-
-    area.style.display = "none";
-
-  }, 3000);
-
-}
-
-
-/* =====================================================
+/* =========================================
    CONFIGURAÇÕES
-===================================================== */
+========================================= */
 
-async function carregarConfiguracoes() {
+async function carregarConfiguracoes(){
 
-  try {
+  try{
 
-    const { data, error } =
+    const {data,error} =
       await supabaseClient
         .from("store_settings")
         .select("*")
         .limit(1)
         .maybeSingle();
 
-    if (error) {
+    if(error){
 
       console.error(
         "Erro nas configurações:",
@@ -757,9 +842,12 @@ async function carregarConfiguracoes() {
       );
 
       return;
+
     }
 
-    if (!data) return;
+    if(!data){
+      return;
+    }
 
     configuracoes = data;
 
@@ -777,43 +865,51 @@ async function carregarConfiguracoes() {
         data.description ||
         "Bolos, brigadeiros, cupcakes e kits preparados com carinho para tornar sua comemoração inesquecível.";
 
-    document.getElementById("horarioInfo")
-      .textContent =
-        data.opening_hours
-          ? "🕐 " + data.opening_hours
-          : "🕐 Consulte nossos horários";
+    if(data.opening_hours){
 
-    document.getElementById("footerHours")
-      .textContent =
-        data.opening_hours
-          ? "🕐 " + data.opening_hours
-          : "";
+      document.getElementById("horarioInfo")
+        .textContent =
+          "🕐 " + data.opening_hours;
 
-    document.getElementById("whatsappInfo")
-      .textContent =
-        data.whatsapp
-          ? "📱 " + data.whatsapp
-          : "📱 WhatsApp";
+      document.getElementById("footerHours")
+        .textContent =
+          "🕐 " + data.opening_hours;
 
-    document.getElementById("footerAddress")
-      .textContent =
-        data.address
-          ? "📍 " + data.address
-          : "";
+    }
 
-    document.getElementById("footerPhone")
-      .textContent =
-        data.phone
-          ? "📞 " + data.phone
-          : "";
+    if(data.whatsapp){
 
-    document.getElementById("footerInstagram")
-      .textContent =
-        data.instagram
-          ? "📸 " + data.instagram
-          : "";
+      document.getElementById("whatsappInfo")
+        .textContent =
+          "📱 " + data.whatsapp;
 
-  } catch (error) {
+    }
+
+    if(data.address){
+
+      document.getElementById("footerAddress")
+        .textContent =
+          "📍 " + data.address;
+
+    }
+
+    if(data.phone){
+
+      document.getElementById("footerPhone")
+        .textContent =
+          "📞 " + data.phone;
+
+    }
+
+    if(data.instagram){
+
+      document.getElementById("footerInstagram")
+        .textContent =
+          "📸 " + data.instagram;
+
+    }
+
+  }catch(error){
 
     console.error(error);
 
@@ -822,29 +918,29 @@ async function carregarConfiguracoes() {
 }
 
 
-/* =====================================================
+/* =========================================
    PRODUTOS
-===================================================== */
+========================================= */
 
-async function carregarProdutos() {
+async function carregarProdutos(){
 
   const area =
     document.getElementById("products");
 
-  try {
+  try{
 
-    const { data, error } =
+    const {data,error} =
       await supabaseClient
         .from("products")
         .select(
           "id,name,category,price,description,image,active"
         )
-        .eq("active", true)
-        .order("name", {
-          ascending: true
+        .eq("active",true)
+        .order("created_at",{
+          ascending:false
         });
 
-    if (error) {
+    if(error){
 
       throw error;
 
@@ -855,9 +951,11 @@ async function carregarProdutos() {
         ? data
         : [];
 
-    aplicarFiltro();
+    renderizarProdutos(
+      todosProdutos
+    );
 
-  } catch (error) {
+  }catch(error){
 
     console.error(
       "Erro ao carregar produtos:",
@@ -865,7 +963,7 @@ async function carregarProdutos() {
     );
 
     area.innerHTML = `
-      <div class="loading">
+      <div class="empty">
         Não conseguimos carregar os produtos.
         <br><br>
         Tente atualizar a página.
@@ -877,87 +975,19 @@ async function carregarProdutos() {
 }
 
 
-/* =====================================================
-   FILTRO
-===================================================== */
+/* =========================================
+   RENDERIZAR
+========================================= */
 
-function filtrarProdutos(
-  categoria,
-  botao
-) {
-
-  categoriaAtual = categoria;
-
-  document
-    .querySelectorAll(".category")
-    .forEach(item => {
-
-      item.classList.remove("active");
-
-    });
-
-  if (botao) {
-
-    botao.classList.add("active");
-
-  }
-
-  aplicarFiltro();
-
-}
-
-
-function aplicarFiltro() {
-
-  if (categoriaAtual === "todos") {
-
-    renderizarProdutos(
-      todosProdutos
-    );
-
-    return;
-
-  }
-
-  const filtrados =
-    todosProdutos.filter(produto => {
-
-      const categoria =
-        String(
-          produto.category || ""
-        )
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "");
-
-      return categoria.includes(
-        categoriaAtual
-      );
-
-    });
-
-  renderizarProdutos(
-    filtrados
-  );
-
-}
-
-
-/* =====================================================
-   RENDERIZAR PRODUTOS
-===================================================== */
-
-function renderizarProdutos(
-  produtos
-) {
+function renderizarProdutos(produtos){
 
   const area =
     document.getElementById("products");
 
-  if (!produtos.length) {
+  if(!produtos.length){
 
     area.innerHTML = `
-      <div class="loading">
+      <div class="empty">
         Nenhum produto disponível no momento. 🍰
       </div>
     `;
@@ -971,44 +1001,37 @@ function renderizarProdutos(
   produtos.forEach(produto => {
 
     const nome =
-      produto.name ||
-      "Produto Lá Dociê";
+      produto.name || "Produto Lá Dociê";
 
     const descricao =
-      produto.description ||
-      "";
+      produto.description || "";
 
     const preco =
       Number(produto.price || 0);
 
     const imagem =
-      produto.image ||
-      "";
+      produto.image || "";
 
     const card =
       document.createElement("div");
 
-    card.className =
-      "product";
+    card.className = "product";
+
+    const imagemHTML =
+      imagem
+      ? `
+        <img
+          src="${escapeHTML(imagem)}"
+          alt="${escapeHTML(nome)}"
+          loading="lazy"
+        >
+      `
+      : "🍰";
 
     card.innerHTML = `
 
       <div class="product-image">
-
-        ${
-          imagem
-
-          ? `
-            <img
-              src="${escapeHTML(imagem)}"
-              alt="${escapeHTML(nome)}"
-              loading="lazy"
-            >
-          `
-
-          : "🍰"
-        }
-
+        ${imagemHTML}
       </div>
 
       <div class="product-info">
@@ -1030,26 +1053,27 @@ function renderizarProdutos(
         </button>
 
       </div>
-
     `;
 
-    card
-      .querySelector(".add")
-      .onclick = () => {
+    card.querySelector(".add")
+      .addEventListener(
+        "click",
+        () => {
 
-        adicionarCarrinho({
+          adicionarCarrinho({
 
-          id: produto.id,
+            id:produto.id,
 
-          nome: nome,
+            nome:nome,
 
-          preco: preco,
+            preco:preco,
 
-          quantidade: 1
+            quantidade:1
 
-        });
+          });
 
-      };
+        }
+      );
 
     area.appendChild(card);
 
@@ -1058,13 +1082,59 @@ function renderizarProdutos(
 }
 
 
-/* =====================================================
-   CARRINHO
-===================================================== */
+/* =========================================
+   FILTRO
+========================================= */
 
-function adicionarCarrinho(
-  produto
-) {
+function filtrarProdutos(
+  categoria,
+  botao
+){
+
+  document
+    .querySelectorAll(".category")
+    .forEach(item =>
+      item.classList.remove("active")
+    );
+
+  botao.classList.add("active");
+
+  if(categoria === "todos"){
+
+    renderizarProdutos(
+      todosProdutos
+    );
+
+    return;
+
+  }
+
+  const filtrados =
+    todosProdutos.filter(produto => {
+
+      const cat =
+        String(
+          produto.category || ""
+        ).toLowerCase();
+
+      return cat.includes(
+        categoria.toLowerCase()
+      );
+
+    });
+
+  renderizarProdutos(
+    filtrados
+  );
+
+}
+
+
+/* =========================================
+   CARRINHO
+========================================= */
+
+function adicionarCarrinho(produto){
 
   const existente =
     carrinho.find(
@@ -1072,11 +1142,11 @@ function adicionarCarrinho(
         item.id === produto.id
     );
 
-  if (existente) {
+  if(existente){
 
     existente.quantidade++;
 
-  } else {
+  }else{
 
     carrinho.push(produto);
 
@@ -1084,34 +1154,61 @@ function adicionarCarrinho(
 
   atualizarCarrinho();
 
-  mostrarMensagem(
-    "Produto adicionado ao carrinho! 🍰"
-  );
+}
+
+
+function alterarQuantidade(
+  index,
+  quantidade
+){
+
+  if(
+    !carrinho[index]
+  ){
+    return;
+  }
+
+  carrinho[index].quantidade =
+    Math.max(
+      1,
+      Number(quantidade)
+    );
+
+  atualizarCarrinho();
 
 }
 
 
-function calcularTotal() {
+function removerCarrinho(index){
+
+  carrinho.splice(
+    index,
+    1
+  );
+
+  atualizarCarrinho();
+
+}
+
+
+function calcularTotal(){
 
   return carrinho.reduce(
-    (total, item) => {
-
-      return total +
-        Number(item.preco || 0) *
-        Number(item.quantidade || 1);
-
-    },
+    (total,item) =>
+      total +
+      Number(item.preco || 0) *
+      Number(item.quantidade || 1),
     0
   );
 
 }
 
 
-function atualizarCarrinho() {
+function atualizarCarrinho(){
 
   const quantidade =
     carrinho.reduce(
-      (total, item) =>
+      (total,item) =>
         total +
         Number(item.quantidade || 1),
       0
@@ -1119,12 +1216,14 @@ function atualizarCarrinho() {
 
   document.getElementById(
     "cartCount"
-  ).textContent = quantidade;
+  ).textContent =
+    quantidade;
 
   document.getElementById(
     "cartTotal"
   ).textContent =
-    "R$ " + dinheiro(
+    "R$ " +
+    dinheiro(
       calcularTotal()
     );
 
@@ -1133,7 +1232,7 @@ function atualizarCarrinho() {
       "cartItems"
     );
 
-  if (!carrinho.length) {
+  if(!carrinho.length){
 
     area.innerHTML = `
       <div class="loading">
@@ -1148,7 +1247,7 @@ function atualizarCarrinho() {
   area.innerHTML = "";
 
   carrinho.forEach(
-    (item, index) => {
+    (item,index) => {
 
       const div =
         document.createElement(
@@ -1166,26 +1265,55 @@ function atualizarCarrinho() {
             ${escapeHTML(item.nome)}
           </strong>
 
-          <div>
-            Quantidade:
-            ${item.quantidade}
+          <div class="quantity">
+
+            <button
+              onclick="
+                alterarQuantidade(
+                  ${index},
+                  ${item.quantidade - 1}
+                )
+              ">
+              −
+            </button>
+
+            <span>
+              ${item.quantidade}
+            </span>
+
+            <button
+              onclick="
+                alterarQuantidade(
+                  ${index},
+                  ${item.quantidade + 1}
+                )
+              ">
+              +
+            </button>
+
           </div>
 
-          <div style="color:#b47b20">
+          <div
+            style="color:#b47b20;margin-top:6px">
+
             R$
             ${dinheiro(
               item.preco *
               item.quantidade
             )}
+
           </div>
 
         </div>
 
         <button
           class="remove"
-          onclick="removerCarrinho(${index})"
-        >
+          onclick="
+            removerCarrinho(${index})
+          ">
+
           Remover
+
         </button>
 
       `;
@@ -1198,23 +1326,7 @@ function atualizarCarrinho() {
 }
 
 
-function removerCarrinho(index) {
-
-  carrinho.splice(
-    index,
-    1
-  );
-
-  atualizarCarrinho();
-
-}
-
-
-/* =====================================================
-   MODAL CARRINHO
-===================================================== */
-
-function mostrarCarrinho() {
+function mostrarCarrinho(){
 
   atualizarCarrinho();
 
@@ -1225,7 +1337,7 @@ function mostrarCarrinho() {
 }
 
 
-function fecharCarrinho() {
+function fecharCarrinho(){
 
   document
     .getElementById("cartModal")
@@ -1234,13 +1346,13 @@ function fecharCarrinho() {
 }
 
 
-/* =====================================================
+/* =========================================
    CHECKOUT
-===================================================== */
+========================================= */
 
-function abrirCheckout() {
+function abrirCheckout(){
 
-  if (!carrinho.length) {
+  if(!carrinho.length){
 
     alert(
       "Seu carrinho está vazio. 🍰"
@@ -1259,7 +1371,7 @@ function abrirCheckout() {
 }
 
 
-function fecharCheckout() {
+function fecharCheckout(){
 
   document
     .getElementById("checkoutModal")
@@ -1268,7 +1380,7 @@ function fecharCheckout() {
 }
 
 
-function alterarEntrega() {
+function alterarEntrega(){
 
   const entrega =
     document.querySelector(
@@ -1286,13 +1398,13 @@ function alterarEntrega() {
 }
 
 
-/* =====================================================
-   ERRO CHECKOUT
-===================================================== */
+/* =========================================
+   ERRO
+========================================= */
 
 function mostrarErro(
   mensagem
-) {
+){
 
   const area =
     document.getElementById(
@@ -1308,11 +1420,11 @@ function mostrarErro(
 }
 
 
-/* =====================================================
+/* =========================================
    FINALIZAR PEDIDO
-===================================================== */
+========================================= */
 
-async function finalizarPedido() {
+async function finalizarPedido(){
 
   const erro =
     document.getElementById(
@@ -1322,7 +1434,7 @@ async function finalizarPedido() {
   erro.style.display =
     "none";
 
-  if (!carrinho.length) {
+  if(!carrinho.length){
 
     mostrarErro(
       "Seu carrinho está vazio."
@@ -1377,7 +1489,7 @@ async function finalizarPedido() {
       "pedidoObservacoes"
     ).value.trim();
 
-  if (!nome) {
+  if(!nome){
 
     mostrarErro(
       "Digite seu nome."
@@ -1387,7 +1499,7 @@ async function finalizarPedido() {
 
   }
 
-  if (!telefone) {
+  if(!telefone){
 
     mostrarErro(
       "Digite seu WhatsApp."
@@ -1397,7 +1509,7 @@ async function finalizarPedido() {
 
   }
 
-  if (!data) {
+  if(!data){
 
     mostrarErro(
       "Escolha a data do pedido."
@@ -1407,7 +1519,7 @@ async function finalizarPedido() {
 
   }
 
-  if (!horario) {
+  if(!horario){
 
     mostrarErro(
       "Escolha o horário."
@@ -1417,7 +1529,7 @@ async function finalizarPedido() {
 
   }
 
-  if (!pagamento) {
+  if(!pagamento){
 
     mostrarErro(
       "Escolha a forma de pagamento."
@@ -1432,10 +1544,10 @@ async function finalizarPedido() {
       ? entrega.value
       : "retirada";
 
-  if (
+  if(
     tipoEntrega === "entrega" &&
     !endereco
-  ) {
+  ){
 
     mostrarErro(
       "Digite o endereço de entrega."
@@ -1450,13 +1562,12 @@ async function finalizarPedido() {
       "confirmarPedido"
     );
 
-  botao.disabled =
-    true;
+  botao.disabled = true;
 
   botao.textContent =
     "Enviando pedido...";
 
-  try {
+  try{
 
     const itens =
       carrinho.map(item => ({
@@ -1484,11 +1595,9 @@ async function finalizarPedido() {
         SUPABASE_URL +
         "/rest/v1/rpc/criar_pedido",
         {
+          method:"POST",
 
-          method: "POST",
-
-          headers: {
-
+          headers:{
             "Content-Type":
               "application/json",
 
@@ -1498,51 +1607,49 @@ async function finalizarPedido() {
             "Authorization":
               "Bearer " +
               SUPABASE_KEY
-
           },
 
-          body:
-            JSON.stringify({
+          body:JSON.stringify({
 
-              p_customer_name:
-                nome,
+            p_customer_name:
+              nome,
 
-              p_customer_phone:
-                telefone,
+            p_customer_phone:
+              telefone,
 
-              p_customer_email:
-                email || null,
+            p_customer_email:
+              email || null,
 
-              p_type:
-                tipoEntrega,
+            p_type:
+              tipoEntrega,
 
-              p_scheduled_date:
-                data,
+            p_scheduled_date:
+              data,
 
-              p_scheduled_time:
-                horario,
+            p_scheduled_time:
+              horario,
 
-              p_total:
-                calcularTotal(),
+            p_total:
+              calcularTotal(),
 
-              p_payment_method:
-                pagamento,
+            p_payment_method:
+              pagamento,
 
-              p_delivery_type:
-                tipoEntrega,
+            p_delivery_type:
+              tipoEntrega,
 
-              p_delivery_address:
-                tipoEntrega === "entrega"
-                  ? endereco
-                  : null,
+            p_delivery_address:
+              tipoEntrega === "entrega"
+                ? endereco
+                : null,
 
-              p_notes:
-                observacoes || null,
+            p_notes:
+              observacoes || null,
 
-              p_items:
-                itens
+            p_items:
+              itens
 
-            })
+          })
 
         }
       );
@@ -1550,7 +1657,7 @@ async function finalizarPedido() {
     const texto =
       await resposta.text();
 
-    if (!resposta.ok) {
+    if(!resposta.ok){
 
       throw new Error(
         texto
@@ -1560,12 +1667,12 @@ async function finalizarPedido() {
 
     let pedidoId;
 
-    try {
+    try{
 
       pedidoId =
         JSON.parse(texto);
 
-    } catch {
+    }catch{
 
       pedidoId =
         texto;
@@ -1590,10 +1697,10 @@ async function finalizarPedido() {
 
     limparFormulario();
 
-  } catch (error) {
+  }catch(error){
 
     console.error(
-      "Erro ao finalizar pedido:",
+      "Erro ao finalizar:",
       error
     );
 
@@ -1601,7 +1708,7 @@ async function finalizarPedido() {
       "Não foi possível finalizar o pedido. Tente novamente."
     );
 
-  } finally {
+  }finally{
 
     botao.disabled =
       false;
@@ -1614,11 +1721,11 @@ async function finalizarPedido() {
 }
 
 
-/* =====================================================
+/* =========================================
    LIMPAR FORMULÁRIO
-===================================================== */
+========================================= */
 
-function limparFormulario() {
+function limparFormulario(){
 
   [
     "clienteNome",
@@ -1633,10 +1740,8 @@ function limparFormulario() {
     const campo =
       document.getElementById(id);
 
-    if (campo) {
-
+    if(campo){
       campo.value = "";
-
     }
 
   });
@@ -1650,11 +1755,8 @@ function limparFormulario() {
       'input[name="entrega"][value="retirada"]'
     );
 
-  if (retirada) {
-
-    retirada.checked =
-      true;
-
+  if(retirada){
+    retirada.checked = true;
   }
 
   alterarEntrega();
@@ -1662,26 +1764,24 @@ function limparFormulario() {
 }
 
 
-/* =====================================================
+/* =========================================
    SUCESSO
-===================================================== */
+========================================= */
 
-function fecharSucesso() {
+function fecharSucesso(){
 
   document
-    .getElementById(
-      "successModal"
-    )
+    .getElementById("successModal")
     .classList.remove("show");
 
 }
 
 
-/* =====================================================
+/* =========================================
    DATA MÍNIMA
-===================================================== */
+========================================= */
 
-function configurarData() {
+function configurarData(){
 
   const hoje =
     new Date();
@@ -1692,12 +1792,12 @@ function configurarData() {
   const mes =
     String(
       hoje.getMonth() + 1
-    ).padStart(2, "0");
+    ).padStart(2,"0");
 
   const dia =
     String(
       hoje.getDate()
-    ).padStart(2, "0");
+    ).padStart(2,"0");
 
   document.getElementById(
     "pedidoData"
@@ -1707,134 +1807,53 @@ function configurarData() {
 }
 
 
-/* =====================================================
-   ATUALIZAÇÃO AUTOMÁTICA DO SITE
-===================================================== */
+/* =========================================
+   ATUALIZAÇÃO AUTOMÁTICA
+========================================= */
 
-/*
-   Quando o painel alterar um produto,
-   o Supabase avisa o site automaticamente.
-*/
-
-function ativarAtualizacaoProdutos() {
-
-  supabaseClient
-    .channel("produtos-site")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "products"
-      },
-      payload => {
-
-        console.log(
-          "Produtos atualizados:",
-          payload
-        );
-
-        carregarProdutos();
-
-        mostrarMensagem(
-          "Produtos atualizados! 🍰"
-        );
-
-      }
-    )
-    .subscribe();
-
-}
-
-
-/*
-   Atualização automática das
-   configurações da loja.
-*/
-
-function ativarAtualizacaoConfiguracoes() {
-
-  supabaseClient
-    .channel("configuracoes-site")
-    .on(
-      "postgres_changes",
-      {
-        event: "*",
-        schema: "public",
-        table: "store_settings"
-      },
-      payload => {
-
-        console.log(
-          "Configurações atualizadas:",
-          payload
-        );
-
-        carregarConfiguracoes();
-
-        mostrarMensagem(
-          "Informações da loja atualizadas!"
-        );
-
-      }
-    )
-    .subscribe();
-
-}
-
-
-/* =====================================================
-   ATUALIZAÇÃO DE SEGURANÇA
-===================================================== */
-
-/*
-   Mesmo que o navegador não receba
-   o evento em tempo real, o site
-   verifica novamente periodicamente.
-*/
-
-setInterval(
-  () => {
-
-    carregarProdutos();
-    carregarConfiguracoes();
-
-  },
-  60000
-);
-
-
-/* =====================================================
-   INICIAR
-===================================================== */
-
-async function iniciar() {
-
-  configurarData();
-
-  atualizarCarrinho();
-
-  alterarEntrega();
-
-  ativarAtualizacaoProdutos();
-
-  ativarAtualizacaoConfiguracoes();
+async function atualizarSite(){
 
   await Promise.all([
-
     carregarConfiguracoes(),
-
     carregarProdutos()
-
   ]);
 
 }
 
 
+/* =========================================
+   INICIAR
+========================================= */
+
+async function iniciar(){
+
+  configurarData();
+
+  atualizarCarrinho();
+
+  await atualizarSite();
+
+}
+
+
+/* =========================================
+   EXECUTAR
+========================================= */
+
 iniciar();
+
+
+/*
+  Atualiza os produtos e informações
+  automaticamente a cada 15 segundos.
+*/
+
+setInterval(
+  atualizarSite,
+  15000
+);
 
 </script>
 
 </body>
 </html>
-```

@@ -11,8 +11,15 @@
 <title>Painel Administrativo - Lá Dociê</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
+      
       <script>
+
+/* =========================================================
+   LÁ DOCIÊ — PAINEL ADMINISTRATIVO
+   VERSÃO CORRIGIDA
+   Pagamentos: MANUAIS
+========================================================= */
+
 
 /* =========================================================
    SUPABASE
@@ -21,8 +28,14 @@
 const SUPABASE_URL =
   "https://lzihqkpscesurkfmcasb.supabase.co";
 
+/*
+   IMPORTANTE:
+   Coloque aqui a sua Publishable Key do Supabase.
+   Não coloque service_role.
+*/
 const SUPABASE_KEY =
-  "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
+  "COLE_AQUI_SUA_PUBLISHABLE_KEY";
+
 
 const supabaseClient =
   window.supabase.createClient(
@@ -32,7 +45,7 @@ const supabaseClient =
 
 
 /* =========================================================
-   ESTADO
+   ESTADO DO SISTEMA
 ========================================================= */
 
 let produtos = [];
@@ -43,6 +56,7 @@ let pedidoAtual = null;
 let itensPedidoAtual = [];
 
 let filtroAtual = "todos";
+
 let realtimeChannel = null;
 
 
@@ -58,6 +72,7 @@ function escapeHTML(valor) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+
 }
 
 
@@ -66,10 +81,14 @@ function dinheiro(valor) {
   return Number(valor || 0)
     .toFixed(2)
     .replace(".", ",");
+
 }
 
 
-function mostrarMensagem(mensagem, tipo = "success") {
+function mostrarMensagem(
+  mensagem,
+  tipo = "success"
+) {
 
   const box =
     document.getElementById("globalNotice");
@@ -86,6 +105,7 @@ function mostrarMensagem(mensagem, tipo = "success") {
     box.classList.remove("show");
 
   }, 5000);
+
 }
 
 
@@ -100,6 +120,7 @@ function mostrarLoginErro(mensagem) {
 
   box.className =
     "notice show error";
+
 }
 
 
@@ -131,19 +152,31 @@ async function entrar() {
 
   try {
 
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: senha
-      });
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth
+        .signInWithPassword({
 
-    if (error) throw error;
+          email: email,
+
+          password: senha
+
+        });
+
+    if (error) {
+
+      throw error;
+
+    }
 
     if (!data?.session) {
 
       throw new Error(
         "Não foi possível iniciar a sessão."
       );
+
     }
 
     await abrirAdmin();
@@ -159,7 +192,9 @@ async function entrar() {
       error.message ||
       "E-mail ou senha incorretos."
     );
+
   }
+
 }
 
 
@@ -176,16 +211,21 @@ async function abrirAdmin() {
     document.getElementById("adminScreen");
 
   if (login) {
+
     login.classList.add("hidden");
+
   }
 
   if (admin) {
+
     admin.classList.remove("hidden");
+
   }
 
   await carregarTudo();
 
   iniciarRealtime();
+
 }
 
 
@@ -201,10 +241,8 @@ async function sair() {
 
   } catch (error) {
 
-    console.error(
-      "Erro ao sair:",
-      error
-    );
+    console.error(error);
+
   }
 
   if (realtimeChannel) {
@@ -212,14 +250,18 @@ async function sair() {
     try {
 
       await supabaseClient
-        .removeChannel(realtimeChannel);
+        .removeChannel(
+          realtimeChannel
+        );
 
     } catch (error) {
 
       console.error(error);
+
     }
 
     realtimeChannel = null;
+
   }
 
   document
@@ -231,6 +273,7 @@ async function sair() {
     .getElementById("loginScreen")
     ?.classList
     .remove("hidden");
+
 }
 
 
@@ -249,6 +292,7 @@ function abrirMenu() {
     .getElementById("overlay")
     ?.classList
     .add("show");
+
 }
 
 
@@ -263,6 +307,7 @@ function fecharMenu() {
     .getElementById("overlay")
     ?.classList
     .remove("show");
+
 }
 
 
@@ -276,13 +321,16 @@ function abrirPagina(nome, botao) {
 
     });
 
+
   const painel =
     document.getElementById(nome);
 
   if (painel) {
 
     painel.classList.add("active");
+
   }
+
 
   document
     .querySelectorAll(".menu-btn")
@@ -292,22 +340,32 @@ function abrirPagina(nome, botao) {
 
     });
 
+
   if (botao) {
 
     botao.classList.add("active");
+
   }
+
 
   const titulos = {
 
     dashboard: "Dashboard",
+
     pedidos: "Pedidos",
+
     produtos: "Produtos",
+
     estoque: "Estoque",
+
     loja: "Minha loja",
+
     cupons: "Cupons",
+
     config: "Configurações"
 
   };
+
 
   const titulo =
     document.getElementById("pageTitle");
@@ -315,48 +373,37 @@ function abrirPagina(nome, botao) {
   if (titulo) {
 
     titulo.textContent =
-      titulos[nome] || "Painel";
+      titulos[nome] ||
+      "Painel";
+
   }
+
 
   fecharMenu();
-
-
-  /* Carrega novamente quando abrir a página */
-
-  if (nome === "pedidos") {
-
-    carregarPedidos();
-  }
-
-  if (nome === "produtos") {
-
-    carregarProdutos();
-  }
-
-  if (nome === "estoque") {
-
-    carregarProdutos();
-  }
-
-  if (nome === "loja") {
-
-    carregarLoja();
-  }
 
 }
 
 
 function abrirPaginaPorNome(nome) {
 
-  const botao =
-    [...document.querySelectorAll(".menu-btn")]
-      .find(btn =>
-        btn.textContent
-          .toLowerCase()
-          .includes(nome.toLowerCase())
-      );
+  const botoes =
+    [...document.querySelectorAll(".menu-btn")];
 
-  abrirPagina(nome, botao);
+  const botao =
+    botoes.find(btn =>
+
+      btn.textContent
+        .toLowerCase()
+        .includes(nome.toLowerCase())
+
+    );
+
+
+  abrirPagina(
+    nome,
+    botao
+  );
+
 }
 
 
@@ -367,10 +414,10 @@ function abrirPaginaPorNome(nome) {
 async function carregarProdutos() {
 
   const area =
-    document.getElementById("productsList");
+    document.getElementById(
+      "productsList"
+    );
 
-  const tbody =
-    document.getElementById("stockTable");
 
   if (area) {
 
@@ -378,51 +425,39 @@ async function carregarProdutos() {
       `<div class="small">
         Carregando produtos...
       </div>`;
+
   }
 
-  if (tbody) {
-
-    tbody.innerHTML =
-      `<tr>
-        <td colspan="5">
-          Carregando estoque...
-        </td>
-      </tr>`;
-  }
 
   try {
 
-    console.log(
-      "Carregando produtos..."
-    );
-
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("products")
         .select("*")
-        .order("created_at", {
-          ascending: false
-        });
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
 
     if (error) {
 
-      console.error(
-        "Erro Supabase produtos:",
-        error
-      );
-
       throw error;
+
     }
+
 
     produtos =
       Array.isArray(data)
         ? data
         : [];
 
-    console.log(
-      "Produtos carregados:",
-      produtos.length
-    );
 
     renderizarProdutos();
 
@@ -431,35 +466,24 @@ async function carregarProdutos() {
   } catch (error) {
 
     console.error(
-      "ERRO AO CARREGAR PRODUTOS:",
+      "Erro ao carregar produtos:",
       error
     );
+
 
     if (area) {
 
       area.innerHTML =
         `<div class="small">
-          ❌ Não foi possível carregar os produtos.
+          Não foi possível carregar os produtos.
           <br><br>
           ${escapeHTML(error.message)}
         </div>`;
+
     }
 
-    if (tbody) {
-
-      tbody.innerHTML =
-        `<tr>
-          <td colspan="5">
-            ❌ Erro ao carregar estoque.
-          </td>
-        </tr>`;
-    }
-
-    mostrarMensagem(
-      "Erro ao carregar produtos.",
-      "error"
-    );
   }
+
 }
 
 
@@ -470,114 +494,144 @@ async function carregarProdutos() {
 function abrirEditorProduto(id = null) {
 
   const modal =
-    document.getElementById("productModal");
+    document.getElementById(
+      "productModal"
+    );
 
   if (!modal) return;
 
   modal.classList.add("show");
 
+
   if (id) {
 
     const produto =
       produtos.find(
-        p => Number(p.id) === Number(id)
+        p =>
+          Number(p.id) ===
+          Number(id)
       );
+
 
     if (!produto) return;
 
-    document.getElementById(
-      "productModalTitle"
-    ).textContent =
+
+    document
+      .getElementById("productModalTitle")
+      .textContent =
       "Editar produto";
 
-    document.getElementById(
-      "produtoId"
-    ).value =
+
+    document
+      .getElementById("produtoId")
+      .value =
       produto.id;
 
-    document.getElementById(
-      "produtoNome"
-    ).value =
+
+    document
+      .getElementById("produtoNome")
+      .value =
       produto.name || "";
 
-    document.getElementById(
-      "produtoCategoria"
-    ).value =
-      produto.category || "bolos";
 
-    document.getElementById(
-      "produtoPreco"
-    ).value =
+    document
+      .getElementById("produtoCategoria")
+      .value =
+      produto.category ||
+      "bolos";
+
+
+    document
+      .getElementById("produtoPreco")
+      .value =
       produto.price ?? "";
 
-    document.getElementById(
-      "produtoDescricao"
-    ).value =
+
+    document
+      .getElementById("produtoDescricao")
+      .value =
       produto.description || "";
 
-    document.getElementById(
-      "produtoImagem"
-    ).value =
+
+    document
+      .getElementById("produtoImagem")
+      .value =
       produto.image || "";
 
-    document.getElementById(
-      "produtoEstoque"
-    ).value =
+
+    document
+      .getElementById("produtoEstoque")
+      .value =
       produto.stock ?? 0;
 
-    document.getElementById(
-      "produtoEstoqueMinimo"
-    ).value =
+
+    document
+      .getElementById("produtoEstoqueMinimo")
+      .value =
       produto.min_stock ?? 5;
 
-    document.getElementById(
-      "produtoAtivo"
-    ).checked =
+
+    document
+      .getElementById("produtoAtivo")
+      .checked =
       produto.active !== false;
+
 
   } else {
 
-    document.getElementById(
-      "productModalTitle"
-    ).textContent =
+    document
+      .getElementById("productModalTitle")
+      .textContent =
       "Novo produto";
 
-    document.getElementById(
-      "produtoId"
-    ).value = "";
 
-    document.getElementById(
-      "produtoNome"
-    ).value = "";
+    document
+      .getElementById("produtoId")
+      .value = "";
 
-    document.getElementById(
-      "produtoCategoria"
-    ).value = "bolos";
 
-    document.getElementById(
-      "produtoPreco"
-    ).value = "";
+    document
+      .getElementById("produtoNome")
+      .value = "";
 
-    document.getElementById(
-      "produtoDescricao"
-    ).value = "";
 
-    document.getElementById(
-      "produtoImagem"
-    ).value = "";
+    document
+      .getElementById("produtoCategoria")
+      .value =
+      "bolos";
 
-    document.getElementById(
-      "produtoEstoque"
-    ).value = 0;
 
-    document.getElementById(
-      "produtoEstoqueMinimo"
-    ).value = 5;
+    document
+      .getElementById("produtoPreco")
+      .value = "";
 
-    document.getElementById(
-      "produtoAtivo"
-    ).checked = true;
+
+    document
+      .getElementById("produtoDescricao")
+      .value = "";
+
+
+    document
+      .getElementById("produtoImagem")
+      .value = "";
+
+
+    document
+      .getElementById("produtoEstoque")
+      .value = 0;
+
+
+    document
+      .getElementById("produtoEstoqueMinimo")
+      .value = 5;
+
+
+    document
+      .getElementById("produtoAtivo")
+      .checked = true;
+
   }
+
 }
 
 
@@ -587,6 +641,7 @@ function fecharEditorProduto() {
     .getElementById("productModal")
     ?.classList
     .remove("show");
+
 }
 
 
@@ -601,57 +656,74 @@ async function salvarProduto() {
       .getElementById("produtoId")
       ?.value;
 
+
   const dados = {
 
     name:
       document
         .getElementById("produtoNome")
         ?.value
-        .trim(),
+        .trim() || "",
+
 
     category:
       document
         .getElementById("produtoCategoria")
-        ?.value,
+        ?.value ||
+      "outros",
+
 
     price:
       Number(
         document
           .getElementById("produtoPreco")
-          ?.value || 0
+          ?.value ||
+        0
       ),
+
 
     description:
       document
         .getElementById("produtoDescricao")
         ?.value
-        .trim() || null,
+        .trim() ||
+      null,
+
 
     image:
       document
         .getElementById("produtoImagem")
         ?.value
-        .trim() || null,
+        .trim() ||
+      null,
+
 
     active:
       document
         .getElementById("produtoAtivo")
-        ?.checked,
+        ?.checked ??
+      true,
+
 
     stock:
       Number(
         document
           .getElementById("produtoEstoque")
-          ?.value || 0
+          ?.value ||
+        0
       ),
+
 
     min_stock:
       Number(
         document
           .getElementById("produtoEstoqueMinimo")
-          ?.value || 0
+          ?.value ||
+        0
       )
+
   };
+
 
   if (!dados.name) {
 
@@ -661,21 +733,35 @@ async function salvarProduto() {
     );
 
     return;
+
   }
+
 
   try {
 
     if (id) {
 
-      const { data, error } =
+      const {
+        data,
+        error
+      } =
         await supabaseClient
           .from("products")
           .update(dados)
-          .eq("id", Number(id))
+          .eq(
+            "id",
+            Number(id)
+          )
           .select()
           .single();
 
-      if (error) throw error;
+
+      if (error) {
+
+        throw error;
+
+      }
+
 
       const indice =
         produtos.findIndex(
@@ -684,38 +770,56 @@ async function salvarProduto() {
             Number(id)
         );
 
+
       if (indice !== -1) {
 
-        produtos[indice] = data;
+        produtos[indice] =
+          data;
+
       }
+
 
       mostrarMensagem(
         "Produto atualizado com sucesso!"
       );
 
+
     } else {
 
-      const { data, error } =
+      const {
+        data,
+        error
+      } =
         await supabaseClient
           .from("products")
           .insert([dados])
           .select()
           .single();
 
-      if (error) throw error;
+
+      if (error) {
+
+        throw error;
+
+      }
+
 
       produtos.unshift(data);
+
 
       mostrarMensagem(
         "Produto criado com sucesso!"
       );
+
     }
+
 
     renderizarProdutos();
 
     renderizarEstoque();
 
     fecharEditorProduto();
+
 
   } catch (error) {
 
@@ -724,12 +828,15 @@ async function salvarProduto() {
       error
     );
 
+
     mostrarMensagem(
       "Não foi possível salvar o produto: " +
       error.message,
       "error"
     );
+
   }
+
 }
 
 
@@ -744,7 +851,9 @@ function renderizarProdutos() {
       "productsList"
     );
 
+
   if (!area) return;
+
 
   if (!produtos.length) {
 
@@ -754,28 +863,42 @@ function renderizarProdutos() {
       </div>`;
 
     return;
+
   }
 
+
   area.innerHTML = "";
+
 
   produtos.forEach(produto => {
 
     const card =
       document.createElement("div");
 
+
     card.className =
       "product-card";
 
-    const imagem =
-      produto.image
-        ? `<img
-            src="${escapeHTML(produto.image)}"
-            alt="${escapeHTML(produto.name)}"
-          >`
-        : "🍰";
+
+    let imagem = "🍰";
+
+
+    if (produto.image) {
+
+      imagem =
+        `<img
+          src="${escapeHTML(produto.image)}"
+          alt="${escapeHTML(produto.name)}"
+        >`;
+
+    }
+
 
     const estoque =
-      Number(produto.stock ?? 0);
+      Number(
+        produto.stock ?? 0
+      );
+
 
     card.innerHTML = `
 
@@ -800,7 +923,9 @@ function renderizarProdutos() {
 
       <div class="small">
         Estoque:
-        <strong>${estoque}</strong>
+        <strong>
+          ${estoque}
+        </strong>
       </div>
 
       <div class="product-actions">
@@ -808,7 +933,9 @@ function renderizarProdutos() {
         <button
           class="btn btn-primary"
           onclick="abrirEditorProduto(${produto.id})">
+
           ✏️ Editar
+
         </button>
 
         <button
@@ -828,10 +955,14 @@ function renderizarProdutos() {
         </button>
 
       </div>
+
     `;
 
+
     area.appendChild(card);
+
   });
+
 }
 
 
@@ -848,21 +979,38 @@ async function alternarProduto(id) {
         Number(id)
     );
 
+
   if (!produto) return;
+
 
   try {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("products")
         .update({
-          active: !produto.active
+
+          active:
+            !produto.active
+
         })
-        .eq("id", Number(id))
+        .eq(
+          "id",
+          Number(id)
+        )
         .select()
         .single();
 
-    if (error) throw error;
+
+    if (error) {
+
+      throw error;
+
+    }
+
 
     const indice =
       produtos.findIndex(
@@ -871,12 +1019,17 @@ async function alternarProduto(id) {
           Number(id)
       );
 
+
     if (indice !== -1) {
 
-      produtos[indice] = data;
+      produtos[indice] =
+        data;
+
     }
 
+
     renderizarProdutos();
+
 
     mostrarMensagem(
       data.active
@@ -884,15 +1037,19 @@ async function alternarProduto(id) {
         : "Produto retirado do site."
     );
 
+
   } catch (error) {
 
     console.error(error);
+
 
     mostrarMensagem(
       error.message,
       "error"
     );
+
   }
+
 }
 
 
@@ -907,7 +1064,9 @@ function renderizarEstoque() {
       "stockTable"
     );
 
+
   if (!tbody) return;
+
 
   if (!produtos.length) {
 
@@ -919,135 +1078,180 @@ function renderizarEstoque() {
       </tr>`;
 
     return;
+
   }
 
+
   let baixos = 0;
+
   let esgotados = 0;
 
+
   tbody.innerHTML = "";
+
 
   produtos.forEach(produto => {
 
     const estoque =
-      Number(produto.stock ?? 0);
+      Number(
+        produto.stock ?? 0
+      );
+
 
     const minimo =
-      Number(produto.min_stock ?? 5);
+      Number(
+        produto.min_stock ?? 5
+      );
+
 
     let status;
+
     let classe;
+
 
     if (estoque <= 0) {
 
       status = "ESGOTADO";
+
       classe = "stock-out";
 
       esgotados++;
 
-    } else if (estoque <= minimo) {
 
-      status = "ESTOQUE BAIXO";
-      classe = "stock-low";
+    } else if (
+      estoque <= minimo
+    ) {
+
+      status =
+        "ESTOQUE BAIXO";
+
+      classe =
+        "stock-low";
 
       baixos++;
+
 
     } else {
 
       status = "NORMAL";
+
       classe = "stock-ok";
+
     }
+
 
     const tr =
       document.createElement("tr");
 
+
     tr.innerHTML = `
 
       <td>
+
         <strong>
           ${escapeHTML(produto.name)}
         </strong>
+
       </td>
 
+
       <td>
-        <span class="stock-number ${classe}">
+
+        <span
+          class="stock-number ${classe}">
+
           ${estoque}
+
         </span>
+
       </td>
+
 
       <td>
         ${minimo}
       </td>
 
+
       <td>
-        <strong class="${classe}">
+
+        <strong
+          class="${classe}">
+
           ${status}
+
         </strong>
+
       </td>
+
 
       <td>
 
         <button
           class="btn btn-light"
           onclick="abrirEditorProduto(${produto.id})">
+
           Ajustar
+
         </button>
 
       </td>
+
     `;
 
+
     tbody.appendChild(tr);
+
   });
 
-  const totalProdutos =
+
+  const total =
     document.getElementById(
       "stockTotalProdutos"
     );
 
-  const estoqueBaixo =
+  const baixo =
     document.getElementById(
       "stockBaixo"
     );
 
-  const estoqueEsgotado =
+  const esgotado =
     document.getElementById(
       "stockEsgotado"
     );
-
-  if (totalProdutos) {
-
-    totalProdutos.textContent =
-      produtos.length;
-  }
-
-  if (estoqueBaixo) {
-
-    estoqueBaixo.textContent =
-      baixos;
-  }
-
-  if (estoqueEsgotado) {
-
-    estoqueEsgotado.textContent =
-      esgotados;
-  }
 
   const statEstoque =
     document.getElementById(
       "statEstoque"
     );
 
-  if (statEstoque) {
 
+  if (total)
+    total.textContent =
+      produtos.length;
+
+
+  if (baixo)
+    baixo.textContent =
+      baixos;
+
+
+  if (esgotado)
+    esgotado.textContent =
+      esgotados;
+
+
+  if (statEstoque)
     statEstoque.textContent =
       baixos + esgotados;
-  }
+
 
   renderizarDashboardEstoque();
+
 }
 
 
 /* =========================================================
-   DASHBOARD ESTOQUE
+   DASHBOARD — ESTOQUE
 ========================================================= */
 
 function renderizarDashboardEstoque() {
@@ -1057,22 +1261,31 @@ function renderizarDashboardEstoque() {
       "dashboardEstoque"
     );
 
+
   if (!area) return;
+
 
   const problemas =
     produtos
-      .filter(p => {
+      .filter(produto => {
 
         const estoque =
-          Number(p.stock ?? 0);
+          Number(
+            produto.stock ?? 0
+          );
+
 
         const minimo =
-          Number(p.min_stock ?? 5);
+          Number(
+            produto.min_stock ?? 5
+          );
+
 
         return estoque <= minimo;
 
       })
       .slice(0, 5);
+
 
   if (!problemas.length) {
 
@@ -1082,33 +1295,40 @@ function renderizarDashboardEstoque() {
       </div>`;
 
     return;
+
   }
+
 
   area.innerHTML =
     problemas
-      .map(p => {
+      .map(produto => {
 
         const estoque =
-          Number(p.stock ?? 0);
+          Number(
+            produto.stock ?? 0
+          );
+
 
         return `
 
-          <div style="
-            display:flex;
-            justify-content:space-between;
-            padding:10px 0;
-            border-bottom:1px solid #eee5e0;
-          ">
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              padding:10px 0;
+              border-bottom:1px solid #eee5e0;
+            ">
 
             <strong>
-              ${escapeHTML(p.name)}
+              ${escapeHTML(produto.name)}
             </strong>
 
-            <span class="${
-              estoque <= 0
-                ? "stock-out"
-                : "stock-low"
-            }">
+            <span
+              class="${
+                estoque <= 0
+                  ? "stock-out"
+                  : "stock-low"
+              }">
 
               ${
                 estoque <= 0
@@ -1119,9 +1339,12 @@ function renderizarDashboardEstoque() {
             </span>
 
           </div>
+
         `;
+
       })
       .join("");
+
 }
 
 
@@ -1136,95 +1359,82 @@ async function carregarPedidos() {
       "ordersList"
     );
 
+
   if (area) {
 
     area.innerHTML =
       `<div class="small">
-        ⏳ Carregando pedidos...
+        Carregando pedidos...
       </div>`;
+
   }
+
 
   try {
 
-    console.log(
-      "Carregando pedidos..."
-    );
-
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("orders")
         .select("*")
-        .order("created_at", {
-          ascending: false
-        });
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
+
 
     if (error) {
 
-      console.error(
-        "Erro Supabase pedidos:",
-        error
-      );
-
       throw error;
+
     }
+
 
     pedidos =
       Array.isArray(data)
         ? data
         : [];
 
-    console.log(
-      "Pedidos carregados:",
-      pedidos.length
-    );
 
     renderizarPedidos();
 
     atualizarDashboard();
 
+
   } catch (error) {
 
     console.error(
-      "ERRO AO CARREGAR PEDIDOS:",
+      "Erro ao carregar pedidos:",
       error
     );
+
 
     if (area) {
 
       area.innerHTML =
         `<div class="small">
 
-          ❌ Não foi possível carregar os pedidos.
+          Não foi possível carregar os pedidos.
 
           <br><br>
 
-          <strong>Erro:</strong><br>
-
-          ${escapeHTML(
-            error.message
-          )}
-
-          <br><br>
-
-          <button
-            class="btn btn-gold"
-            onclick="carregarPedidos()">
-            🔄 Tentar novamente
-          </button>
+          ${escapeHTML(error.message)}
 
         </div>`;
+
     }
 
-    mostrarMensagem(
-      "Erro ao carregar pedidos.",
-      "error"
-    );
   }
+
 }
 
 
 /* =========================================================
-   FILTRO PEDIDOS
+   FILTRO DE PEDIDOS
 ========================================================= */
 
 function filtrarPedidos(
@@ -1235,6 +1445,7 @@ function filtrarPedidos(
   filtroAtual =
     status;
 
+
   document
     .querySelectorAll(".order-tab")
     .forEach(btn => {
@@ -1242,16 +1453,21 @@ function filtrarPedidos(
       btn.classList.remove(
         "active"
       );
+
     });
+
 
   if (botao) {
 
     botao.classList.add(
       "active"
     );
+
   }
 
+
   renderizarPedidos();
+
 }
 
 
@@ -1266,22 +1482,32 @@ function renderizarPedidos() {
       "ordersList"
     );
 
+
   if (!area) return;
+
 
   let lista =
     [...pedidos];
 
+
   if (
-    filtroAtual !== "todos"
+    filtroAtual !==
+    "todos"
   ) {
 
     lista =
-      lista.filter(p =>
-        (p.status ||
-          "pendente") ===
-        filtroAtual
+      lista.filter(
+        pedido =>
+
+          (
+            pedido.status ||
+            "pendente"
+          ) ===
+          filtroAtual
       );
+
   }
+
 
   if (!lista.length) {
 
@@ -1291,26 +1517,30 @@ function renderizarPedidos() {
       </div>`;
 
     return;
+
   }
+
 
   area.innerHTML =
     lista
-      .map(p => {
+      .map(pedido => {
 
         const status =
-          p.status ||
+          pedido.status ||
           "pendente";
 
+
         const cliente =
-          p.customer_name ||
-          p.name ||
-          p.customer ||
+          pedido.customer_name ||
+          pedido.name ||
+          pedido.customer ||
           "Cliente";
 
+
         const data =
-          p.created_at
+          pedido.created_at
             ? new Date(
-                p.created_at
+                pedido.created_at
               ).toLocaleString(
                 "pt-BR",
                 {
@@ -1322,28 +1552,46 @@ function renderizarPedidos() {
               )
             : "";
 
+
         return `
 
           <div
             class="order-row"
-            onclick="abrirDetalhePedidoPorId(${Number(p.id)})">
+            onclick="abrirDetalhePedidoPorId(${Number(pedido.id)})">
 
             <div>
 
-              <div class="order-number">
-                Pedido #${escapeHTML(p.id)}
+              <div
+                class="order-number">
+
+                Pedido #${escapeHTML(
+                  pedido.id
+                )}
+
               </div>
 
-              <div class="order-client">
-                ${escapeHTML(cliente)}
+
+              <div
+                class="order-client">
+
+                ${escapeHTML(
+                  cliente
+                )}
+
               </div>
 
-              <div class="order-meta">
+
+              <div
+                class="order-meta">
 
                 <span
-                  class="tag tag-${escapeHTML(status)}">
+                  class="tag tag-${escapeHTML(
+                    status
+                  )}">
 
-                  ${escapeHTML(status)}
+                  ${escapeHTML(
+                    status
+                  )}
 
                 </span>
 
@@ -1351,27 +1599,43 @@ function renderizarPedidos() {
 
             </div>
 
+
             <div>
 
-              <div class="order-total">
-                R$ ${dinheiro(p.total)}
+              <div
+                class="order-total">
+
+                R$
+                ${dinheiro(
+                  pedido.total
+                )}
+
               </div>
 
-              <div class="order-time">
-                ${escapeHTML(data)}
+
+              <div
+                class="order-time">
+
+                ${escapeHTML(
+                  data
+                )}
+
               </div>
 
             </div>
 
           </div>
+
         `;
+
       })
       .join("");
+
 }
 
 
 /* =========================================================
-   ABRIR PEDIDO
+   ABRIR DETALHE DO PEDIDO
 ========================================================= */
 
 async function abrirDetalhePedidoPorId(id) {
@@ -1383,6 +1647,7 @@ async function abrirDetalhePedidoPorId(id) {
         Number(id)
     );
 
+
   if (!pedido) {
 
     mostrarMensagem(
@@ -1391,11 +1656,14 @@ async function abrirDetalhePedidoPorId(id) {
     );
 
     return;
+
   }
+
 
   await abrirDetalhePedido(
     pedido
   );
+
 }
 
 
@@ -1406,16 +1674,20 @@ async function abrirDetalhePedido(
   pedidoAtual =
     pedido;
 
+
   const lista =
     document.getElementById(
       "pedidosListaView"
     );
 
+
   if (lista) {
 
     lista.style.display =
       "none";
+
   }
+
 
   document
     .getElementById(
@@ -1424,46 +1696,52 @@ async function abrirDetalhePedido(
     ?.classList
     .add("show");
 
+
   preencherDetalhePedido(
     pedido
   );
 
+
   await carregarItensDoPedido(
     pedido.id
   );
+
 }
 
 
 /* =========================================================
-   DETALHES DO PEDIDO
+   PREENCHER DETALHES
 ========================================================= */
 
 function preencherDetalhePedido(
   pedido
 ) {
 
-  if (!pedido) return;
-
   const status =
     pedido.status ||
     "pendente";
+
 
   const numero =
     document.getElementById(
       "detalheNumero"
     );
 
+
   if (numero) {
 
     numero.textContent =
       "Pedido #" +
       pedido.id;
+
   }
+
 
   const data =
     document.getElementById(
       "detalheData"
     );
+
 
   if (data) {
 
@@ -1475,12 +1753,15 @@ function preencherDetalhePedido(
             "pt-BR"
           )
         : "";
+
   }
+
 
   const statusEl =
     document.getElementById(
       "detalheStatus"
     );
+
 
   if (statusEl) {
 
@@ -1490,17 +1771,21 @@ function preencherDetalhePedido(
     statusEl.className =
       "tag tag-" +
       status;
+
   }
 
-  const selectStatus =
+
+  const statusSelect =
     document.getElementById(
       "statusPedido"
     );
 
-  if (selectStatus) {
 
-    selectStatus.value =
+  if (statusSelect) {
+
+    statusSelect.value =
       status;
+
   }
 
 
@@ -1547,7 +1832,7 @@ function preencherDetalhePedido(
     "-";
 
 
-  /* PAGAMENTO */
+  /* PAGAMENTO MANUAL */
 
   document.getElementById(
     "pagamentoForma"
@@ -1565,7 +1850,7 @@ function preencherDetalhePedido(
 
     pedido.payment_status ||
     pedido.payment_state ||
-    "-";
+    "Pendente";
 
 
   /* OBSERVAÇÕES */
@@ -1619,6 +1904,7 @@ function preencherDetalhePedido(
   atualizarPagamentoDinheiro(
     pedido
   );
+
 }
 
 
@@ -1635,35 +1921,50 @@ async function carregarItensDoPedido(
       "pedidoItens"
     );
 
+
   const aviso =
     document.getElementById(
       "pedidoItensAviso"
     );
 
+
   if (!tbody) return;
 
-  tbody.innerHTML =
-    `<tr>
-      <td colspan="4"
-          style="text-align:center">
+
+  tbody.innerHTML = `
+
+    <tr>
+
+      <td
+        colspan="4"
+        style="text-align:center">
+
         Carregando produtos...
+
       </td>
-    </tr>`;
+
+    </tr>
+
+  `;
+
 
   if (aviso) {
 
     aviso.style.display =
       "none";
 
-    aviso.textContent =
-      "";
   }
+
 
   itensPedidoAtual = [];
 
+
   try {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("order_items")
         .select("*")
@@ -1671,18 +1972,29 @@ async function carregarItensDoPedido(
           "order_id",
           Number(orderId)
         )
-        .order("id", {
-          ascending: true
-        });
+        .order(
+          "id",
+          {
+            ascending: true
+          }
+        );
 
-    if (error) throw error;
+
+    if (error) {
+
+      throw error;
+
+    }
+
 
     itensPedidoAtual =
       Array.isArray(data)
         ? data
         : [];
 
+
     renderizarItensPedido();
+
 
   } catch (error) {
 
@@ -1691,13 +2003,21 @@ async function carregarItensDoPedido(
       error
     );
 
-    tbody.innerHTML =
-      `<tr>
+
+    tbody.innerHTML = `
+
+      <tr>
+
         <td colspan="4">
-          ❌ Não foi possível carregar
-          os produtos deste pedido.
+
+          Não foi possível carregar os produtos deste pedido.
+
         </td>
-      </tr>`;
+
+      </tr>
+
+    `;
+
 
     if (aviso) {
 
@@ -1707,8 +2027,11 @@ async function carregarItensDoPedido(
 
       aviso.style.display =
         "block";
+
     }
+
   }
+
 }
 
 
@@ -1723,31 +2046,51 @@ function renderizarItensPedido() {
       "pedidoItens"
     );
 
+
   if (!tbody) return;
+
 
   if (!itensPedidoAtual.length) {
 
-    tbody.innerHTML =
-      `<tr>
+    tbody.innerHTML = `
+
+      <tr>
+
         <td
           colspan="4"
           style="text-align:center">
 
-          Nenhum produto encontrado
-          neste pedido.
+          Nenhum produto encontrado neste pedido.
 
         </td>
-      </tr>`;
 
-    document.getElementById(
-      "pedidoSubtotal"
-    ).textContent =
-      "R$ 0,00";
+      </tr>
+
+    `;
+
+
+    const subtotal =
+      document.getElementById(
+        "pedidoSubtotal"
+      );
+
+
+    if (subtotal) {
+
+      subtotal.textContent =
+        "R$ 0,00";
+
+    }
+
 
     return;
+
   }
 
-  let subtotal = 0;
+
+  let subtotal =
+    0;
+
 
   tbody.innerHTML =
     itensPedidoAtual
@@ -1755,20 +2098,27 @@ function renderizarItensPedido() {
 
         const quantidade =
           Number(
-            item.qty || 0
+            item.qty ||
+            item.quantity ||
+            0
           );
+
 
         const preco =
           Number(
-            item.price || 0
+            item.price ||
+            0
           );
+
 
         const totalItem =
           quantidade *
           preco;
 
+
         subtotal +=
           totalItem;
+
 
         return `
 
@@ -1777,55 +2127,86 @@ function renderizarItensPedido() {
             <td>
 
               <strong>
+
                 ${escapeHTML(
                   item.name ||
                   "Produto"
                 )}
+
               </strong>
 
             </td>
 
-            <td>
-              ${quantidade}
-            </td>
 
             <td>
-              R$ ${dinheiro(preco)}
+
+              ${quantidade}
+
             </td>
+
+
+            <td>
+
+              R$
+              ${dinheiro(
+                preco
+              )}
+
+            </td>
+
 
             <td>
 
               <strong>
-                R$ ${dinheiro(totalItem)}
+
+                R$
+                ${dinheiro(
+                  totalItem
+                )}
+
               </strong>
 
             </td>
 
           </tr>
+
         `;
+
       })
       .join("");
+
 
   document.getElementById(
     "pedidoSubtotal"
   ).textContent =
+
     "R$ " +
-    dinheiro(subtotal);
+    dinheiro(
+      subtotal
+    );
+
 
   if (
     pedidoAtual &&
     (
-      pedidoAtual.total === null ||
-      pedidoAtual.total === undefined
+      pedidoAtual.total ===
+      null ||
+      pedidoAtual.total ===
+      undefined
     )
   ) {
 
     document.getElementById(
       "pedidoTotal"
     ).textContent =
+
       "R$ " +
-      dinheiro(subtotal);
+      dinheiro(
+        subtotal
+      );
+
   }
+
 }
 
 
@@ -1841,6 +2222,7 @@ function fecharPedido() {
   itensPedidoAtual =
     [];
 
+
   document
     .getElementById(
       "pedidoDetalhe"
@@ -1848,27 +2230,34 @@ function fecharPedido() {
     ?.classList
     .remove("show");
 
+
   const lista =
     document.getElementById(
       "pedidosListaView"
     );
 
+
   if (lista) {
 
     lista.style.display =
       "block";
+
   }
+
 
   const itens =
     document.getElementById(
       "pedidoItens"
     );
 
+
   if (itens) {
 
     itens.innerHTML =
       "";
+
   }
+
 }
 
 
@@ -1882,14 +2271,20 @@ async function alterarStatusPedidoAtual(
 
   if (!pedidoAtual) return;
 
+
   try {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("orders")
         .update({
+
           status:
             novoStatus
+
         })
         .eq(
           "id",
@@ -1900,10 +2295,17 @@ async function alterarStatusPedidoAtual(
         .select()
         .single();
 
-    if (error) throw error;
+
+    if (error) {
+
+      throw error;
+
+    }
+
 
     pedidoAtual =
       data;
+
 
     const indice =
       pedidos.findIndex(
@@ -1912,34 +2314,45 @@ async function alterarStatusPedidoAtual(
           Number(data.id)
       );
 
+
     if (indice !== -1) {
 
       pedidos[indice] =
         data;
+
     }
+
 
     preencherDetalhePedido(
       data
     );
 
+
     renderizarPedidos();
 
     atualizarDashboard();
+
 
     mostrarMensagem(
       "Status do pedido atualizado!"
     );
 
+
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      error
+    );
+
 
     mostrarMensagem(
       "Não foi possível alterar o status: " +
       error.message,
       "error"
     );
+
   }
+
 }
 
 
@@ -1953,31 +2366,23 @@ function atualizarPagamentoDinheiro(
 
   const forma =
     String(
+
       pedido.payment_method ||
       pedido.payment_type ||
       pedido.payment ||
       ""
+
     ).toLowerCase();
+
 
   const cashBox =
     document.getElementById(
       "cashBox"
     );
 
+
   if (!cashBox) return;
 
-  const dinheiroCliente =
-    Number(
-      pedido.cash_received ??
-      pedido.money_received ??
-      pedido.amount_received ??
-      0
-    );
-
-  const total =
-    Number(
-      pedido.total || 0
-    );
 
   const eDinheiro =
     forma.includes(
@@ -1987,6 +2392,7 @@ function atualizarPagamentoDinheiro(
       "cash"
     );
 
+
   if (!eDinheiro) {
 
     cashBox.classList.add(
@@ -1994,41 +2400,73 @@ function atualizarPagamentoDinheiro(
     );
 
     return;
+
   }
+
 
   cashBox.classList.remove(
     "hidden"
   );
 
+
+  const recebido =
+    Number(
+
+      pedido.cash_received ??
+      pedido.money_received ??
+      pedido.amount_received ??
+      0
+
+    );
+
+
+  const total =
+    Number(
+      pedido.total ||
+      0
+    );
+
+
   document.getElementById(
     "dinheiroCliente"
   ).textContent =
+
     "R$ " +
     dinheiro(
-      dinheiroCliente
+      recebido
     );
 
-  const precisa =
-    dinheiroCliente > 0 &&
-    dinheiroCliente < total;
+
+  let precisaTroco =
+    "-";
+
+
+  if (
+    recebido > 0 &&
+    recebido >= total
+  ) {
+
+    precisaTroco =
+      "Sim";
+
+  }
+
 
   document.getElementById(
     "precisaTroco"
   ).textContent =
+    precisaTroco;
 
-    precisa
-      ? "Não"
-      : dinheiroCliente >= total
-        ? "Sim"
-        : "-";
 
   const troco =
-    dinheiroCliente -
+    recebido -
     total;
+
 
   document.getElementById(
     "valorTroco"
   ).textContent =
+
     "R$ " +
     dinheiro(
       Math.max(
@@ -2036,6 +2474,7 @@ function atualizarPagamentoDinheiro(
         troco
       )
     );
+
 }
 
 
@@ -2047,12 +2486,15 @@ function chamarWhatsApp() {
 
   if (!pedidoAtual) return;
 
+
   const telefone =
+
     pedidoAtual.customer_phone ||
     pedidoAtual.phone ||
     pedidoAtual.whatsapp ||
     pedidoAtual.customer_whatsapp ||
     "";
+
 
   if (!telefone) {
 
@@ -2062,7 +2504,9 @@ function chamarWhatsApp() {
     );
 
     return;
+
   }
+
 
   const numero =
     String(
@@ -2072,23 +2516,32 @@ function chamarWhatsApp() {
       ""
     );
 
+
   const cliente =
+
     pedidoAtual.customer_name ||
     pedidoAtual.name ||
     "cliente";
 
+
   const mensagem =
+
     `Olá, ${cliente}! Aqui é da Lá Dociê. Estou entrando em contato sobre o seu pedido #${pedidoAtual.id}.`;
 
+
   window.open(
+
     "https://wa.me/55" +
-      numero +
-      "?text=" +
-      encodeURIComponent(
-        mensagem
-      ),
+    numero +
+    "?text=" +
+    encodeURIComponent(
+      mensagem
+    ),
+
     "_blank"
+
   );
+
 }
 
 
@@ -2101,76 +2554,108 @@ function imprimirPedido() {
   if (!pedidoAtual) return;
 
   window.print();
+
 }
 
 
 /* =========================================================
-   LOJA
+   MINHA LOJA
 ========================================================= */
 
 async function carregarLoja() {
 
   try {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("store_settings")
         .select("*")
         .limit(1)
         .maybeSingle();
 
-    if (error) throw error;
+
+    if (error) {
+
+      throw error;
+
+    }
+
 
     loja =
-      data || null;
+      data ||
+      null;
+
 
     if (!loja) return;
+
 
     document.getElementById(
       "lojaNome"
     ).value =
-      loja.store_name || "";
+      loja.store_name ||
+      "";
+
 
     document.getElementById(
       "lojaDescricao"
     ).value =
-      loja.description || "";
+      loja.description ||
+      "";
+
 
     document.getElementById(
       "lojaTelefone"
     ).value =
-      loja.phone || "";
+      loja.phone ||
+      "";
+
 
     document.getElementById(
       "lojaWhatsapp"
     ).value =
-      loja.whatsapp || "";
+      loja.whatsapp ||
+      "";
+
 
     document.getElementById(
       "lojaEndereco"
     ).value =
-      loja.address || "";
+      loja.address ||
+      "";
+
 
     document.getElementById(
       "lojaInstagram"
     ).value =
-      loja.instagram || "";
+      loja.instagram ||
+      "";
+
 
     document.getElementById(
       "lojaHorario"
     ).value =
+
       loja.opening_hours ||
-      "Terça a sábado: 14h às 21h\nDomingo: 15h30 às 20h";
+
+      "Terça a sexta: 14h às 22h\nSábado: 10h às 17h";
+
 
     document.getElementById(
       "lojaPix"
     ).value =
-      loja.pix_key || "";
+      loja.pix_key ||
+      "";
+
 
     document.getElementById(
       "lojaTaxa"
     ).value =
-      loja.delivery_fee ?? 0;
+      loja.delivery_fee ??
+      0;
+
 
   } catch (error) {
 
@@ -2178,7 +2663,9 @@ async function carregarLoja() {
       "Erro ao carregar loja:",
       error
     );
+
   }
+
 }
 
 
@@ -2192,80 +2679,75 @@ async function salvarLoja() {
 
     store_name:
       document
-        .getElementById(
-          "lojaNome"
-        )
-        .value
-        .trim(),
+        .getElementById("lojaNome")
+        ?.value
+        .trim() || "",
+
 
     description:
       document
-        .getElementById(
-          "lojaDescricao"
-        )
-        .value
-        .trim(),
+        .getElementById("lojaDescricao")
+        ?.value
+        .trim() || "",
+
 
     phone:
       document
-        .getElementById(
-          "lojaTelefone"
-        )
-        .value
-        .trim(),
+        .getElementById("lojaTelefone")
+        ?.value
+        .trim() || "",
+
 
     whatsapp:
       document
-        .getElementById(
-          "lojaWhatsapp"
-        )
-        .value
-        .trim(),
+        .getElementById("lojaWhatsapp")
+        ?.value
+        .trim() || "",
+
 
     address:
       document
-        .getElementById(
-          "lojaEndereco"
-        )
-        .value
-        .trim(),
+        .getElementById("lojaEndereco")
+        ?.value
+        .trim() || "",
+
 
     instagram:
       document
-        .getElementById(
-          "lojaInstagram"
-        )
-        .value
-        .trim(),
+        .getElementById("lojaInstagram")
+        ?.value
+        .trim() || "",
+
 
     opening_hours:
       document
-        .getElementById(
-          "lojaHorario"
-        )
-        .value
-        .trim(),
+        .getElementById("lojaHorario")
+        ?.value
+        .trim() || "",
+
 
     pix_key:
       document
-        .getElementById(
-          "lojaPix"
-        )
-        .value
-        .trim(),
+        .getElementById("lojaPix")
+        ?.value
+        .trim() || "",
+
 
     delivery_fee:
       Number(
         document
-          .getElementById(
-            "lojaTaxa"
-          )
-          .value || 0
+          .getElementById("lojaTaxa")
+          ?.value ||
+        0
       ),
 
+
     updated_at:
-      new Date().toISOString()
+      new Date()
+        .toISOString()
+
   };
+
 
   try {
 
@@ -2274,7 +2756,10 @@ async function salvarLoja() {
       loja.id
     ) {
 
-      const { data, error } =
+      const {
+        data,
+        error
+      } =
         await supabaseClient
           .from("store_settings")
           .update(dados)
@@ -2285,40 +2770,65 @@ async function salvarLoja() {
           .select()
           .single();
 
-      if (error) throw error;
+
+      if (error) {
+
+        throw error;
+
+      }
+
 
       loja =
         data;
 
+
     } else {
 
-      const { data, error } =
+      const {
+        data,
+        error
+      } =
         await supabaseClient
           .from("store_settings")
           .insert([dados])
           .select()
           .single();
 
-      if (error) throw error;
+
+      if (error) {
+
+        throw error;
+
+      }
+
 
       loja =
         data;
+
     }
+
 
     mostrarMensagem(
       "Informações da loja salvas!"
     );
 
+
   } catch (error) {
 
-    console.error(error);
+    console.error(
+      "Erro ao salvar loja:",
+      error
+    );
+
 
     mostrarMensagem(
       "Erro ao salvar: " +
       error.message,
       "error"
     );
+
   }
+
 }
 
 
@@ -2336,72 +2846,93 @@ function atualizarDashboard() {
         10
       );
 
+
   const pedidosHoje =
-    pedidos.filter(p => {
+    pedidos.filter(
+      pedido => {
 
-      const data =
-        p.scheduled_date ||
-        p.created_at?.slice(
-          0,
-          10
-        );
+        const data =
+          pedido.scheduled_date ||
+          pedido.created_at?.slice(
+            0,
+            10
+          );
 
-      return data === hoje;
-    });
+
+        return data === hoje;
+
+      }
+    );
+
 
   const faturamento =
     pedidosHoje
+
       .filter(
-        p =>
-          (p.status ||
-            "pendente") !==
+        pedido =>
+
+          (
+            pedido.status ||
+            "pendente"
+          ) !==
           "cancelado"
       )
+
       .reduce(
+
         (
           total,
-          p
+          pedido
         ) =>
+
           total +
           Number(
-            p.total || 0
+            pedido.total ||
+            0
           ),
+
         0
+
       );
+
 
   const pendentes =
     pedidos.filter(
-      p =>
-        (p.status ||
-          "pendente") ===
+      pedido =>
+
+        (
+          pedido.status ||
+          "pendente"
+        ) ===
         "pendente"
     ).length;
+
 
   const statPedidos =
     document.getElementById(
       "statPedidos"
     );
 
+
   const statFaturamento =
     document.getElementById(
       "statFaturamento"
     );
+
 
   const statPendentes =
     document.getElementById(
       "statPendentes"
     );
 
-  const badgePedidos =
-    document.getElementById(
-      "badgePedidos"
-    );
 
   if (statPedidos) {
 
     statPedidos.textContent =
       pedidosHoje.length;
+
   }
+
 
   if (statFaturamento) {
 
@@ -2410,32 +2941,47 @@ function atualizarDashboard() {
       dinheiro(
         faturamento
       );
+
   }
+
 
   if (statPendentes) {
 
     statPendentes.textContent =
       pendentes;
+
   }
 
-  if (badgePedidos) {
 
-    badgePedidos.textContent =
+  const badge =
+    document.getElementById(
+      "badgePedidos"
+    );
+
+
+  if (badge) {
+
+    badge.textContent =
       pendentes;
+
   }
+
 
   const area =
     document.getElementById(
       "dashboardPedidos"
     );
 
+
   if (!area) return;
+
 
   const recentes =
     pedidos.slice(
       0,
       5
     );
+
 
   if (!recentes.length) {
 
@@ -2445,44 +2991,62 @@ function atualizarDashboard() {
       </div>`;
 
     return;
+
   }
+
 
   area.innerHTML =
     recentes
-      .map(p => {
+      .map(pedido => {
 
         const status =
-          p.status ||
+          pedido.status ||
           "pendente";
+
 
         return `
 
           <div
             class="order-row"
-            onclick="abrirPaginaPorNome('pedidos');abrirDetalhePedidoPorId(${Number(p.id)})">
+            onclick="
+              abrirPaginaPorNome('pedidos');
+              abrirDetalhePedidoPorId(${Number(pedido.id)});
+            ">
 
             <div>
 
-              <div class="order-number">
-                Pedido #${escapeHTML(p.id)}
+              <div
+                class="order-number">
+
+                Pedido #${escapeHTML(
+                  pedido.id
+                )}
+
               </div>
+
 
               <div class="small">
 
                 ${escapeHTML(
-                  p.customer_name ||
-                  p.name ||
+                  pedido.customer_name ||
+                  pedido.name ||
                   "Cliente"
                 )}
 
               </div>
 
-              <div class="order-meta">
+
+              <div
+                class="order-meta">
 
                 <span
-                  class="tag tag-${escapeHTML(status)}">
+                  class="tag tag-${escapeHTML(
+                    status
+                  )}">
 
-                  ${escapeHTML(status)}
+                  ${escapeHTML(
+                    status
+                  )}
 
                 </span>
 
@@ -2490,18 +3054,137 @@ function atualizarDashboard() {
 
             </div>
 
-            <div class="order-total">
 
-              R$ ${dinheiro(
-                p.total
+            <div
+              class="order-total">
+
+              R$
+              ${dinheiro(
+                pedido.total
               )}
 
             </div>
 
           </div>
+
         `;
+
       })
       .join("");
+
+}
+
+
+/* =========================================================
+   FIDELIDADE
+========================================================= */
+
+async function carregarFidelidadeCliente(
+  telefone
+) {
+
+  if (!telefone) {
+
+    return null;
+
+  }
+
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("customers")
+        .select("*")
+        .eq(
+          "phone",
+          telefone
+        )
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.warn(
+        "Fidelidade:",
+        error.message
+      );
+
+      return null;
+
+    }
+
+
+    return data || null;
+
+
+  } catch (error) {
+
+    console.warn(
+      "Erro fidelidade:",
+      error
+    );
+
+    return null;
+
+  }
+
+}
+
+
+/* =========================================================
+   NOTIFICAÇÕES
+========================================================= */
+
+async function carregarNotificacoes() {
+
+  try {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("notifications")
+        .select("*")
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        )
+        .limit(20);
+
+
+    if (error) {
+
+      console.warn(
+        "Notificações:",
+        error.message
+      );
+
+      return [];
+
+    }
+
+
+    return data || [];
+
+
+  } catch (error) {
+
+    console.warn(
+      "Erro notificações:",
+      error
+    );
+
+    return [];
+
+  }
+
 }
 
 
@@ -2511,26 +3194,42 @@ function atualizarDashboard() {
 
 function iniciarRealtime() {
 
-  if (realtimeChannel) return;
+  if (realtimeChannel) {
+
+    return;
+
+  }
+
 
   realtimeChannel =
+
     supabaseClient
       .channel(
         "admin-orders-realtime"
       )
+
       .on(
+
         "postgres_changes",
+
         {
+
           event: "*",
+
           schema: "public",
+
           table: "orders"
+
         },
+
         async payload => {
 
+
           console.log(
-            "Realtime pedido:",
+            "Pedido atualizado:",
             payload
           );
+
 
           if (
             payload.eventType ===
@@ -2540,7 +3239,9 @@ function iniciarRealtime() {
             pedidos.unshift(
               payload.new
             );
+
           }
+
 
           if (
             payload.eventType ===
@@ -2549,15 +3250,21 @@ function iniciarRealtime() {
 
             const indice =
               pedidos.findIndex(
-                p =>
-                  Number(p.id) ===
+                pedido =>
+
+                  Number(
+                    pedido.id
+                  ) ===
+
                   Number(
                     payload.new.id
                   )
               );
 
+
             if (
-              indice !== -1
+              indice !==
+              -1
             ) {
 
               pedidos[indice] =
@@ -2568,30 +3275,41 @@ function iniciarRealtime() {
               pedidos.unshift(
                 payload.new
               );
+
             }
 
+
             if (
+
               pedidoAtual &&
+
               Number(
                 pedidoAtual.id
               ) ===
+
               Number(
                 payload.new.id
               )
+
             ) {
 
               pedidoAtual =
                 payload.new;
 
+
               preencherDetalhePedido(
                 pedidoAtual
               );
 
+
               await carregarItensDoPedido(
                 pedidoAtual.id
               );
+
             }
+
           }
+
 
           if (
             payload.eventType ===
@@ -2600,36 +3318,52 @@ function iniciarRealtime() {
 
             pedidos =
               pedidos.filter(
-                p =>
-                  Number(p.id) !==
+                pedido =>
+
+                  Number(
+                    pedido.id
+                  ) !==
+
                   Number(
                     payload.old.id
                   )
               );
 
+
             if (
+
               pedidoAtual &&
+
               Number(
                 pedidoAtual.id
               ) ===
+
               Number(
                 payload.old.id
               )
+
             ) {
 
               fecharPedido();
+
             }
+
           }
+
 
           renderizarPedidos();
 
           atualizarDashboard();
 
+
           mostrarMensagem(
             "Pedido atualizado em tempo real."
           );
+
         }
+
       )
+
       .subscribe(
         status => {
 
@@ -2640,6 +3374,7 @@ function iniciarRealtime() {
 
         }
       );
+
 }
 
 
@@ -2650,26 +3385,28 @@ function iniciarRealtime() {
 async function carregarTudo() {
 
   console.log(
-    "Iniciando carregamento do painel..."
+    "Carregando painel..."
   );
 
-  /*
-    Cada parte é carregada separadamente.
-    Assim, se produtos der erro,
-    pedidos continuam carregando.
-  */
 
-  await carregarProdutos();
+  await Promise.allSettled([
 
-  await carregarPedidos();
+    carregarProdutos(),
 
-  await carregarLoja();
+    carregarPedidos(),
+
+    carregarLoja()
+
+  ]);
+
 
   atualizarDashboard();
+
 
   console.log(
     "Painel carregado."
   );
+
 }
 
 
@@ -2681,24 +3418,26 @@ async function iniciar() {
 
   try {
 
-    console.log(
-      "Verificando sessão..."
-    );
-
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .auth
         .getSession();
 
+
     if (error) {
 
       console.error(
-        "Erro ao verificar sessão:",
+        "Sessão:",
         error
       );
 
       return;
+
     }
+
 
     if (
       data &&
@@ -2707,21 +3446,20 @@ async function iniciar() {
 
       await abrirAdmin();
 
-    } else {
-
-      console.log(
-        "Nenhuma sessão ativa."
-      );
     }
 
   } catch (error) {
 
     console.error(
-      "Erro na inicialização:",
+      "Inicialização:",
       error
     );
+
   }
+
 }
+
+</script>
 
 
 /* =========================================================
@@ -2730,8 +3468,9 @@ async function iniciar() {
 
 iniciar();
 
-</script>
 
-</body>
+      </script>
+      </body>
 
 </html>
+

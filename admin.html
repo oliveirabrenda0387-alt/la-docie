@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -86,6 +87,11 @@
 
     button:hover {
       opacity: .9;
+    }
+
+    button:disabled {
+      opacity: .6;
+      cursor: not-allowed;
     }
 
     .hidden {
@@ -178,24 +184,98 @@
     }
 
     .pedido-item {
-      padding: 8px 0;
+      padding: 10px 0;
       border-bottom: 1px solid #eee;
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
     }
 
     .pedido-item:last-child {
       border-bottom: 0;
     }
 
+    .pedido-vazio,
+    .pedido-erro,
     .vazio {
       text-align: center;
       padding: 25px 10px;
       color: #777;
     }
 
+    .pedido-topo {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 10px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #eee;
+    }
+
+    .pedido-topo h3 {
+      margin: 0;
+    }
+
+    .pedido-data {
+      color: #777;
+      font-size: 13px;
+      margin-top: 5px;
+    }
+
+    .pedido-info {
+      margin-top: 15px;
+    }
+
+    .pedido-info p {
+      margin: 8px 0;
+      line-height: 1.4;
+    }
+
+    .pedido-produtos {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .pedido-produtos h4 {
+      margin: 0 0 8px;
+    }
+
+    .pedido-total {
+      margin-top: 15px;
+      padding-top: 12px;
+      border-top: 1px solid #ddd;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .pedido-acoes {
+      margin-top: 15px;
+    }
+
+    .pedido-acoes select {
+      margin-top: 5px;
+    }
+
     label {
       display: block;
       margin-top: 12px;
       font-weight: bold;
+    }
+
+    @media (max-width: 500px) {
+      .menu {
+        grid-template-columns: 1fr 1fr;
+      }
+
+      .pedido-topo {
+        flex-direction: column;
+      }
+
+      .acoes {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -322,7 +402,7 @@
     </div>
 
 
-    <!-- CADASTRO DE PRODUTO -->
+    <!-- CADASTRO PRODUTO -->
 
     <div id="cadastroArea" class="card hidden">
 
@@ -349,6 +429,15 @@
         type="text"
         id="produtoCategoria"
         placeholder="Ex.: Bolos"
+      >
+
+      <label>Preço</label>
+
+      <input
+        type="number"
+        id="produtoPreco"
+        step="0.01"
+        placeholder="Ex.: 89.90"
       >
 
       <label>Imagem</label>
@@ -386,208 +475,12 @@
 
       </div>
 
-      <button class="secondary" onclick="carregarPedidos()">
-        async function carregarPedidos() {
-
-  const lista = document.getElementById("listaPedidos");
-
-  lista.innerHTML = "Carregando pedidos...";
-
-  try {
-
-    const resposta = await fetch(
-      SUPABASE_URL +
-      "/rest/v1/orders?select=*&order=id.desc",
-      {
-        method: "GET",
-
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": "Bearer " + SUPABASE_KEY
-        }
-      }
-    );
-
-    if (!resposta.ok) {
-
-      const erro = await resposta.text();
-
-      throw new Error(erro);
-    }
-
-    const pedidos = await resposta.json();
-
-    if (!pedidos.length) {
-
-      lista.innerHTML = `
-        <div class="pedido-vazio">
-          📦 Nenhum pedido recebido ainda.
-        </div>
-      `;
-
-      return;
-    }
-
-    lista.innerHTML = "";
-
-    for (const pedido of pedidos) {
-
-      const itens = await carregarItensPedido(pedido.id);
-
-      const itensHTML = itens.length
-        ? itens.map(item => `
-            <div class="pedido-item">
-              <span>
-                ${item.qty}x ${item.name}
-              </span>
-
-              <strong>
-                R$ ${Number(item.price || 0)
-                  .toFixed(2)
-                  .replace(".", ",")}
-              </strong>
-            </div>
-          `).join("")
-        : `
-          <div class="pedido-item">
-            Nenhum produto encontrado.
-          </div>
-        `;
-
-      const card = document.createElement("div");
-
-      card.className = "pedido-card";
-
-      card.innerHTML = `
-
-        <div class="pedido-topo">
-
-          <div>
-            <strong>
-              Pedido #${pedido.id}
-            </strong>
-
-            <small>
-              ${pedido.created_at
-                ? new Date(pedido.created_at)
-                    .toLocaleString("pt-BR")
-                : ""}
-            </small>
-          </div>
-
-          <span class="status">
-            ${pedido.status || "novo"}
-          </span>
-
-        </div>
-
-
-        <div class="pedido-info">
-
-          <p>
-            👤 <strong>Cliente:</strong>
-            ${pedido.customer_name || "-"}
-          </p>
-
-          <p>
-            📱 <strong>Telefone:</strong>
-            ${pedido.customer_phone || "-"}
-          </p>
-
-          <p>
-            📧 <strong>E-mail:</strong>
-            ${pedido.customer_email || "-"}
-          </p>
-
-          <p>
-            📅 <strong>Data:</strong>
-            ${pedido.scheduled_date || "-"}
-          </p>
-
-          <p>
-            ⏰ <strong>Horário:</strong>
-            ${pedido.scheduled_time || "-"}
-          </p>
-
-          <p>
-            📦 <strong>Tipo:</strong>
-            ${pedido.delivery_type || pedido.type || "retirada"}
-          </p>
-
-          ${
-            pedido.delivery_address
-              ? `
-                <p>
-                  📍 <strong>Endereço:</strong>
-                  ${pedido.delivery_address}
-                </p>
-              `
-              : ""
-          }
-
-          <p>
-            💳 <strong>Pagamento:</strong>
-            ${pedido.payment_method || "-"}
-          </p>
-
-          <p>
-            💰 <strong>Total:</strong>
-            R$ ${Number(pedido.total || 0)
-              .toFixed(2)
-              .replace(".", ",")}
-          </p>
-
-          ${
-            pedido.notes
-              ? `
-                <p>
-                  📝 <strong>Observações:</strong>
-                  ${pedido.notes}
-                </p>
-              `
-              : ""
-          }
-
-        </div>
-
-
-        <div class="pedido-produtos">
-
-          <h4>🍰 Produtos</h4>
-
-          ${itensHTML}
-
-        </div>
-
-
-        <div class="pedido-acoes">
-
-          <button
-            onclick="alterarStatusPedido(${pedido.id}, 'confirmado')"
-          >
-            ✅ Confirmar
-          </button>
-
-          <button
-            onclick="alterarStatusPedido(${pedido.id}, 'em_preparo')"
-          >
-            👩‍🍳 Em preparo
-          </button>
-
-          <button
-            onclick="alterarStatusPedido(${pedido.id}, 'pronto')"
-          >
-            🎂 Pronto
-          </button>
-
-          <button
-            onclick="alterarStatusPedido(${pedido.id}, 'entregue')"
-          >
-            📦 Finalizado
-          </button>
-
-        </div>
-    </button>
+      <button
+        class="secondary"
+        onclick="carregarPedidos()"
+      >
+        🔄 Atualizar pedidos
+      </button>
 
       <div id="listaPedidos">
         Carregando pedidos...
@@ -619,9 +512,7 @@
 
       <label>Descrição</label>
 
-      <textarea
-        id="configDescricao"
-      ></textarea>
+      <textarea id="configDescricao"></textarea>
 
       <label>Telefone</label>
 
@@ -689,22 +580,27 @@
 
 <script>
 
+  /* =====================================
+     SUPABASE
+  ===================================== */
+
   const SUPABASE_URL =
     "https://lzihqkpscesurkfmcasb.supabase.co";
 
   const SUPABASE_KEY =
     "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
 
+
   const supabaseClient =
-    supabase.createClient(
+    window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_KEY
     );
 
 
-  /* =========================
+  /* =====================================
      LOGIN
-  ========================= */
+  ===================================== */
 
   async function entrar() {
 
@@ -727,11 +623,13 @@
       return;
     }
 
+
     const { data, error } =
       await supabaseClient.auth.signInWithPassword({
         email,
         password
       });
+
 
     if (error) {
 
@@ -741,7 +639,9 @@
       return;
     }
 
+
     const user = data.user;
+
 
     const { data: admin, error: adminError } =
       await supabaseClient
@@ -749,6 +649,7 @@
         .select("user_id")
         .eq("user_id", user.id)
         .maybeSingle();
+
 
     if (adminError || !admin) {
 
@@ -760,9 +661,11 @@
       return;
     }
 
+
     document
       .getElementById("loginArea")
       .classList.add("hidden");
+
 
     document
       .getElementById("painel")
@@ -771,9 +674,9 @@
   }
 
 
-  /* =========================
+  /* =====================================
      SAIR
-  ========================= */
+  ===================================== */
 
   async function sair() {
 
@@ -790,9 +693,9 @@
   }
 
 
-  /* =========================
+  /* =====================================
      NAVEGAÇÃO
-  ========================= */
+  ===================================== */
 
   function esconderAreas() {
 
@@ -830,9 +733,9 @@
   }
 
 
-  /* =========================
+  /* =====================================
      PRODUTOS
-  ========================= */
+  ===================================== */
 
   async function abrirProdutos() {
 
@@ -872,6 +775,10 @@
       .value = "";
 
     document
+      .getElementById("produtoPreco")
+      .value = "";
+
+    document
       .getElementById("produtoImagem")
       .value = "";
 
@@ -887,23 +794,31 @@
     const lista =
       document.getElementById("listaProdutos");
 
-    lista.innerHTML = "Carregando produtos...";
+    lista.innerHTML =
+      "Carregando produtos...";
+
 
     const { data, error } =
       await supabaseClient
         .from("products")
         .select("*")
-        .order("name", { ascending: true });
+        .order("name", {
+          ascending: true
+        });
+
 
     if (error) {
 
-      lista.innerHTML =
-        '<div class="message">Erro ao carregar produtos.</div>';
-
       console.error(error);
+
+      lista.innerHTML =
+        '<div class="message">Erro ao carregar produtos: ' +
+        error.message +
+        '</div>';
 
       return;
     }
+
 
     if (!data || data.length === 0) {
 
@@ -913,7 +828,9 @@
       return;
     }
 
+
     lista.innerHTML = "";
+
 
     data.forEach(produto => {
 
@@ -922,63 +839,100 @@
 
       div.className = "produto";
 
-      if (produto.image) {
+
+      if (
+        produto.image_url ||
+        produto.image
+      ) {
 
         const img =
           document.createElement("img");
 
-        img.src = produto.image;
+        img.src =
+          produto.image_url ||
+          produto.image;
 
-        img.alt = produto.name || "Produto";
+        img.alt =
+          produto.name ||
+          "Produto";
 
         div.appendChild(img);
 
       }
 
+
       const titulo =
         document.createElement("h3");
 
       titulo.innerText =
-        produto.name || "Sem nome";
+        produto.name ||
+        "Sem nome";
 
       div.appendChild(titulo);
+
 
       const categoria =
         document.createElement("p");
 
       categoria.innerHTML =
         "<strong>Categoria:</strong> " +
-        (produto.category || "Sem categoria");
+        (
+          produto.category ||
+          "Sem categoria"
+        );
 
       div.appendChild(categoria);
+
+
+      const preco =
+        document.createElement("p");
+
+      preco.innerHTML =
+        "<strong>Preço:</strong> R$ " +
+        Number(
+          produto.price || 0
+        )
+        .toFixed(2)
+        .replace(".", ",");
+
+      div.appendChild(preco);
+
 
       const acoes =
         document.createElement("div");
 
-      acoes.className = "acoes";
+      acoes.className =
+        "acoes";
+
 
       const editar =
         document.createElement("button");
 
-      editar.innerText = "✏️ Editar";
+      editar.innerText =
+        "✏️ Editar";
 
-      editar.onclick = function() {
-        editarProduto(produto);
-      };
+      editar.onclick =
+        function() {
+          editarProduto(produto);
+        };
+
 
       const excluir =
         document.createElement("button");
 
-      excluir.innerText = "🗑️ Excluir";
+      excluir.innerText =
+        "🗑️ Excluir";
 
-      excluir.className = "danger";
+      excluir.className =
+        "danger";
 
-      excluir.onclick = function() {
-        excluirProduto(produto.id);
-      };
+      excluir.onclick =
+        function() {
+          excluirProduto(produto.id);
+        };
+
 
       acoes.appendChild(editar);
-
       acoes.appendChild(excluir);
 
       div.appendChild(acoes);
@@ -993,21 +947,43 @@
   async function salvarProduto() {
 
     const id =
-      document.getElementById("produtoId").value;
+      document
+        .getElementById("produtoId")
+        .value;
 
     const nome =
-      document.getElementById("produtoNome").value.trim();
+      document
+        .getElementById("produtoNome")
+        .value
+        .trim();
 
     const categoria =
-      document.getElementById("produtoCategoria").value.trim();
+      document
+        .getElementById("produtoCategoria")
+        .value
+        .trim();
+
+    const preco =
+      Number(
+        document
+          .getElementById("produtoPreco")
+          .value || 0
+      );
 
     const imagem =
-      document.getElementById("produtoImagem").value.trim();
+      document
+        .getElementById("produtoImagem")
+        .value
+        .trim();
 
     const mensagem =
-      document.getElementById("produtoMessage");
+      document.getElementById(
+        "produtoMessage"
+      );
+
 
     mensagem.innerHTML = "";
+
 
     if (!nome) {
 
@@ -1017,13 +993,25 @@
       return;
     }
 
+
     const produto = {
+
       name: nome,
-      category: categoria || null,
-      image: imagem || null
+
+      category:
+        categoria || null,
+
+      price:
+        preco,
+
+      image:
+        imagem || null
+
     };
 
+
     let resultado;
+
 
     if (id) {
 
@@ -1042,9 +1030,12 @@
 
     }
 
+
     if (resultado.error) {
 
-      console.error(resultado.error);
+      console.error(
+        resultado.error
+      );
 
       mensagem.innerHTML =
         '<div class="message">Erro ao salvar produto: ' +
@@ -1054,14 +1045,15 @@
       return;
     }
 
+
     mensagem.innerHTML =
       '<div class="message">Produto salvo com sucesso! 🍰</div>';
 
-    setTimeout(() => {
 
-      abrirProdutos();
-
-    }, 700);
+    setTimeout(
+      () => abrirProdutos(),
+      700
+    );
 
   }
 
@@ -1074,40 +1066,66 @@
       .getElementById("cadastroArea")
       .classList.remove("hidden");
 
+
     document
       .getElementById("tituloFormulario")
-      .innerText = "✏️ Editar produto";
+      .innerText =
+      "✏️ Editar produto";
+
 
     document
       .getElementById("produtoId")
-      .value = produto.id || "";
+      .value =
+      produto.id || "";
+
 
     document
       .getElementById("produtoNome")
-      .value = produto.name || "";
+      .value =
+      produto.name || "";
+
 
     document
       .getElementById("produtoCategoria")
-      .value = produto.category || "";
+      .value =
+      produto.category || "";
+
+
+    document
+      .getElementById("produtoPreco")
+      .value =
+      produto.price || "";
+
 
     document
       .getElementById("produtoImagem")
-      .value = produto.image || "";
+      .value =
+      produto.image_url ||
+      produto.image ||
+      "";
 
   }
 
 
   async function excluirProduto(id) {
 
-    if (!confirm("Tem certeza que deseja excluir este produto?")) {
+    if (
+      !confirm(
+        "Tem certeza que deseja excluir este produto?"
+      )
+    ) {
+
       return;
+
     }
+
 
     const { error } =
       await supabaseClient
         .from("products")
         .delete()
         .eq("id", id);
+
 
     if (error) {
 
@@ -1119,16 +1137,20 @@
       return;
     }
 
-    alert("Produto excluído com sucesso! 🍰");
+
+    alert(
+      "Produto excluído com sucesso! 🍰"
+    );
+
 
     await carregarProdutos();
 
   }
 
 
-  /* =========================
+  /* =====================================
      PEDIDOS
-  ========================= */
+  ===================================== */
 
   async function abrirPedidos() {
 
@@ -1146,270 +1168,567 @@
   async function carregarPedidos() {
 
     const lista =
-      document.getElementById("listaPedidos");
+      document.getElementById(
+        "listaPedidos"
+      );
+
 
     lista.innerHTML =
-      "Carregando pedidos...";
+      "🔄 Carregando pedidos...";
 
-    const { data, error } =
-      await supabaseClient
-        .from("orders")
-        .select("*")
-        .order("created_at", {
-          ascending: false
-        });
 
-    if (error) {
+    try {
 
-      lista.innerHTML =
-        '<div class="message">Erro ao carregar pedidos: ' +
-        error.message +
-        '</div>';
+      const {
+        data: pedidos,
+        error
+      } =
+        await supabaseClient
+          .from("orders")
+          .select("*")
+          .order("created_at", {
+            ascending: false
+          });
 
-      return;
-    }
 
-    if (!data || data.length === 0) {
+      if (error) {
 
-      lista.innerHTML =
-        '<div class="vazio">Nenhum pedido recebido ainda.</div>';
+        throw error;
 
-      return;
-    }
+      }
 
-    lista.innerHTML = "";
 
-    for (const pedido of data) {
+      if (
+        !pedidos ||
+        pedidos.length === 0
+      ) {
 
-      const div =
-        document.createElement("div");
+        lista.innerHTML = `
+          <div class="pedido-vazio">
+            📦<br><br>
+            Nenhum pedido recebido ainda.
+          </div>
+        `;
 
-      div.className = "pedido";
+        return;
 
-      const dataPedido =
-        pedido.created_at
-          ? new Date(pedido.created_at).toLocaleString("pt-BR")
-          : "";
+      }
 
-      div.innerHTML = `
-        <h3>📦 Pedido</h3>
 
-        <p>
-          <strong>Cliente:</strong>
-          ${pedido.customer_name || "Não informado"}
-        </p>
+      lista.innerHTML = "";
 
-        <p>
-          <strong>Telefone:</strong>
-          ${pedido.customer_phone || "Não informado"}
-        </p>
 
-        <p>
-          <strong>Pagamento:</strong>
-          ${pedido.payment_method || "Não informado"}
-        </p>
+      for (
+        const pedido of pedidos
+      ) {
 
-        <p>
-          <strong>Entrega:</strong>
-          ${pedido.delivery_type || "Retirada"}
-        </p>
+        await criarCardPedido(
+          pedido,
+          lista
+        );
 
-        <p>
-          <strong>Endereço:</strong>
-          ${pedido.delivery_address || "Não informado"}
-        </p>
+      }
 
-        <p>
-          <strong>Total:</strong>
-          R$ ${Number(pedido.total || 0).toFixed(2).replace(".", ",")}
-        </p>
 
-        <p>
-          <strong>Data:</strong>
-          ${dataPedido}
-        </p>
+    } catch (erro) {
 
-        <p>
-          <strong>Status:</strong>
-          <span class="status">
-            ${pedido.status || "pendente"}
-          </span>
-        </p>
-
-        <label>Alterar status</label>
-
-        <select
-          onchange="alterarStatusPedido('${pedido.id}', this.value)"
-        >
-          <option value="pendente" ${pedido.status === "pendente" ? "selected" : ""}>
-            Pendente
-          </option>
-
-          <option value="confirmado" ${pedido.status === "confirmado" ? "selected" : ""}>
-            Confirmado
-          </option>
-
-          <option value="em_preparo" ${pedido.status === "em_preparo" ? "selected" : ""}>
-            Em preparo
-          </option>
-
-          <option value="pronto" ${pedido.status === "pronto" ? "selected" : ""}>
-            Pronto
-          </option>
-
-          <option value="entregue" ${pedido.status === "entregue" ? "selected" : ""}>
-            Entregue
-          </option>
-
-          <option value="cancelado" ${pedido.status === "cancelado" ? "selected" : ""}>
-            Cancelado
-          </option>
-        </select>
-
-        <div id="itens-${pedido.id}">
-          Carregando itens...
-        </div>
-
-        <button
-          class="danger"
-          onclick="cancelarPedido('${pedido.id}')"
-        >
-          ❌ Cancelar pedido
-        </button>
-      `;
-
-      lista.appendChild(div);
-
-      carregarItensPedido(
-        pedido.id
+      console.error(
+        "ERRO AO CARREGAR PEDIDOS:",
+        erro
       );
+
+
+      lista.innerHTML = `
+        <div class="message">
+
+          ❌ <strong>Erro ao carregar pedidos.</strong>
+
+          <br><br>
+
+          ${erro.message || erro}
+
+        </div>
+      `;
 
     }
 
   }
 
 
-  async function carregarItensPedido(orderId) {
+  async function criarCardPedido(
+    pedido,
+    lista
+  ) {
+
+    const card =
+      document.createElement(
+        "div"
+      );
+
+
+    card.className =
+      "pedido";
+
+
+    const dataPedido =
+      pedido.created_at
+        ? new Date(
+            pedido.created_at
+          ).toLocaleString(
+            "pt-BR"
+          )
+        : "Data não informada";
+
+
+    const tipo =
+      pedido.delivery_type ||
+      pedido.type ||
+      "retirada";
+
+
+    const status =
+      pedido.status ||
+      "novo";
+
+
+    card.innerHTML = `
+
+      <div class="pedido-topo">
+
+        <div>
+
+          <h3>
+            📦 Pedido #${pedido.id}
+          </h3>
+
+          <div class="pedido-data">
+            ${dataPedido}
+          </div>
+
+        </div>
+
+        <span class="status">
+          ${status}
+        </span>
+
+      </div>
+
+
+      <div class="pedido-info">
+
+        <p>
+          👤
+          <strong>Cliente:</strong>
+          ${pedido.customer_name || "-"}
+        </p>
+
+        <p>
+          📱
+          <strong>Telefone:</strong>
+          ${pedido.customer_phone || "-"}
+        </p>
+
+        <p>
+          📧
+          <strong>E-mail:</strong>
+          ${pedido.customer_email || "-"}
+        </p>
+
+        <p>
+          📅
+          <strong>Data agendada:</strong>
+          ${pedido.scheduled_date || "-"}
+        </p>
+
+        <p>
+          ⏰
+          <strong>Horário:</strong>
+          ${pedido.scheduled_time || "-"}
+        </p>
+
+        <p>
+          📦
+          <strong>Recebimento:</strong>
+          ${tipo}
+        </p>
+
+        ${
+          pedido.delivery_address
+          ?
+          `
+          <p>
+            📍
+            <strong>Endereço:</strong>
+            ${pedido.delivery_address}
+          </p>
+          `
+          :
+          ""
+        }
+
+        <p>
+          💳
+          <strong>Pagamento:</strong>
+          ${pedido.payment_method || "-"}
+        </p>
+
+        <p>
+          💰
+          <strong>Total:</strong>
+          R$ ${Number(
+            pedido.total || 0
+          )
+          .toFixed(2)
+          .replace(".", ",")}
+        </p>
+
+        ${
+          pedido.notes
+          ?
+          `
+          <p>
+            📝
+            <strong>Observações:</strong>
+            ${pedido.notes}
+          </p>
+          `
+          :
+          ""
+        }
+
+      </div>
+
+
+      <div class="pedido-produtos">
+
+        <h4>
+          🍰 Produtos do pedido
+        </h4>
+
+        <div id="itens-${pedido.id}">
+          Carregando produtos...
+        </div>
+
+      </div>
+
+
+      <div class="pedido-total">
+
+        Total:
+        R$ ${Number(
+          pedido.total || 0
+        )
+        .toFixed(2)
+        .replace(".", ",")}
+
+      </div>
+
+
+      <div class="pedido-acoes">
+
+        <label>
+          Alterar status
+        </label>
+
+        <select
+          onchange="
+            alterarStatusPedido(
+              ${pedido.id},
+              this.value
+            )
+          "
+        >
+
+          <option
+            value="novo"
+            ${status === "novo" ? "selected" : ""}
+          >
+            Novo
+          </option>
+
+          <option
+            value="confirmado"
+            ${status === "confirmado" ? "selected" : ""}
+          >
+            Confirmado
+          </option>
+
+          <option
+            value="em_preparo"
+            ${status === "em_preparo" ? "selected" : ""}
+          >
+            Em preparo
+          </option>
+
+          <option
+            value="pronto"
+            ${status === "pronto" ? "selected" : ""}
+          >
+            Pronto
+          </option>
+
+          <option
+            value="entregue"
+            ${status === "entregue" ? "selected" : ""}
+          >
+            Entregue
+          </option>
+
+          <option
+            value="cancelado"
+            ${status === "cancelado" ? "selected" : ""}
+          >
+            Cancelado
+          </option>
+
+        </select>
+
+
+        <button
+          class="danger"
+          onclick="
+            cancelarPedido(${pedido.id})
+          "
+        >
+          ❌ Cancelar pedido
+        </button>
+
+      </div>
+
+    `;
+
+
+    lista.appendChild(
+      card
+    );
+
+
+    await carregarItensPedido(
+      pedido.id
+    );
+
+  }
+
+
+  /* =====================================
+     ITENS DO PEDIDO
+  ===================================== */
+
+  async function carregarItensPedido(
+    orderId
+  ) {
 
     const area =
       document.getElementById(
         "itens-" + orderId
       );
 
-    if (!area) return;
 
-    const { data, error } =
-      await supabaseClient
-        .from("order_items")
-        .select("*")
-        .eq("order_id", orderId);
-
-    if (error) {
-
-      area.innerHTML =
-        "<p>Não foi possível carregar os itens.</p>";
+    if (!area) {
 
       return;
+
     }
 
-    if (!data || data.length === 0) {
 
-      area.innerHTML =
-        "<p><strong>Itens:</strong> Não informados.</p>";
+    try {
 
-      return;
+      const {
+        data: itens,
+        error
+      } =
+        await supabaseClient
+          .from("order_items")
+          .select("*")
+          .eq(
+            "order_id",
+            orderId
+          )
+          .order(
+            "id",
+            {
+              ascending: true
+            }
+          );
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      if (
+        !itens ||
+        itens.length === 0
+      ) {
+
+        area.innerHTML =
+          "<p>Nenhum produto encontrado neste pedido.</p>";
+
+        return;
+
+      }
+
+
+      area.innerHTML = "";
+
+
+      itens.forEach(
+        item => {
+
+          const linha =
+            document.createElement(
+              "div"
+            );
+
+
+          linha.className =
+            "pedido-item";
+
+
+          const quantidade =
+            Number(
+              item.qty || 1
+            );
+
+
+          const preco =
+            Number(
+              item.price || 0
+            );
+
+
+          linha.innerHTML = `
+
+            <span>
+              ${quantidade}x
+              ${item.name || "Produto"}
+            </span>
+
+            <strong>
+              R$ ${(
+                preco *
+                quantidade
+              )
+              .toFixed(2)
+              .replace(".", ",")}
+            </strong>
+
+          `;
+
+
+          area.appendChild(
+            linha
+          );
+
+        }
+      );
+
+
+    } catch (erro) {
+
+      console.error(
+        "Erro nos itens:",
+        erro
+      );
+
+
+      area.innerHTML = `
+        <p>
+          ❌ Não foi possível carregar
+          os produtos deste pedido.
+        </p>
+      `;
+
     }
-
-    area.innerHTML =
-      "<p><strong>Itens:</strong></p>";
-
-    data.forEach(item => {
-
-      const div =
-        document.createElement("div");
-
-      div.className = "pedido-item";
-
-      div.innerText =
-        `${item.quantity}x ${item.product_name} — R$ ${Number(item.subtotal || 0).toFixed(2).replace(".", ",")}`;
-
-      area.appendChild(div);
-
-    });
 
   }
 
+
+  /* =====================================
+     ALTERAR STATUS
+  ===================================== */
 
   async function alterarStatusPedido(
     id,
     status
   ) {
 
-    const { error } =
-      await supabaseClient
-        .from("orders")
-        .update({ status })
-        .eq("id", id);
+    try {
 
-    if (error) {
+      const {
+        error
+      } =
+        await supabaseClient
+          .from("orders")
+          .update({
+            status: status
+          })
+          .eq(
+            "id",
+            id
+          );
+
+
+      if (error) {
+
+        throw error;
+
+      }
+
+
+      await carregarPedidos();
+
+
+    } catch (erro) {
+
+      console.error(
+        erro
+      );
+
 
       alert(
         "Erro ao alterar status: " +
-        error.message
+        erro.message
       );
 
-      return;
     }
-
-    alert(
-      "Status atualizado! 📦"
-    );
-
-    await carregarPedidos();
 
   }
 
 
-  async function cancelarPedido(id) {
+  /* =====================================
+     CANCELAR PEDIDO
+  ===================================== */
+
+  async function cancelarPedido(
+    id
+  ) {
 
     if (
       !confirm(
         "Deseja realmente cancelar este pedido?"
       )
     ) {
-      return;
-    }
-
-    const { error } =
-      await supabaseClient
-        .from("orders")
-        .update({
-          status: "cancelado"
-        })
-        .eq("id", id);
-
-    if (error) {
-
-      alert(
-        "Erro ao cancelar pedido: " +
-        error.message
-      );
 
       return;
+
     }
 
-    alert(
-      "Pedido cancelado."
+
+    await alterarStatusPedido(
+      id,
+      "cancelado"
     );
-
-    await carregarPedidos();
 
   }
 
 
-  /* =========================
+  /* =====================================
      CONFIGURAÇÕES
-  ========================= */
+  ===================================== */
 
   async function abrirConfiguracoes() {
 
@@ -1419,6 +1738,7 @@
       .getElementById("configArea")
       .classList.remove("hidden");
 
+
     await carregarConfiguracoes();
 
   }
@@ -1426,52 +1746,109 @@
 
   async function carregarConfiguracoes() {
 
-    const { data, error } =
+    const {
+      data,
+      error
+    } =
       await supabaseClient
         .from("store_settings")
         .select("*")
         .limit(1)
         .maybeSingle();
 
+
     if (error) {
 
       document
-        .getElementById("configMessage")
+        .getElementById(
+          "configMessage"
+        )
         .innerHTML =
         '<div class="message">Erro ao carregar configurações: ' +
         error.message +
         '</div>';
 
       return;
+
     }
 
-    if (!data) return;
 
-    document.getElementById("configNome").value =
+    if (!data) {
+
+      return;
+
+    }
+
+
+    document
+      .getElementById(
+        "configNome"
+      )
+      .value =
       data.store_name || "";
 
-    document.getElementById("configDescricao").value =
+
+    document
+      .getElementById(
+        "configDescricao"
+      )
+      .value =
       data.description || "";
 
-    document.getElementById("configTelefone").value =
+
+    document
+      .getElementById(
+        "configTelefone"
+      )
+      .value =
       data.phone || "";
 
-    document.getElementById("configWhatsapp").value =
+
+    document
+      .getElementById(
+        "configWhatsapp"
+      )
+      .value =
       data.whatsapp || "";
 
-    document.getElementById("configPix").value =
+
+    document
+      .getElementById(
+        "configPix"
+      )
+      .value =
       data.pix_key || "";
 
-    document.getElementById("configTaxa").value =
+
+    document
+      .getElementById(
+        "configTaxa"
+      )
+      .value =
       data.delivery_fee || 0;
 
-    document.getElementById("configHorario").value =
+
+    document
+      .getElementById(
+        "configHorario"
+      )
+      .value =
       data.opening_hours || "";
 
-    document.getElementById("configEndereco").value =
+
+    document
+      .getElementById(
+        "configEndereco"
+      )
+      .value =
       data.address || "";
 
-    document.getElementById("configInstagram").value =
+
+    document
+      .getElementById(
+        "configInstagram"
+      )
+      .value =
       data.instagram || "";
 
   }
@@ -1480,48 +1857,99 @@
   async function salvarConfiguracoes() {
 
     const mensagem =
-      document.getElementById("configMessage");
+      document.getElementById(
+        "configMessage"
+      );
+
 
     mensagem.innerHTML =
       "Salvando...";
 
-    const { data: existente } =
+
+    const {
+      data: existente
+    } =
       await supabaseClient
         .from("store_settings")
         .select("id")
         .limit(1)
         .maybeSingle();
 
+
     const configuracao = {
 
       store_name:
-        document.getElementById("configNome").value.trim(),
+        document
+          .getElementById(
+            "configNome"
+          )
+          .value
+          .trim(),
 
       description:
-        document.getElementById("configDescricao").value.trim(),
+        document
+          .getElementById(
+            "configDescricao"
+          )
+          .value
+          .trim(),
 
       phone:
-        document.getElementById("configTelefone").value.trim(),
+        document
+          .getElementById(
+            "configTelefone"
+          )
+          .value
+          .trim(),
 
       whatsapp:
-        document.getElementById("configWhatsapp").value.trim(),
+        document
+          .getElementById(
+            "configWhatsapp"
+          )
+          .value
+          .trim(),
 
       pix_key:
-        document.getElementById("configPix").value.trim(),
+        document
+          .getElementById(
+            "configPix"
+          )
+          .value
+          .trim(),
 
       delivery_fee:
         Number(
-          document.getElementById("configTaxa").value || 0
+          document
+            .getElementById(
+              "configTaxa"
+            )
+            .value || 0
         ),
 
       opening_hours:
-        document.getElementById("configHorario").value.trim(),
+        document
+          .getElementById(
+            "configHorario"
+          )
+          .value
+          .trim(),
 
       address:
-        document.getElementById("configEndereco").value.trim(),
+        document
+          .getElementById(
+            "configEndereco"
+          )
+          .value
+          .trim(),
 
       instagram:
-        document.getElementById("configInstagram").value.trim(),
+        document
+          .getElementById(
+            "configInstagram"
+          )
+          .value
+          .trim(),
 
       updated_at:
         new Date().toISOString()
@@ -1531,20 +1959,28 @@
 
     let resultado;
 
+
     if (existente) {
 
       resultado =
         await supabaseClient
           .from("store_settings")
-          .update(configuracao)
-          .eq("id", existente.id);
+          .update(
+            configuracao
+          )
+          .eq(
+            "id",
+            existente.id
+          );
 
     } else {
 
       resultado =
         await supabaseClient
           .from("store_settings")
-          .insert(configuracao);
+          .insert(
+            configuracao
+          );
 
     }
 
@@ -1557,6 +1993,7 @@
         '</div>';
 
       return;
+
     }
 
 
@@ -1565,86 +2002,70 @@
 
   }
 
+
+  /* =====================================
+     INICIALIZAÇÃO
+  ===================================== */
+
+  atualizarTelaInicial();
+
+
+  async function atualizarTelaInicial() {
+
+    const {
+      data
+    } =
+      await supabaseClient.auth.getSession();
+
+
+    if (
+      data &&
+      data.session
+    ) {
+
+      const user =
+        data.session.user;
+
+
+      const {
+        data: admin
+      } =
+        await supabaseClient
+          .from("admin_users")
+          .select("user_id")
+          .eq(
+            "user_id",
+            user.id
+          )
+          .maybeSingle();
+
+
+      if (admin) {
+
+        document
+          .getElementById(
+            "loginArea"
+          )
+          .classList.add(
+            "hidden"
+          );
+
+
+        document
+          .getElementById(
+            "painel"
+          )
+          .classList.remove(
+            "hidden"
+          );
+
+      }
+
+    }
+
+  }
+
 </script>
 
-  pedido-card {
-  background: white;
-  border-radius: 16px;
-  padding: 18px;
-  margin-top: 15px;
-  box-shadow: 0 4px 15px rgba(0,0,0,.08);
-}
-
-.pedido-topo {
-  display: flex;
-  justify-content: space-between;
-  gap: 10px;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 12px;
-}
-
-.pedido-topo small {
-  display: block;
-  margin-top: 5px;
-  color: #777;
-}
-
-.status {
-  background: #f1dfbd;
-  color: #4b281d;
-  padding: 7px 10px;
-  border-radius: 20px;
-  font-size: 13px;
-}
-
-.pedido-info {
-  margin-top: 15px;
-}
-
-.pedido-info p {
-  margin: 8px 0;
-}
-
-.pedido-produtos {
-  margin-top: 15px;
-  padding-top: 12px;
-  border-top: 1px solid #eee;
-}
-
-.pedido-produtos h4 {
-  margin: 0 0 10px;
-}
-
-.pedido-item {
-  display: flex;
-  justify-content: space-between;
-  padding: 8px 0;
-}
-
-.pedido-acoes {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 15px;
-}
-
-.pedido-acoes button {
-  padding: 10px;
-  border: 0;
-  border-radius: 8px;
-  background: #4b281d;
-  color: white;
-  cursor: pointer;
-}
-
-.pedido-vazio,
-.pedido-erro {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  margin-top: 15px;
-  text-align: center;
-}
 </body>
   </html>

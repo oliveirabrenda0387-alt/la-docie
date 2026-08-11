@@ -322,28 +322,53 @@ header{
 
 /* PRODUTOS */
 
-.products{
+ .products{
   display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:18px;
+  grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;
+}
+
+.category-section{
+  margin-bottom:30px;
+}
+
+.category-heading{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  margin:0 0 12px;
+}
+
+.category-heading h3{
+  margin:0;
+  font-size:20px;
+}
+
+.category-heading span:last-child{
+  margin-left:auto;
+  color:var(--marrom-claro);
+  font-size:12px;
 }
 
 .product{
   background:white;
   border:1px solid var(--borda);
-  border-radius:18px;
+  border-radius:16px;
   overflow:hidden;
   box-shadow:var(--sombra);
   transition:.2s;
   position:relative;
+  cursor:pointer;
+  min-width:0;
 }
 
 .product:hover{
   transform:translateY(-2px);
+  box-shadow:0 12px 28px rgba(75,40,29,.12);
 }
 
 .product-image{
-  height:190px;
+  height:180px;
   background:var(--creme-2);
   display:flex;
   align-items:center;
@@ -371,19 +396,20 @@ header{
 }
 
 .product-body{
-  padding:15px;
+  padding:12px 13px 14px;
 }
 
 .product h3{
-  margin:0 0 7px;
-  font-size:17px;
+  margin:0;
+  font-size:16px;
+  line-height:1.25;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .product-description{
-  color:var(--marrom-claro);
-  font-size:13px;
-  line-height:1.45;
-  min-height:38px;
+  display:none;
 }
 
 .product-bottom{
@@ -391,7 +417,7 @@ header{
   align-items:center;
   justify-content:space-between;
   gap:8px;
-  margin-top:13px;
+  margin-top:8px;
 }
 
 .price{
@@ -401,14 +427,15 @@ header{
 }
 
 .add-btn{
-  width:40px;
-  height:40px;
+  width:32px;
+  height:32px;
   border:0;
-  border-radius:12px;
+  border-radius:10px;
   background:var(--marrom);
   color:white;
-  font-size:22px;
+  font-size:19px;
   font-weight:bold;
+  pointer-events:none;
 }
 
 .out-stock{
@@ -421,7 +448,7 @@ header{
 
 .highlight-grid{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(3,minmax(0,1fr));
   gap:15px;
 }
 
@@ -494,6 +521,153 @@ header{
   background:#eaded7;
   color:var(--marrom);
   font-size:22px;
+}
+
+/* DETALHE DO PRODUTO */
+.product-detail-image{
+  width:100%;
+  aspect-ratio:1/1;
+  max-height:360px;
+  object-fit:cover;
+  border-radius:16px;
+  background:var(--creme-2);
+  display:block;
+}
+
+.product-detail-placeholder{
+  width:100%;
+  aspect-ratio:1/1;
+  max-height:360px;
+  border-radius:16px;
+  background:var(--creme-2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:70px;
+}
+
+.product-detail-price{
+  color:#ad7923;
+  font-size:24px;
+  font-weight:800;
+  margin-top:7px;
+}
+
+.product-detail-description{
+  color:var(--marrom-claro);
+  line-height:1.6;
+  margin:12px 0 18px;
+}
+
+.product-detail-section{
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:14px;
+  padding:14px;
+  margin-top:12px;
+}
+
+.product-detail-section h4{
+  margin:0 0 10px;
+}
+
+.complement-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  align-items:center;
+  gap:9px;
+  padding:10px 0;
+  border-bottom:1px solid var(--borda);
+}
+
+.complement-row:last-child{
+  border-bottom:0;
+}
+
+.complement-row input[type="checkbox"],
+.complement-row input[type="radio"]{
+  width:auto;
+}
+
+.complement-name{
+  font-size:14px;
+  font-weight:700;
+}
+
+.complement-price{
+  color:#ad7923;
+  font-size:13px;
+  font-weight:700;
+}
+
+.complement-qty{
+  width:70px;
+  padding:8px;
+  display:none;
+}
+
+.complement-row.selected .complement-qty{
+  display:block;
+}
+
+.detail-quantity{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.detail-quantity-controls{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.detail-quantity-controls button{
+  width:38px;
+  height:38px;
+  border:1px solid var(--borda);
+  background:var(--creme);
+  border-radius:10px;
+  font-size:20px;
+  font-weight:800;
+}
+
+.detail-quantity-controls strong{
+  min-width:25px;
+  text-align:center;
+}
+
+.detail-total{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-top:15px;
+  padding-top:15px;
+  border-top:1px solid var(--borda);
+  font-size:20px;
+  font-weight:800;
+}
+
+@media(max-width:950px){
+  .products{grid-template-columns:repeat(3,minmax(0,1fr));}
+}
+
+@media(max-width:700px){
+  .products{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;}
+  .product-image{height:145px;}
+  .product-body{padding:10px 11px 12px;}
+  .product h3{font-size:14px;}
+  .price{font-size:16px;}
+  .category-heading h3{font-size:18px;}
+}
+
+@media(max-width:450px){
+  .product-image{height:125px;}
+  .product-body{padding:9px 10px 11px;}
+  .product h3{font-size:13px;}
+  .price{font-size:15px;}
 }
 
 /* CARRINHO */
@@ -850,7 +1024,7 @@ footer{
 
 @media(max-width:950px){
   .products{
-    grid-template-columns:repeat(3,1fr);
+    grid-template-columns:repeat(3,minmax(0,1fr));
   }
 }
 
@@ -879,7 +1053,7 @@ footer{
   }
 
   .products{
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(2,minmax(0,1fr));
     gap:12px;
   }
 
@@ -929,7 +1103,7 @@ footer{
   }
 
   .products{
-    grid-template-columns:repeat(2,1fr);
+    grid-template-columns:repeat(2,minmax(0,1fr));
   }
 
   .product-image{
@@ -1396,6 +1570,43 @@ footer{
 
     <button class="main-button" onclick="continuarAgendamento()">
       Continuar agendamento
+    </button>
+  </div>
+</div>
+
+<!-- DETALHE DO PRODUTO -->
+<div id="productDetailModal" class="modal">
+  <div class="modal-content">
+    <div class="modal-title">
+      <h2 id="detailProductName">Produto</h2>
+      <button class="close" onclick="fecharDetalheProduto()">×</button>
+    </div>
+
+    <div id="detailProductContent"></div>
+
+    <div class="product-detail-section">
+      <div class="detail-quantity">
+        <strong>Quantidade</strong>
+        <div class="detail-quantity-controls">
+          <button type="button" onclick="alterarQuantidadeDetalhe(-1)">−</button>
+          <strong id="detailQuantity">1</strong>
+          <button type="button" onclick="alterarQuantidadeDetalhe(1)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="product-detail-section">
+      <label style="margin-top:0">Observação do produto</label>
+      <textarea id="detailObservation" placeholder="Ex.: escrever nome, retirar algum ingrediente, mensagem..." style="min-height:90px"></textarea>
+    </div>
+
+    <div class="detail-total">
+      <span>Total</span>
+      <span id="detailTotal">R$ 0,00</span>
+    </div>
+
+    <button class="main-button" onclick="adicionarDetalheAoCarrinho()">
+      🛒 Adicionar ao carrinho
     </button>
   </div>
 </div>
@@ -1919,6 +2130,8 @@ function iconeCategoria(categoria){
 function criarCardProduto(produto){
   const card = document.createElement("div");
   card.className = "product";
+  card.setAttribute("role","button");
+  card.setAttribute("tabindex","0");
 
   const nome = produto.name || "Produto Lá Dociê";
   const preco = Number(produto.price || 0);
@@ -1932,16 +2145,25 @@ function criarCardProduto(produto){
       ${produto.featured ? `<div class="product-badge">⭐ Destaque</div>` : ""}
     </div>
     <div class="product-body">
-      <h3>${escapeHTML(nome)}</h3>
-      <div class="product-description">${escapeHTML(produto.description || "")}</div>
+      <h3 title="${escapeHTML(nome)}">${escapeHTML(nome)}</h3>
       <div class="product-bottom">
         <div>
           <div class="price">R$ ${dinheiro(preco)}</div>
           ${indisponivel ? `<div class="out-stock">Produto esgotado</div>` : ""}
         </div>
-        ${indisponivel ? "" : `<button class="add-btn" aria-label="Adicionar ${escapeHTML(nome)}" onclick="adicionarCarrinhoPorId('${String(produto.id)}')">+</button>`}
+        ${indisponivel ? `<span class="out-stock">Esgotado</span>` : `<button class="add-btn" tabindex="-1" aria-hidden="true">+</button>`}
       </div>
     </div>`;
+
+  if(!indisponivel){
+    card.addEventListener("click", () => abrirDetalheProduto(produto.id));
+    card.addEventListener("keydown", event => {
+      if(event.key === "Enter" || event.key === " "){
+        event.preventDefault();
+        abrirDetalheProduto(produto.id);
+      }
+    });
+  }
 
   return card;
 }
@@ -2020,68 +2242,201 @@ function filtrarProdutos(categoria,botao){
 
 
 /* =========================================================
+   DETALHE DO PRODUTO
+========================================================= */
+
+let produtoDetalheAtual = null;
+let quantidadeDetalhe = 1;
+
+function normalizarComplementos(produto){
+  let dados = produto?.complements ?? produto?.complementos ?? produto?.addons ?? produto?.extras ?? produto?.options ?? [];
+
+  if(typeof dados === "string"){
+    try{ dados = JSON.parse(dados); }catch{
+      dados = dados.split(",").map(item => item.trim()).filter(Boolean);
+    }
+  }
+
+  if(!Array.isArray(dados)) return [];
+
+  return dados.map((item,index) => {
+    if(typeof item === "string"){
+      return {id:index,name:item,price:0,required:false,multiple:true};
+    }
+    return {
+      id:item.id ?? index,
+      name:item.name ?? item.nome ?? item.title ?? `Complemento ${index+1}`,
+      price:Number(item.price ?? item.preco ?? item.additional_price ?? 0),
+      required:Boolean(item.required ?? item.obrigatorio ?? false),
+      multiple:item.multiple !== false
+    };
+  });
+}
+
+function abrirDetalheProduto(id){
+  const produto = todosProdutos.find(item => String(item.id) === String(id));
+  if(!produto) return;
+
+  produtoDetalheAtual = produto;
+  quantidadeDetalhe = 1;
+
+  document.getElementById("detailProductName").textContent = produto.name || "Produto Lá Dociê";
+  document.getElementById("detailQuantity").textContent = "1";
+  document.getElementById("detailObservation").value = "";
+
+  const area = document.getElementById("detailProductContent");
+  const imagem = produto.image || "";
+  const preco = Number(produto.price || 0);
+  const complementos = normalizarComplementos(produto);
+
+  area.innerHTML = `
+    ${imagem
+      ? `<img class="product-detail-image" src="${escapeHTML(imagem)}" alt="${escapeHTML(produto.name || "Produto")}">`
+      : `<div class="product-detail-placeholder">🍰</div>`}
+    <div style="margin-top:14px">
+      <div class="product-detail-price">R$ ${dinheiro(preco)}</div>
+      <div class="product-detail-description">${escapeHTML(produto.description || "Delicioso produto preparado com carinho pela Lá Dociê.")}</div>
+    </div>
+  `;
+
+  if(complementos.length){
+    const section = document.createElement("div");
+    section.className = "product-detail-section";
+    section.innerHTML = `<h4>✨ Complementos</h4><div id="detailComplements"></div>`;
+    area.appendChild(section);
+
+    const list = section.querySelector("#detailComplements");
+    complementos.forEach((comp,index) => {
+      const row = document.createElement("div");
+      row.className = "complement-row";
+      const inputType = comp.multiple ? "checkbox" : "radio";
+      const priceText = comp.price > 0 ? `+ R$ ${dinheiro(comp.price)}` : "Grátis";
+      row.innerHTML = `
+        <input type="${inputType}" name="detailComplement" data-index="${index}" data-price="${comp.price}" ${comp.required ? "required" : ""}>
+        <div>
+          <div class="complement-name">${escapeHTML(comp.name)}</div>
+          <div class="complement-price">${priceText}${comp.required ? " • obrigatório" : ""}</div>
+        </div>
+        <input class="complement-qty" type="number" min="1" value="1" data-complement-qty="${index}">
+      `;
+      const choice = row.querySelector("input[type=checkbox],input[type=radio]");
+      choice.addEventListener("change", () => {
+        row.classList.toggle("selected", choice.checked);
+        atualizarTotalDetalhe();
+      });
+      list.appendChild(row);
+    });
+  }
+
+  atualizarTotalDetalhe();
+  document.getElementById("productDetailModal").classList.add("show");
+}
+
+function fecharDetalheProduto(){
+  document.getElementById("productDetailModal").classList.remove("show");
+  produtoDetalheAtual = null;
+}
+
+function alterarQuantidadeDetalhe(valor){
+  quantidadeDetalhe = Math.max(1, quantidadeDetalhe + Number(valor || 0));
+
+  if(produtoDetalheAtual?.stock !== undefined && produtoDetalheAtual?.stock !== null){
+    const estoque = Number(produtoDetalheAtual.stock);
+    if(estoque > 0) quantidadeDetalhe = Math.min(quantidadeDetalhe, estoque);
+  }
+
+  document.getElementById("detailQuantity").textContent = quantidadeDetalhe;
+  atualizarTotalDetalhe();
+}
+
+function obterComplementosSelecionados(){
+  const produto = produtoDetalheAtual;
+  if(!produto) return [];
+
+  const complementos = normalizarComplementos(produto);
+  const inputs = document.querySelectorAll('#detailComplements input[type="checkbox"], #detailComplements input[type="radio"]');
+  const selecionados = [];
+
+  inputs.forEach(input => {
+    if(!input.checked) return;
+    const index = Number(input.dataset.index);
+    const comp = complementos[index];
+    if(!comp) return;
+    const qtyInput = document.querySelector(`[data-complement-qty="${index}"]`);
+    const qty = Math.max(1, Number(qtyInput?.value || 1));
+    selecionados.push({
+      id:comp.id,
+      nome:comp.name,
+      preco:Number(comp.price || 0),
+      quantidade:qty
+    });
+  });
+
+  return selecionados;
+}
+
+function atualizarTotalDetalhe(){
+  if(!produtoDetalheAtual) return;
+
+  const base = Number(produtoDetalheAtual.price || 0);
+  const complementos = obterComplementosSelecionados();
+  const adicional = complementos.reduce((total,item) => total + Number(item.preco || 0) * Number(item.quantidade || 1), 0);
+  const total = (base + adicional) * quantidadeDetalhe;
+
+  document.getElementById("detailTotal").textContent = "R$ " + dinheiro(total);
+}
+
+function adicionarDetalheAoCarrinho(){
+  if(!produtoDetalheAtual) return;
+
+  const complementos = obterComplementosSelecionados();
+  const todos = normalizarComplementos(produtoDetalheAtual);
+  const obrigatorios = todos.filter(item => item.required);
+  const faltando = obrigatorios.some(item => !complementos.some(sel => String(sel.id) === String(item.id)));
+
+  if(faltando){
+    alert("Selecione os complementos obrigatórios antes de continuar.");
+    return;
+  }
+
+  const observacao = document.getElementById("detailObservation").value.trim();
+  const base = Number(produtoDetalheAtual.price || 0);
+  const adicionalUnitario = complementos.reduce((total,item) => total + Number(item.preco || 0) * Number(item.quantidade || 1), 0);
+  const precoFinalUnitario = base + adicionalUnitario;
+
+  const assinatura = JSON.stringify({
+    produto:String(produtoDetalheAtual.id),
+    complementos:complementos.map(item => ({id:String(item.id),q:Number(item.quantidade || 1)})).sort((a,b) => a.id.localeCompare(b.id)),
+    observacao
+  });
+
+  const existente = carrinho.find(item => item.assinatura === assinatura);
+
+  if(existente){
+    existente.quantidade += quantidadeDetalhe;
+  }else{
+    carrinho.push({
+      id:produtoDetalheAtual.id,
+      nome:produtoDetalheAtual.name,
+      preco:precoFinalUnitario,
+      quantidade:quantidadeDetalhe,
+      observacao,
+      complementos,
+      assinatura
+    });
+  }
+
+  atualizarCarrinho();
+  fecharDetalheProduto();
+}
+
+/* =========================================================
    CARRINHO
 ========================================================= */
 
 function adicionarCarrinhoPorId(id){
-
-  const produto =
-    todosProdutos.find(
-      item => String(item.id) === String(id)
-    );
-
-  if(!produto) return;
-
-  const estoque =
-    produto.stock !== undefined &&
-    produto.stock !== null
-      ? Number(produto.stock)
-      : null;
-
-  const existente =
-    carrinho.find(
-      item => String(item.id) === String(id)
-    );
-
-  const quantidadeAtual =
-    existente
-      ? existente.quantidade
-      : 0;
-
-  if(
-    estoque !== null &&
-    quantidadeAtual >= estoque
-  ){
-
-    alert(
-      "A quantidade disponível deste produto foi atingida."
-    );
-
-    return;
-
-  }
-
-  if(existente){
-
-    existente.quantidade++;
-
-  }else{
-
-    carrinho.push({
-
-      id:produto.id,
-      nome:produto.name,
-      preco:Number(produto.price || 0),
-      quantidade:1
-
-    });
-
-  }
-
-  atualizarCarrinho();
-
+  abrirDetalheProduto(id);
 }
-
 
 function aumentarQuantidade(index){
 
@@ -2239,8 +2594,11 @@ function atualizarCarrinho(){
           ${escapeHTML(item.nome)}
         </strong>
 
+        ${item.complementos?.length ? `<div style="color:var(--marrom-claro);font-size:12px;margin-top:5px">${item.complementos.map(c => `${escapeHTML(c.quantidade > 1 ? c.quantidade + "x " : "")}${escapeHTML(c.nome)}`).join(" • ")}</div>` : ""}
+        ${item.observacao ? `<div style="color:var(--marrom-claro);font-size:12px;margin-top:5px">📝 ${escapeHTML(item.observacao)}</div>` : ""}
+
         <div style="color:#ad7923;margin-top:5px">
-          R$ ${dinheiro(item.preco)}
+          R$ ${dinheiro(item.preco)} cada
         </div>
 
         <div class="quantity">
@@ -3216,7 +3574,11 @@ async function finalizarPedido(){
       carrinho.map(item => ({
 
         product_id:item.id,
-        name:item.nome,
+        name:[
+          item.nome,
+          item.complementos?.length ? "Complementos: " + item.complementos.map(c => `${c.quantidade > 1 ? c.quantidade + "x " : ""}${c.nome}`).join(", ") : "",
+          item.observacao ? "Obs.: " + item.observacao : ""
+        ].filter(Boolean).join(" | "),
         qty:Number(
           item.quantidade || 1
         ),
@@ -4035,4 +4397,4 @@ iniciar();
 </script>
 
 </body>
-  </html>
+</html>

@@ -1,41 +1,764 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
-
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lá Dociê — Painel Administrativo</title>
 
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>Painel Administrativo - Lá Dociê</title>
-
+<!-- Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-      
-      <script>
 
-/* =========================================================
-   LÁ DOCIÊ — PAINEL ADMINISTRATIVO
-   VERSÃO CORRIGIDA
-   Pagamentos: MANUAIS
-========================================================= */
+<style>
+*{box-sizing:border-box}
+:root{
+  --pink:#f7e1e5;
+  --pink2:#efd0d7;
+  --gold:#c9a45c;
+  --brown:#4a3028;
+  --cream:#fffaf7;
+  --text:#3f302b;
+  --muted:#85756f;
+  --border:#eadfd9;
+  --danger:#c95b5b;
+  --success:#4f9b70;
+  --shadow:0 8px 28px rgba(75,45,35,.08);
+}
+body{margin:0;font-family:Arial,Helvetica,sans-serif;background:#fbf8f6;color:var(--text)}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.app{min-height:100vh;display:flex}
+.sidebar{
+  width:250px;background:#fff;border-right:1px solid var(--border);
+  position:fixed;left:0;top:0;bottom:0;padding:22px 14px;z-index:20;
+  overflow-y:auto
+}
+.brand{text-align:center;padding:10px 8px 25px}
+.brand h1{margin:0;color:var(--brown);font-size:23px;letter-spacing:2px}
+.brand small{color:var(--gold);font-weight:bold}
+.menu-btn{
+  width:100%;border:0;background:transparent;text-align:left;
+  padding:13px 14px;border-radius:12px;color:var(--text);
+  margin:3px 0;display:flex;align-items:center;gap:11px
+}
+.menu-btn:hover,.menu-btn.active{background:var(--pink);font-weight:bold}
+.menu-icon{width:24px;text-align:center}
+.sidebar-bottom{margin-top:20px;border-top:1px solid var(--border);padding-top:12px}
+.logout-menu{color:#a34e4e}
+.main{margin-left:250px;width:calc(100% - 250px);min-height:100vh}
+.topbar{
+  height:70px;background:#fff;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;padding:0 28px;
+  position:sticky;top:0;z-index:10
+}
+.topbar-left{display:flex;align-items:center;gap:15px}
+.page-title{font-size:21px;font-weight:700}
+.store-status{font-size:13px;color:var(--success)}
+.store-dot{display:inline-block;width:9px;height:9px;border-radius:50%;background:#55a979;margin-right:5px}
+.mobile-menu{display:none;border:0;background:transparent;font-size:25px}
+.content{padding:25px}
+.panel{display:none}
+.panel.active{display:block}
+.welcome{margin-bottom:20px}
+.welcome h1{margin:0 0 6px}
+.small{font-size:13px;color:var(--muted);line-height:1.5}
+.notice{display:none;padding:12px 14px;border-radius:10px;margin-bottom:16px;background:#e8f6ee;color:#286341}
+.notice.show{display:block}
+.notice.error{background:#fff0f0;color:#9b3838}
+.card{
+  background:#fff;border:1px solid var(--border);border-radius:16px;
+  padding:20px;box-shadow:var(--shadow);margin-bottom:20px
+}
+.card-header{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:18px}
+.card-header h2{margin:0 0 4px;font-size:18px}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:20px}
+.stat,.stock-stat{
+  background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px;
+  box-shadow:var(--shadow)
+}
+.stat-top{display:flex;justify-content:space-between}
+.stat-label{font-size:13px;color:var(--muted)}
+.stat-icon{font-size:20px}
+.stat-value{font-size:25px;font-weight:800;margin-top:10px}
+.dashboard-grid,.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+.btn{
+  border:0;border-radius:10px;padding:10px 14px;font-weight:700;
+  display:inline-flex;align-items:center;justify-content:center;gap:7px
+}
+.btn-primary{background:var(--brown);color:#fff}
+.btn-gold{background:var(--gold);color:#fff}
+.btn-light{background:#f6f1ee;color:var(--text)}
+.btn-danger{background:#f4d8d8;color:#9a4141}
+.btn-success{background:#dff1e7;color:#31704e}
+.btn-whatsapp{background:#dff3e6;color:#217542}
+.btn-print{background:#eee;color:#333}
+.field{margin-bottom:15px}
+.field label{display:block;font-size:13px;font-weight:700;margin-bottom:7px}
+.field input,.field select,.field textarea{
+  width:100%;padding:11px 12px;border:1px solid var(--border);
+  border-radius:10px;background:#fff;color:var(--text);outline:none
+}
+.field textarea{min-height:90px;resize:vertical}
+.products{display:grid;grid-template-columns:repeat(3,1fr);gap:15px}
+.product-card{border:1px solid var(--border);border-radius:14px;padding:15px;background:#fff}
+.product-image{height:160px;background:#f8f0ed;border-radius:10px;display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:12px;font-size:45px}
+.product-image img{width:100%;height:100%;object-fit:cover}
+.product-name{font-weight:800;margin-bottom:4px}
+.product-price{font-weight:800;color:var(--gold);font-size:18px;margin:8px 0}
+.product-actions{display:flex;gap:7px;margin-top:12px}
+.product-actions .btn{flex:1;font-size:12px}
+.orders-list{display:flex;flex-direction:column}
+.order-row{
+  display:flex;justify-content:space-between;align-items:center;gap:15px;
+  padding:15px 4px;border-bottom:1px solid #eee5e0;cursor:pointer
+}
+.order-row:hover{background:#fffaf7}
+.order-number{font-weight:800}
+.order-client{font-size:13px;margin-top:3px}
+.order-meta{margin-top:7px}
+.order-total{font-weight:800}
+.order-time{font-size:12px;color:var(--muted);margin-top:4px}
+.tag{display:inline-block;padding:5px 9px;border-radius:20px;background:#eee;color:#555;font-size:11px;font-weight:800;text-transform:capitalize}
+.tag-pendente{background:#fff0d1;color:#8b6515}
+.tag-confirmado{background:#e1eefc;color:#2e5e91}
+.tag-preparando{background:#eee2ff;color:#7046a0}
+.tag-pronto{background:#dff1e7;color:#31704e}
+.tag-entregue{background:#d9f2df;color:#276b42}
+.tag-cancelado{background:#f7dede;color:#9b3838}
+.order-tabs{display:flex;gap:7px;overflow-x:auto;margin-bottom:15px;padding-bottom:3px}
+.order-tab{white-space:nowrap;border:1px solid var(--border);background:#fff;border-radius:20px;padding:8px 13px}
+.order-tab.active{background:var(--brown);color:#fff}
+.order-detail{display:none}
+.order-detail.show{display:block}
+.back-btn{border:0;background:transparent;color:var(--brown);font-weight:700;margin-bottom:15px}
+.order-detail-head{display:flex;justify-content:space-between;gap:15px}
+.order-detail-title{font-size:22px;font-weight:800}
+.order-actions{display:flex;gap:8px}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.info-item{padding:11px;border:1px solid #eee5e0;border-radius:10px}
+.info-label{font-size:11px;color:var(--muted);font-weight:700;margin-bottom:4px}
+.info-value{font-weight:700;word-break:break-word}
+.items-table,.stock-table{width:100%;border-collapse:collapse}
+.items-table th,.items-table td,.stock-table th,.stock-table td{
+  padding:12px 9px;border-bottom:1px solid #eee5e0;text-align:left;font-size:13px
+}
+.order-summary{margin-top:18px;margin-left:auto;max-width:350px}
+.summary-line{display:flex;justify-content:space-between;padding:7px 0}
+.summary-total{border-top:1px solid var(--border);font-size:18px;margin-top:5px;padding-top:12px}
+.cash-box{margin-top:15px;background:#fff8e9;border-radius:12px;padding:15px}
+.cash-title{font-weight:800;margin-bottom:12px}
+.change-positive{font-size:22px;font-weight:800;color:var(--success)}
+.stock-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-bottom:20px}
+.stock-ok{color:var(--success)}
+.stock-low{color:#bd7d24}
+.stock-out{color:var(--danger)}
+.stock-number{font-weight:800}
+.modal-bg{
+  display:none;position:fixed;inset:0;background:rgba(40,25,20,.45);
+  z-index:100;align-items:center;justify-content:center;padding:20px
+}
+.modal-bg.show{display:flex}
+.modal{background:#fff;border-radius:18px;padding:20px;width:min(650px,100%);max-height:90vh;overflow:auto}
+.modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-header h2{margin:0}
+.close-modal{border:0;background:#f3ece9;border-radius:50%;width:34px;height:34px;font-size:22px}
+.login-screen{min-height:100vh;background:linear-gradient(135deg,#fff7f5,#f7e1e5);display:flex;align-items:center;justify-content:center;padding:20px}
+.login-card{width:min(420px,100%);background:#fff;border-radius:20px;padding:28px;box-shadow:var(--shadow)}
+.login-card h1{text-align:center;margin:0 0 5px;color:var(--brown)}
+.login-card .sub{text-align:center;color:var(--muted);margin-bottom:25px}
+.login-card .btn{width:100%;margin-top:8px}
+.sidebar-overlay{display:none}
+.payment-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.payment-option{border:1px solid var(--border);border-radius:12px;padding:14px}
+.payment-option strong{display:block;margin-bottom:5px}
+.customer-card{border:1px solid var(--border);border-radius:12px;padding:15px;margin-bottom:10px}
+.customer-actions{display:flex;gap:8px;margin-top:10px}
+.loyalty-box{background:#fff7e8;border:1px solid #f0dfb7;border-radius:14px;padding:16px}
+.notification-box{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:15px;background:#f9f3f0;border-radius:12px}
+.switch{position:relative;width:50px;height:27px}
+.switch input{opacity:0;width:0;height:0}
+.slider{position:absolute;inset:0;background:#ccc;border-radius:30px}
+.slider:before{content:"";position:absolute;width:21px;height:21px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.switch input:checked + .slider{background:var(--gold)}
+.switch input:checked + .slider:before{transform:translateX(23px)}
 
+@media(max-width:900px){
+  .sidebar{transform:translateX(-100%);transition:.2s}
+  .sidebar.open{transform:translateX(0)}
+  .main{margin-left:0;width:100%}
+  .mobile-menu{display:block}
+  .sidebar-overlay.show{display:block;position:fixed;inset:0;background:rgba(0,0,0,.25);z-index:15}
+  .stats{grid-template-columns:1fr 1fr}
+  .dashboard-grid,.grid-2{grid-template-columns:1fr}
+  .products{grid-template-columns:1fr 1fr}
+  .topbar{padding:0 16px}
+  .content{padding:16px}
+}
+@media(max-width:600px){
+  .stats,.stock-grid,.products{grid-template-columns:1fr}
+  .info-grid{grid-template-columns:1fr}
+  .payment-methods{grid-template-columns:1fr}
+  .order-detail-head{flex-direction:column}
+  .order-actions{flex-wrap:wrap}
+  .order-actions .btn{flex:1}
+  .card{padding:15px}
+}
+</style>
+</head>
 
+<body>
+
+<!-- LOGIN -->
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <h1>LÁ DOCIÊ</h1>
+    <div class="sub">Painel Administrativo</div>
+
+    <div id="loginError" class="notice error"></div>
+
+    <div class="field">
+      <label>E-mail</label>
+      <input id="loginEmail" type="email" placeholder="Seu e-mail">
+    </div>
+
+    <div class="field">
+      <label>Senha</label>
+      <input id="loginPassword" type="password" placeholder="Sua senha">
+    </div>
+
+    <button class="btn btn-primary" onclick="entrar()">Entrar</button>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminScreen" class="app hidden">
+
+  <aside id="sidebar" class="sidebar">
+    <div class="brand">
+      <h1>LÁ DOCIÊ</h1>
+      <small>PAINEL ADMINISTRATIVO</small>
+    </div>
+
+    <button class="menu-btn active" onclick="abrirPagina('dashboard',this)">
+      <span class="menu-icon">📊</span> Dashboard
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('pedidos',this)">
+      <span class="menu-icon">📦</span> Pedidos
+      <span id="badgePedidos" style="margin-left:auto"></span>
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('produtos',this)">
+      <span class="menu-icon">🍰</span> Produtos
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('estoque',this)">
+      <span class="menu-icon">📦</span> Estoque
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('clientes',this)">
+      <span class="menu-icon">👥</span> Clientes
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('pagamentos',this)">
+      <span class="menu-icon">💳</span> Pagamentos
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('loja',this)">
+      <span class="menu-icon">🏪</span> Minha loja
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('cupons',this)">
+      <span class="menu-icon">🎟️</span> Cupons
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('notificacoes',this)">
+      <span class="menu-icon">🔔</span> Notificações
+    </button>
+
+    <button class="menu-btn" onclick="abrirPagina('config',this)">
+      <span class="menu-icon">🔧</span> Configurações
+    </button>
+
+    <div class="sidebar-bottom">
+      <button class="menu-btn logout-menu" onclick="sair()">
+        <span class="menu-icon">↪️</span> Sair
+      </button>
+    </div>
+  </aside>
+
+  <div id="overlay" class="sidebar-overlay" onclick="fecharMenu()"></div>
+
+  <main class="main">
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="mobile-menu" onclick="abrirMenu()">☰</button>
+        <div id="pageTitle" class="page-title">Dashboard</div>
+      </div>
+      <div class="store-status"><span class="store-dot"></span>Sistema online</div>
+    </header>
+
+    <div class="content">
+      <div id="globalNotice" class="notice"></div>
+
+      <!-- DASHBOARD -->
+      <section id="dashboard" class="panel active">
+        <div class="welcome">
+          <h1>Olá! 👋</h1>
+          <div class="small">Aqui está o resumo da Lá Dociê.</div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">
+            <div class="stat-top"><div class="stat-label">Pedidos hoje</div><div>📦</div></div>
+            <div id="statPedidos" class="stat-value">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-top"><div class="stat-label">Faturamento hoje</div><div>💰</div></div>
+            <div id="statFaturamento" class="stat-value">R$ 0,00</div>
+          </div>
+          <div class="stat">
+            <div class="stat-top"><div class="stat-label">Pendentes</div><div>⏳</div></div>
+            <div id="statPendentes" class="stat-value">0</div>
+          </div>
+          <div class="stat">
+            <div class="stat-top"><div class="stat-label">Estoque baixo</div><div>⚠️</div></div>
+            <div id="statEstoque" class="stat-value">0</div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Pedidos recentes</h2>
+                <div class="small">Acompanhe os últimos pedidos.</div>
+              </div>
+              <button class="btn btn-light" onclick="abrirPaginaPorNome('pedidos')">Ver todos</button>
+            </div>
+            <div id="dashboardPedidos" class="orders-list"><div class="small">Carregando...</div></div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Estoque</h2>
+                <div class="small">Produtos que precisam de atenção.</div>
+              </div>
+            </div>
+            <div id="dashboardEstoque"><div class="small">Carregando...</div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <h2>Clientes e fidelidade</h2>
+              <div class="small">Resumo dos clientes que já fizeram pedidos.</div>
+            </div>
+            <button class="btn btn-light" onclick="abrirPaginaPorNome('clientes')">Ver clientes</button>
+          </div>
+          <div id="dashboardClientes" class="small">Carregando...</div>
+        </div>
+      </section>
+
+      <!-- PEDIDOS -->
+      <section id="pedidos" class="panel">
+        <div id="pedidosListaView">
+          <div class="card">
+            <div class="card-header">
+              <div>
+                <h2>Pedidos</h2>
+                <div class="small">Gerencie seus pedidos em tempo real.</div>
+              </div>
+              <button class="btn btn-gold" onclick="carregarPedidos()">🔄 Atualizar</button>
+            </div>
+
+            <div class="order-tabs">
+              <button class="order-tab active" onclick="filtrarPedidos('todos',this)">Todos</button>
+              <button class="order-tab" onclick="filtrarPedidos('pendente',this)">Pendentes</button>
+              <button class="order-tab" onclick="filtrarPedidos('confirmado',this)">Confirmados</button>
+              <button class="order-tab" onclick="filtrarPedidos('preparando',this)">Preparando</button>
+              <button class="order-tab" onclick="filtrarPedidos('pronto',this)">Prontos</button>
+              <button class="order-tab" onclick="filtrarPedidos('entregue',this)">Entregues</button>
+              <button class="order-tab" onclick="filtrarPedidos('cancelado',this)">Cancelados</button>
+            </div>
+
+            <div id="ordersList" class="orders-list"><div class="small">Carregando pedidos...</div></div>
+          </div>
+        </div>
+
+        <div id="pedidoDetalhe" class="order-detail">
+          <button class="back-btn" onclick="fecharPedido()">← Voltar para pedidos</button>
+
+          <div class="card">
+            <div class="order-detail-head">
+              <div>
+                <div id="detalheNumero" class="order-detail-title">Pedido</div>
+                <div id="detalheData" class="small"></div>
+                <div style="margin-top:10px"><span id="detalheStatus" class="tag"></span></div>
+              </div>
+              <div class="order-actions">
+                <button class="btn btn-whatsapp" onclick="chamarWhatsApp()">💬 WhatsApp</button>
+                <button class="btn btn-print" onclick="imprimirPedido()">🖨️ Imprimir</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header"><h2>Cliente</h2></div>
+              <div class="info-grid">
+                <div class="info-item"><div class="info-label">Nome</div><div id="clienteNome" class="info-value">-</div></div>
+                <div class="info-item"><div class="info-label">WhatsApp</div><div id="clienteTelefone" class="info-value">-</div></div>
+                <div class="info-item"><div class="info-label">Endereço</div><div id="clienteEndereco" class="info-value">-</div></div>
+                <div class="info-item"><div class="info-label">Tipo</div><div id="clienteTipo" class="info-value">-</div></div>
+              </div>
+              <div class="loyalty-box" style="margin-top:15px">
+                <strong>⭐ Fidelidade</strong>
+                <div id="clienteFidelidadePedido" class="small" style="margin-top:6px">Calculando...</div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h2>Status do pedido</h2></div>
+              <div class="field">
+                <label>Atualizar status</label>
+                <select id="statusPedido" onchange="alterarStatusPedidoAtual(this.value)">
+                  <option value="pendente">Pendente</option>
+                  <option value="confirmado">Confirmado</option>
+                  <option value="preparando">Preparando</option>
+                  <option value="pronto">Pronto</option>
+                  <option value="entregue">Entregue</option>
+                  <option value="cancelado">Cancelado</option>
+                </select>
+              </div>
+              <div class="small">A alteração será sincronizada em tempo real.</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">
+              <div><h2>Produtos do pedido</h2><div class="small">Itens, quantidades e valores.</div></div>
+            </div>
+            <div style="overflow-x:auto">
+              <table class="items-table">
+                <thead><tr><th>Produto</th><th>Quantidade</th><th>Preço</th><th>Total</th></tr></thead>
+                <tbody id="pedidoItens"></tbody>
+              </table>
+            </div>
+            <div id="pedidoItensAviso" class="notice error"></div>
+            <div class="order-summary">
+              <div class="summary-line"><span>Subtotal</span><strong id="pedidoSubtotal">R$ 0,00</strong></div>
+              <div class="summary-line"><span>Entrega</span><strong id="pedidoEntrega">R$ 0,00</strong></div>
+              <div class="summary-line"><span>Desconto</span><strong id="pedidoDesconto">R$ 0,00</strong></div>
+              <div class="summary-line summary-total"><span>Total</span><span id="pedidoTotal">R$ 0,00</span></div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="card">
+              <div class="card-header"><h2>Pagamento</h2></div>
+              <div class="info-grid">
+                <div class="info-item"><div class="info-label">Forma</div><div id="pagamentoForma" class="info-value">-</div></div>
+                <div class="info-item"><div class="info-label">Status</div><div id="pagamentoStatus" class="info-value">-</div></div>
+              </div>
+
+              <div id="cashBox" class="cash-box hidden">
+                <div class="cash-title">💵 Pagamento em dinheiro</div>
+                <div class="info-grid">
+                  <div class="info-item"><div class="info-label">Cliente possui</div><div id="dinheiroCliente" class="info-value">R$ 0,00</div></div>
+                  <div class="info-item"><div class="info-label">Precisa de troco?</div><div id="precisaTroco" class="info-value">-</div></div>
+                </div>
+                <div style="margin-top:12px">
+                  <div class="info-label">Troco</div>
+                  <div id="valorTroco" class="change-positive">R$ 0,00</div>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <div class="card-header"><h2>Observações</h2></div>
+              <div id="pedidoObservacoes" class="small">Nenhuma observação.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUTOS -->
+      <section id="produtos" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <div><h2>Produtos</h2><div class="small">Cadastre e gerencie os produtos da Lá Dociê.</div></div>
+            <button class="btn btn-gold" onclick="abrirEditorProduto()">+ Novo produto</button>
+          </div>
+          <div id="productsList" class="products"><div class="small">Carregando...</div></div>
+        </div>
+      </section>
+
+      <!-- ESTOQUE -->
+      <section id="estoque" class="panel">
+        <div class="stock-grid">
+          <div class="stock-stat"><div class="small">Produtos cadastrados</div><div id="stockTotalProdutos" class="stat-value">0</div></div>
+          <div class="stock-stat"><div class="small">Estoque baixo</div><div id="stockBaixo" class="stat-value">0</div></div>
+          <div class="stock-stat"><div class="small">Esgotados</div><div id="stockEsgotado" class="stat-value">0</div></div>
+        </div>
+        <div class="card">
+          <div class="card-header">
+            <div><h2>Controle de estoque</h2><div class="small">Controle a quantidade disponível de cada produto.</div></div>
+            <button class="btn btn-gold" onclick="carregarProdutos()">🔄 Atualizar</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="stock-table">
+              <thead><tr><th>Produto</th><th>Estoque</th><th>Estoque mínimo</th><th>Status</th><th>Ação</th></tr></thead>
+              <tbody id="stockTable"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- CLIENTES -->
+      <section id="clientes" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <div><h2>Clientes</h2><div class="small">Nome, telefone, endereço, compras e fidelidade.</div></div>
+            <button class="btn btn-gold" onclick="renderizarClientes()">🔄 Atualizar</button>
+          </div>
+          <div id="clientesList"><div class="small">Carregando clientes...</div></div>
+        </div>
+      </section>
+
+      <!-- PAGAMENTOS -->
+      <section id="pagamentos" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <div><h2>Pagamentos</h2><div class="small">Configuração manual de pagamentos. O site não fará cobrança automática.</div></div>
+          </div>
+
+          <div class="payment-methods">
+            <div class="payment-option">
+              <strong>💚 Pix</strong>
+              <div class="small">Usa a chave Pix cadastrada em Minha loja.</div>
+            </div>
+            <div class="payment-option">
+              <strong>🔗 Link de pagamento</strong>
+              <div class="small">Você pode cadastrar manualmente o seu link do Mercado Pago.</div>
+            </div>
+            <div class="payment-option">
+              <strong>💳 Cartão na maquininha</strong>
+              <div class="small">Disponível somente para retirada, conforme sua regra.</div>
+            </div>
+          </div>
+
+          <div style="margin-top:20px" class="grid-2">
+            <div class="field">
+              <label>Chave Pix</label>
+              <input id="pagPix" placeholder="Sua chave Pix">
+            </div>
+            <div class="field">
+              <label>Link de pagamento</label>
+              <input id="pagLink" type="url" placeholder="https://...">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Taxa da maquininha — débito (%)</label>
+              <input id="taxaDebito" type="number" step="0.01" min="0">
+            </div>
+            <div class="field">
+              <label>Taxa da maquininha — crédito (%)</label>
+              <input id="taxaCredito" type="number" step="0.01" min="0">
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field">
+              <label>Parcelamento permitido</label>
+              <select id="parcelamento">
+                <option value="2">2x</option>
+                <option value="3">3x</option>
+                <option value="4">4x</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Quem absorve a taxa?</label>
+              <input value="A loja absorve a taxa" disabled>
+            </div>
+          </div>
+
+          <button class="btn btn-primary" onclick="salvarPagamentos()">💾 Salvar configurações de pagamento</button>
+        </div>
+
+        <div class="card">
+          <div class="card-header"><div><h2>Regras de pagamento</h2></div></div>
+          <div class="small">
+            • Pix: chave cadastrada.<br>
+            • Link de pagamento: você envia manualmente ao cliente.<br>
+            • Crédito: opções de 2x, 3x ou 4x.<br>
+            • Débito/crédito na maquininha física: somente para retirada.<br>
+            • As taxas cadastradas ficam registradas para seu controle; a loja absorve a taxa.
+          </div>
+        </div>
+      </section>
+
+      <!-- LOJA -->
+      <section id="loja" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <div><h2>Minha loja</h2><div class="small">Informações exibidas para seus clientes.</div></div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field"><label>Nome da loja</label><input id="lojaNome"></div>
+            <div class="field"><label>Telefone</label><input id="lojaTelefone"></div>
+          </div>
+
+          <div class="field"><label>Descrição</label><textarea id="lojaDescricao"></textarea></div>
+
+          <div class="grid-2">
+            <div class="field"><label>WhatsApp</label><input id="lojaWhatsapp"></div>
+            <div class="field"><label>Instagram</label><input id="lojaInstagram"></div>
+          </div>
+
+          <div class="field"><label>Endereço</label><input id="lojaEndereco"></div>
+
+          <div class="field">
+            <label>Horário de funcionamento</label>
+            <textarea id="lojaHorario">Terça a sexta: 14h às 22h
+Sábado: 10h às 17h
+Domingo e segunda: fechado</textarea>
+          </div>
+
+          <div class="grid-2">
+            <div class="field"><label>Chave Pix</label><input id="lojaPix"></div>
+            <div class="field"><label>Taxa de entrega</label><input id="lojaTaxa" type="number" step="0.01" min="0"></div>
+          </div>
+
+          <button class="btn btn-primary" onclick="salvarLoja()">💾 Salvar informações</button>
+        </div>
+      </section>
+
+      <!-- CUPONS -->
+      <section id="cupons" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <div><h2>Cupons</h2><div class="small">Área preparada para códigos e descontos.</div></div>
+            <button class="btn btn-gold" onclick="mostrarMensagem('O cadastro avançado de cupons será conectado ao banco em uma próxima etapa.')">+ Novo cupom</button>
+          </div>
+          <div class="small">Aqui você poderá controlar código, percentual, validade, limite e ativação.</div>
+        </div>
+      </section>
+
+      <!-- NOTIFICAÇÕES -->
+      <section id="notificacoes" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <div><h2>Notificações</h2><div class="small">Controle os avisos do painel administrativo.</div></div>
+          </div>
+
+          <div class="notification-box">
+            <div>
+              <strong>🔔 Notificações de novos pedidos</strong>
+              <div class="small">Quando um novo pedido chegar, o painel mostrará um aviso.</div>
+            </div>
+            <label class="switch">
+              <input id="notificacoesAtivas" type="checkbox" checked onchange="salvarPreferenciaNotificacoes()">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div style="margin-top:15px" class="notification-box">
+            <div>
+              <strong>🔊 Som de novo pedido</strong>
+              <div class="small">Ative para tocar um alerta quando houver novo pedido.</div>
+            </div>
+            <label class="switch">
+              <input id="somPedidos" type="checkbox" checked onchange="salvarPreferenciaNotificacoes()">
+              <span class="slider"></span>
+            </label>
+          </div>
+
+          <div style="margin-top:15px">
+            <button class="btn btn-light" onclick="pedirPermissaoNotificacao()">Permitir notificações do navegador</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONFIG -->
+      <section id="config" class="panel">
+        <div class="card">
+          <div class="card-header">
+            <div><h2>Configurações</h2><div class="small">Ferramentas administrativas da Lá Dociê.</div></div>
+          </div>
+          <div class="grid-2">
+            <div class="info-item"><div class="info-label">Banco de dados</div><div class="info-value">Supabase</div></div>
+            <div class="info-item"><div class="info-label">Pedidos em tempo real</div><div class="info-value">Ativo</div></div>
+          </div>
+          <div style="margin-top:15px" class="small">
+            Pagamentos automáticos estão desativados. O Mercado Pago pode ser usado apenas através do link cadastrado manualmente.
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- MODAL PRODUTO -->
+<div id="productModal" class="modal-bg">
+  <div class="modal">
+    <div class="modal-header">
+      <h2 id="productModalTitle">Novo produto</h2>
+      <button class="close-modal" onclick="fecharEditorProduto()">×</button>
+    </div>
+
+    <input id="produtoId" type="hidden">
+
+    <div class="field"><label>Nome</label><input id="produtoNome" placeholder="Ex.: Bolo de Chocolate"></div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>Categoria</label>
+        <select id="produtoCategoria">
+          <option value="bolos">Bolos</option>
+          <option value="doces">Doces</option>
+          <option value="kits">Kits</option>
+          <option value="outros">Outros</option>
+        </select>
+      </div>
+      <div class="field"><label>Preço</label><input id="produtoPreco" type="number" min="0" step="0.01"></div>
+    </div>
+
+    <div class="field"><label>Descrição</label><textarea id="produtoDescricao"></textarea></div>
+    <div class="field"><label>URL da imagem</label><input id="produtoImagem" type="url" placeholder="https://..."></div>
+
+    <div class="grid-2">
+      <div class="field"><label>Estoque atual</label><input id="produtoEstoque" type="number" min="0" step="1" value="0"></div>
+      <div class="field"><label>Estoque mínimo</label><input id="produtoEstoqueMinimo" type="number" min="0" step="1" value="5"></div>
+    </div>
+
+    <div class="field">
+      <label><input id="produtoAtivo" type="checkbox" checked style="width:auto"> Produto disponível no site</label>
+    </div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn btn-primary" style="flex:1" onclick="salvarProduto()">💾 Salvar</button>
+      <button class="btn btn-light" onclick="fecharEditorProduto()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
 /* =========================================================
    SUPABASE
-========================================================= */
+   ========================================================= */
 
 const SUPABASE_URL =
   "https://lzihqkpscesurkfmcasb.supabase.co";
 
-/*
-   IMPORTANTE:
-   Coloque aqui a sua Publishable Key do Supabase.
-   Não coloque service_role.
-*/
 const SUPABASE_KEY =
   "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
-
 
 const supabaseClient =
   window.supabase.createClient(
@@ -43,3434 +766,1204 @@ const supabaseClient =
     SUPABASE_KEY
   );
 
-
 /* =========================================================
-   ESTADO DO SISTEMA
-========================================================= */
+   ESTADO
+   ========================================================= */
 
 let produtos = [];
 let pedidos = [];
 let loja = null;
-
 let pedidoAtual = null;
 let itensPedidoAtual = [];
-
 let filtroAtual = "todos";
-
 let realtimeChannel = null;
-
 
 /* =========================================================
    UTILIDADES
-========================================================= */
+   ========================================================= */
 
-function escapeHTML(valor) {
-
+function escapeHTML(valor){
   return String(valor ?? "")
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
-
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 }
 
-
-function dinheiro(valor) {
-
-  return Number(valor || 0)
-    .toFixed(2)
-    .replace(".", ",");
-
+function dinheiro(valor){
+  return Number(valor || 0).toFixed(2).replace(".",",");
 }
 
-
-function mostrarMensagem(
-  mensagem,
-  tipo = "success"
-) {
-
-  const box =
-    document.getElementById("globalNotice");
-
-  if (!box) return;
-
+function mostrarMensagem(mensagem,tipo="success"){
+  const box = document.getElementById("globalNotice");
   box.textContent = mensagem;
-
-  box.className =
-    "notice show " + tipo;
-
-  setTimeout(() => {
-
-    box.classList.remove("show");
-
-  }, 5000);
-
+  box.className = "notice show " + tipo;
+  setTimeout(()=>box.classList.remove("show"),5000);
 }
 
-
-function mostrarLoginErro(mensagem) {
-
-  const box =
-    document.getElementById("loginError");
-
-  if (!box) return;
-
+function mostrarLoginErro(mensagem){
+  const box = document.getElementById("loginError");
   box.textContent = mensagem;
-
-  box.className =
-    "notice show error";
-
+  box.className = "notice show error";
 }
-
 
 /* =========================================================
    LOGIN
-========================================================= */
+   ========================================================= */
 
-async function entrar() {
+async function entrar(){
+  const email = document.getElementById("loginEmail").value.trim();
+  const senha = document.getElementById("loginPassword").value;
 
-  const email =
-    document
-      .getElementById("loginEmail")
-      ?.value
-      .trim();
-
-  const senha =
-    document
-      .getElementById("loginPassword")
-      ?.value;
-
-  if (!email || !senha) {
-
-    mostrarLoginErro(
-      "Digite seu e-mail e sua senha."
-    );
-
+  if(!email || !senha){
+    mostrarLoginErro("Digite seu e-mail e sua senha.");
     return;
   }
 
-  try {
+  try{
+    const {data,error} =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password:senha
+      });
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth
-        .signInWithPassword({
-
-          email: email,
-
-          password: senha
-
-        });
-
-    if (error) {
-
-      throw error;
-
-    }
-
-    if (!data?.session) {
-
-      throw new Error(
-        "Não foi possível iniciar a sessão."
-      );
-
-    }
+    if(error) throw error;
+    if(!data.session) throw new Error("Não foi possível iniciar a sessão.");
 
     await abrirAdmin();
-
-  } catch (error) {
-
-    console.error(
-      "Erro no login:",
-      error
-    );
-
-    mostrarLoginErro(
-      error.message ||
-      "E-mail ou senha incorretos."
-    );
-
+  }catch(error){
+    console.error(error);
+    mostrarLoginErro(error.message || "E-mail ou senha incorretos.");
   }
-
 }
 
-
-/* =========================================================
-   ABRIR PAINEL
-========================================================= */
-
-async function abrirAdmin() {
-
-  const login =
-    document.getElementById("loginScreen");
-
-  const admin =
-    document.getElementById("adminScreen");
-
-  if (login) {
-
-    login.classList.add("hidden");
-
-  }
-
-  if (admin) {
-
-    admin.classList.remove("hidden");
-
-  }
+async function abrirAdmin(){
+  document.getElementById("loginScreen").classList.add("hidden");
+  document.getElementById("adminScreen").classList.remove("hidden");
 
   await carregarTudo();
-
   iniciarRealtime();
-
 }
 
-
-/* =========================================================
-   SAIR
-========================================================= */
-
-async function sair() {
-
-  try {
-
+async function sair(){
+  try{
     await supabaseClient.auth.signOut();
-
-  } catch (error) {
-
+  }catch(error){
     console.error(error);
-
   }
 
-  if (realtimeChannel) {
-
-    try {
-
-      await supabaseClient
-        .removeChannel(
-          realtimeChannel
-        );
-
-    } catch (error) {
-
-      console.error(error);
-
-    }
-
+  if(realtimeChannel){
+    await supabaseClient.removeChannel(realtimeChannel);
     realtimeChannel = null;
-
   }
 
-  document
-    .getElementById("adminScreen")
-    ?.classList
-    .add("hidden");
-
-  document
-    .getElementById("loginScreen")
-    ?.classList
-    .remove("hidden");
-
+  document.getElementById("adminScreen").classList.add("hidden");
+  document.getElementById("loginScreen").classList.remove("hidden");
 }
-
 
 /* =========================================================
    MENU
-========================================================= */
+   ========================================================= */
 
-function abrirMenu() {
-
-  document
-    .getElementById("sidebar")
-    ?.classList
-    .add("open");
-
-  document
-    .getElementById("overlay")
-    ?.classList
-    .add("show");
-
+function abrirMenu(){
+  document.getElementById("sidebar").classList.add("open");
+  document.getElementById("overlay").classList.add("show");
 }
 
-
-function fecharMenu() {
-
-  document
-    .getElementById("sidebar")
-    ?.classList
-    .remove("open");
-
-  document
-    .getElementById("overlay")
-    ?.classList
-    .remove("show");
-
+function fecharMenu(){
+  document.getElementById("sidebar").classList.remove("open");
+  document.getElementById("overlay").classList.remove("show");
 }
 
+function abrirPagina(nome,botao){
+  document.querySelectorAll(".panel").forEach(p=>p.classList.remove("active"));
 
-function abrirPagina(nome, botao) {
+  const painel = document.getElementById(nome);
+  if(painel) painel.classList.add("active");
 
-  document
-    .querySelectorAll(".panel")
-    .forEach(p => {
-
-      p.classList.remove("active");
-
-    });
-
-
-  const painel =
-    document.getElementById(nome);
-
-  if (painel) {
-
-    painel.classList.add("active");
-
-  }
-
-
-  document
-    .querySelectorAll(".menu-btn")
-    .forEach(b => {
-
-      b.classList.remove("active");
-
-    });
-
-
-  if (botao) {
-
-    botao.classList.add("active");
-
-  }
-
+  document.querySelectorAll(".menu-btn").forEach(b=>b.classList.remove("active"));
+  if(botao) botao.classList.add("active");
 
   const titulos = {
-
-    dashboard: "Dashboard",
-
-    pedidos: "Pedidos",
-
-    produtos: "Produtos",
-
-    estoque: "Estoque",
-
-    loja: "Minha loja",
-
-    cupons: "Cupons",
-
-    config: "Configurações"
-
+    dashboard:"Dashboard",
+    pedidos:"Pedidos",
+    produtos:"Produtos",
+    estoque:"Estoque",
+    clientes:"Clientes",
+    pagamentos:"Pagamentos",
+    loja:"Minha loja",
+    cupons:"Cupons",
+    notificacoes:"Notificações",
+    config:"Configurações"
   };
 
-
-  const titulo =
-    document.getElementById("pageTitle");
-
-  if (titulo) {
-
-    titulo.textContent =
-      titulos[nome] ||
-      "Painel";
-
-  }
-
-
+  document.getElementById("pageTitle").textContent = titulos[nome] || "Painel";
   fecharMenu();
 
+  if(nome === "clientes") renderizarClientes();
+  if(nome === "pagamentos") carregarPagamentos();
 }
 
+function abrirPaginaPorNome(nome){
+  const botao = [...document.querySelectorAll(".menu-btn")]
+    .find(btn => btn.textContent.toLowerCase().includes(nome.toLowerCase()));
 
-function abrirPaginaPorNome(nome) {
-
-  const botoes =
-    [...document.querySelectorAll(".menu-btn")];
-
-  const botao =
-    botoes.find(btn =>
-
-      btn.textContent
-        .toLowerCase()
-        .includes(nome.toLowerCase())
-
-    );
-
-
-  abrirPagina(
-    nome,
-    botao
-  );
-
+  abrirPagina(nome,botao);
 }
-
 
 /* =========================================================
    PRODUTOS
-========================================================= */
+   ========================================================= */
 
-async function carregarProdutos() {
-
-  const area =
-    document.getElementById(
-      "productsList"
-    );
-
-
-  if (area) {
-
-    area.innerHTML =
-      `<div class="small">
-        Carregando produtos...
-      </div>`;
-
-  }
-
-
-  try {
-
-    const {
-      data,
-      error
-    } =
+async function carregarProdutos(){
+  try{
+    const {data,error} =
       await supabaseClient
         .from("products")
         .select("*")
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
+        .order("created_at",{ascending:false});
 
+    if(error) throw error;
 
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    produtos =
-      Array.isArray(data)
-        ? data
-        : [];
-
+    produtos = Array.isArray(data) ? data : [];
 
     renderizarProdutos();
-
     renderizarEstoque();
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao carregar produtos:",
-      error
-    );
-
-
-    if (area) {
-
-      area.innerHTML =
-        `<div class="small">
-          Não foi possível carregar os produtos.
-          <br><br>
-          ${escapeHTML(error.message)}
-        </div>`;
-
-    }
-
+  }catch(error){
+    console.error("Produtos:",error);
+    document.getElementById("productsList").innerHTML =
+      `<div class="small">Não foi possível carregar os produtos.<br><br>${escapeHTML(error.message)}</div>`;
   }
-
 }
 
+function abrirEditorProduto(id=null){
+  document.getElementById("productModal").classList.add("show");
 
-/* =========================================================
-   EDITOR DE PRODUTO
-========================================================= */
+  if(id){
+    const produto = produtos.find(p=>Number(p.id)===Number(id));
+    if(!produto) return;
 
-function abrirEditorProduto(id = null) {
-
-  const modal =
-    document.getElementById(
-      "productModal"
-    );
-
-  if (!modal) return;
-
-  modal.classList.add("show");
-
-
-  if (id) {
-
-    const produto =
-      produtos.find(
-        p =>
-          Number(p.id) ===
-          Number(id)
-      );
-
-
-    if (!produto) return;
-
-
-    document
-      .getElementById("productModalTitle")
-      .textContent =
-      "Editar produto";
-
-
-    document
-      .getElementById("produtoId")
-      .value =
-      produto.id;
-
-
-    document
-      .getElementById("produtoNome")
-      .value =
-      produto.name || "";
-
-
-    document
-      .getElementById("produtoCategoria")
-      .value =
-      produto.category ||
-      "bolos";
-
-
-    document
-      .getElementById("produtoPreco")
-      .value =
-      produto.price ?? "";
-
-
-    document
-      .getElementById("produtoDescricao")
-      .value =
-      produto.description || "";
-
-
-    document
-      .getElementById("produtoImagem")
-      .value =
-      produto.image || "";
-
-
-    document
-      .getElementById("produtoEstoque")
-      .value =
-      produto.stock ?? 0;
-
-
-    document
-      .getElementById("produtoEstoqueMinimo")
-      .value =
-      produto.min_stock ?? 5;
-
-
-    document
-      .getElementById("produtoAtivo")
-      .checked =
-      produto.active !== false;
-
-
-  } else {
-
-    document
-      .getElementById("productModalTitle")
-      .textContent =
-      "Novo produto";
-
-
-    document
-      .getElementById("produtoId")
-      .value = "";
-
-
-    document
-      .getElementById("produtoNome")
-      .value = "";
-
-
-    document
-      .getElementById("produtoCategoria")
-      .value =
-      "bolos";
-
-
-    document
-      .getElementById("produtoPreco")
-      .value = "";
-
-
-    document
-      .getElementById("produtoDescricao")
-      .value = "";
-
-
-    document
-      .getElementById("produtoImagem")
-      .value = "";
-
-
-    document
-      .getElementById("produtoEstoque")
-      .value = 0;
-
-
-    document
-      .getElementById("produtoEstoqueMinimo")
-      .value = 5;
-
-
-    document
-      .getElementById("produtoAtivo")
-      .checked = true;
-
+    document.getElementById("productModalTitle").textContent="Editar produto";
+    document.getElementById("produtoId").value=produto.id;
+    document.getElementById("produtoNome").value=produto.name || "";
+    document.getElementById("produtoCategoria").value=produto.category || "bolos";
+    document.getElementById("produtoPreco").value=produto.price ?? "";
+    document.getElementById("produtoDescricao").value=produto.description || "";
+    document.getElementById("produtoImagem").value=produto.image || "";
+    document.getElementById("produtoEstoque").value=produto.stock ?? 0;
+    document.getElementById("produtoEstoqueMinimo").value=produto.min_stock ?? 5;
+    document.getElementById("produtoAtivo").checked=produto.active !== false;
+  }else{
+    document.getElementById("productModalTitle").textContent="Novo produto";
+    document.getElementById("produtoId").value="";
+    document.getElementById("produtoNome").value="";
+    document.getElementById("produtoCategoria").value="bolos";
+    document.getElementById("produtoPreco").value="";
+    document.getElementById("produtoDescricao").value="";
+    document.getElementById("produtoImagem").value="";
+    document.getElementById("produtoEstoque").value=0;
+    document.getElementById("produtoEstoqueMinimo").value=5;
+    document.getElementById("produtoAtivo").checked=true;
   }
-
 }
 
-
-function fecharEditorProduto() {
-
-  document
-    .getElementById("productModal")
-    ?.classList
-    .remove("show");
-
+function fecharEditorProduto(){
+  document.getElementById("productModal").classList.remove("show");
 }
 
+async function salvarProduto(){
+  const id=document.getElementById("produtoId").value;
 
-/* =========================================================
-   SALVAR PRODUTO
-========================================================= */
-
-async function salvarProduto() {
-
-  const id =
-    document
-      .getElementById("produtoId")
-      ?.value;
-
-
-  const dados = {
-
-    name:
-      document
-        .getElementById("produtoNome")
-        ?.value
-        .trim() || "",
-
-
-    category:
-      document
-        .getElementById("produtoCategoria")
-        ?.value ||
-      "outros",
-
-
-    price:
-      Number(
-        document
-          .getElementById("produtoPreco")
-          ?.value ||
-        0
-      ),
-
-
-    description:
-      document
-        .getElementById("produtoDescricao")
-        ?.value
-        .trim() ||
-      null,
-
-
-    image:
-      document
-        .getElementById("produtoImagem")
-        ?.value
-        .trim() ||
-      null,
-
-
-    active:
-      document
-        .getElementById("produtoAtivo")
-        ?.checked ??
-      true,
-
-
-    stock:
-      Number(
-        document
-          .getElementById("produtoEstoque")
-          ?.value ||
-        0
-      ),
-
-
-    min_stock:
-      Number(
-        document
-          .getElementById("produtoEstoqueMinimo")
-          ?.value ||
-        0
-      )
-
+  const dados={
+    name:document.getElementById("produtoNome").value.trim(),
+    category:document.getElementById("produtoCategoria").value,
+    price:Number(document.getElementById("produtoPreco").value||0),
+    description:document.getElementById("produtoDescricao").value.trim()||null,
+    image:document.getElementById("produtoImagem").value.trim()||null,
+    active:document.getElementById("produtoAtivo").checked,
+    stock:Number(document.getElementById("produtoEstoque").value||0),
+    min_stock:Number(document.getElementById("produtoEstoqueMinimo").value||0)
   };
 
-
-  if (!dados.name) {
-
-    mostrarMensagem(
-      "Digite o nome do produto.",
-      "error"
-    );
-
+  if(!dados.name){
+    mostrarMensagem("Digite o nome do produto.","error");
     return;
-
   }
 
+  try{
+    if(id){
+      const {data,error}=await supabaseClient
+        .from("products").update(dados).eq("id",Number(id)).select().single();
 
-  try {
+      if(error) throw error;
 
-    if (id) {
+      const indice=produtos.findIndex(p=>Number(p.id)===Number(id));
+      if(indice!==-1) produtos[indice]=data;
 
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("products")
-          .update(dados)
-          .eq(
-            "id",
-            Number(id)
-          )
-          .select()
-          .single();
+      mostrarMensagem("Produto atualizado com sucesso!");
+    }else{
+      const {data,error}=await supabaseClient
+        .from("products").insert([dados]).select().single();
 
-
-      if (error) {
-
-        throw error;
-
-      }
-
-
-      const indice =
-        produtos.findIndex(
-          p =>
-            Number(p.id) ===
-            Number(id)
-        );
-
-
-      if (indice !== -1) {
-
-        produtos[indice] =
-          data;
-
-      }
-
-
-      mostrarMensagem(
-        "Produto atualizado com sucesso!"
-      );
-
-
-    } else {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("products")
-          .insert([dados])
-          .select()
-          .single();
-
-
-      if (error) {
-
-        throw error;
-
-      }
-
-
+      if(error) throw error;
       produtos.unshift(data);
-
-
-      mostrarMensagem(
-        "Produto criado com sucesso!"
-      );
-
+      mostrarMensagem("Produto criado com sucesso!");
     }
 
-
     renderizarProdutos();
-
     renderizarEstoque();
-
     fecharEditorProduto();
-
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao salvar produto:",
-      error
-    );
-
-
-    mostrarMensagem(
-      "Não foi possível salvar o produto: " +
-      error.message,
-      "error"
-    );
-
+  }catch(error){
+    console.error(error);
+    mostrarMensagem("Não foi possível salvar o produto: "+error.message,"error");
   }
-
 }
 
+function renderizarProdutos(){
+  const area=document.getElementById("productsList");
 
-/* =========================================================
-   RENDERIZAR PRODUTOS
-========================================================= */
-
-function renderizarProdutos() {
-
-  const area =
-    document.getElementById(
-      "productsList"
-    );
-
-
-  if (!area) return;
-
-
-  if (!produtos.length) {
-
-    area.innerHTML =
-      `<div class="small">
-        Nenhum produto cadastrado.
-      </div>`;
-
+  if(!produtos.length){
+    area.innerHTML=`<div class="small">Nenhum produto cadastrado.</div>`;
     return;
-
   }
 
+  area.innerHTML="";
 
-  area.innerHTML = "";
+  produtos.forEach(produto=>{
+    const card=document.createElement("div");
+    card.className="product-card";
 
+    const imagem=produto.image
+      ? `<img src="${escapeHTML(produto.image)}" alt="${escapeHTML(produto.name)}">`
+      : "🍰";
 
-  produtos.forEach(produto => {
+    const estoque=Number(produto.stock??0);
 
-    const card =
-      document.createElement("div");
-
-
-    card.className =
-      "product-card";
-
-
-    let imagem = "🍰";
-
-
-    if (produto.image) {
-
-      imagem =
-        `<img
-          src="${escapeHTML(produto.image)}"
-          alt="${escapeHTML(produto.name)}"
-        >`;
-
-    }
-
-
-    const estoque =
-      Number(
-        produto.stock ?? 0
-      );
-
-
-    card.innerHTML = `
-
-      <div class="product-image">
-        ${imagem}
-      </div>
-
-      <div class="product-name">
-        ${escapeHTML(produto.name)}
-      </div>
-
-      <div class="small">
-        ${escapeHTML(
-          produto.category ||
-          "Produto"
-        )}
-      </div>
-
-      <div class="product-price">
-        R$ ${dinheiro(produto.price)}
-      </div>
-
-      <div class="small">
-        Estoque:
-        <strong>
-          ${estoque}
-        </strong>
-      </div>
-
+    card.innerHTML=`
+      <div class="product-image">${imagem}</div>
+      <div class="product-name">${escapeHTML(produto.name)}</div>
+      <div class="small">${escapeHTML(produto.category||"Produto")}</div>
+      <div class="product-price">R$ ${dinheiro(produto.price)}</div>
+      <div class="small">Estoque: <strong>${estoque}</strong></div>
       <div class="product-actions">
-
-        <button
-          class="btn btn-primary"
-          onclick="abrirEditorProduto(${produto.id})">
-
-          ✏️ Editar
-
+        <button class="btn btn-primary" onclick="abrirEditorProduto(${produto.id})">✏️ Editar</button>
+        <button class="btn ${produto.active?'btn-danger':'btn-success'}" onclick="alternarProduto(${produto.id})">
+          ${produto.active?"Desativar":"Ativar"}
         </button>
-
-        <button
-          class="btn ${
-            produto.active
-              ? "btn-danger"
-              : "btn-success"
-          }"
-          onclick="alternarProduto(${produto.id})">
-
-          ${
-            produto.active
-              ? "Desativar"
-              : "Ativar"
-          }
-
-        </button>
-
-      </div>
-
-    `;
-
-
+      </div>`;
     area.appendChild(card);
-
   });
-
 }
 
+async function alternarProduto(id){
+  const produto=produtos.find(p=>Number(p.id)===Number(id));
+  if(!produto) return;
 
-/* =========================================================
-   ATIVAR / DESATIVAR PRODUTO
-========================================================= */
+  try{
+    const {data,error}=await supabaseClient
+      .from("products")
+      .update({active:!produto.active})
+      .eq("id",Number(id))
+      .select().single();
 
-async function alternarProduto(id) {
+    if(error) throw error;
 
-  const produto =
-    produtos.find(
-      p =>
-        Number(p.id) ===
-        Number(id)
-    );
-
-
-  if (!produto) return;
-
-
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("products")
-        .update({
-
-          active:
-            !produto.active
-
-        })
-        .eq(
-          "id",
-          Number(id)
-        )
-        .select()
-        .single();
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    const indice =
-      produtos.findIndex(
-        p =>
-          Number(p.id) ===
-          Number(id)
-      );
-
-
-    if (indice !== -1) {
-
-      produtos[indice] =
-        data;
-
-    }
-
-
+    const indice=produtos.findIndex(p=>Number(p.id)===Number(id));
+    produtos[indice]=data;
     renderizarProdutos();
 
-
-    mostrarMensagem(
-      data.active
-        ? "Produto ativado."
-        : "Produto retirado do site."
-    );
-
-
-  } catch (error) {
-
-    console.error(error);
-
-
-    mostrarMensagem(
-      error.message,
-      "error"
-    );
-
+    mostrarMensagem(data.active?"Produto ativado.":"Produto retirado do site.");
+  }catch(error){
+    mostrarMensagem(error.message,"error");
   }
-
 }
-
 
 /* =========================================================
    ESTOQUE
-========================================================= */
+   ========================================================= */
 
-function renderizarEstoque() {
+function renderizarEstoque(){
+  const tbody=document.getElementById("stockTable");
 
-  const tbody =
-    document.getElementById(
-      "stockTable"
-    );
-
-
-  if (!tbody) return;
-
-
-  if (!produtos.length) {
-
-    tbody.innerHTML =
-      `<tr>
-        <td colspan="5">
-          Nenhum produto cadastrado.
-        </td>
-      </tr>`;
-
+  if(!produtos.length){
+    tbody.innerHTML=`<tr><td colspan="5">Nenhum produto cadastrado.</td></tr>`;
     return;
-
   }
 
+  let baixos=0,esgotados=0;
+  tbody.innerHTML="";
 
-  let baixos = 0;
+  produtos.forEach(produto=>{
+    const estoque=Number(produto.stock??0);
+    const minimo=Number(produto.min_stock??5);
 
-  let esgotados = 0;
+    let status,classe;
 
-
-  tbody.innerHTML = "";
-
-
-  produtos.forEach(produto => {
-
-    const estoque =
-      Number(
-        produto.stock ?? 0
-      );
-
-
-    const minimo =
-      Number(
-        produto.min_stock ?? 5
-      );
-
-
-    let status;
-
-    let classe;
-
-
-    if (estoque <= 0) {
-
-      status = "ESGOTADO";
-
-      classe = "stock-out";
-
-      esgotados++;
-
-
-    } else if (
-      estoque <= minimo
-    ) {
-
-      status =
-        "ESTOQUE BAIXO";
-
-      classe =
-        "stock-low";
-
-      baixos++;
-
-
-    } else {
-
-      status = "NORMAL";
-
-      classe = "stock-ok";
-
+    if(estoque<=0){
+      status="ESGOTADO";classe="stock-out";esgotados++;
+    }else if(estoque<=minimo){
+      status="ESTOQUE BAIXO";classe="stock-low";baixos++;
+    }else{
+      status="NORMAL";classe="stock-ok";
     }
 
-
-    const tr =
-      document.createElement("tr");
-
-
-    tr.innerHTML = `
-
-      <td>
-
-        <strong>
-          ${escapeHTML(produto.name)}
-        </strong>
-
-      </td>
-
-
-      <td>
-
-        <span
-          class="stock-number ${classe}">
-
-          ${estoque}
-
-        </span>
-
-      </td>
-
-
-      <td>
-        ${minimo}
-      </td>
-
-
-      <td>
-
-        <strong
-          class="${classe}">
-
-          ${status}
-
-        </strong>
-
-      </td>
-
-
-      <td>
-
-        <button
-          class="btn btn-light"
-          onclick="abrirEditorProduto(${produto.id})">
-
-          Ajustar
-
-        </button>
-
-      </td>
-
-    `;
-
-
+    const tr=document.createElement("tr");
+    tr.innerHTML=`
+      <td><strong>${escapeHTML(produto.name)}</strong></td>
+      <td><span class="stock-number ${classe}">${estoque}</span></td>
+      <td>${minimo}</td>
+      <td><strong class="${classe}">${status}</strong></td>
+      <td><button class="btn btn-light" onclick="abrirEditorProduto(${produto.id})">Ajustar</button></td>`;
     tbody.appendChild(tr);
-
   });
 
-
-  const total =
-    document.getElementById(
-      "stockTotalProdutos"
-    );
-
-  const baixo =
-    document.getElementById(
-      "stockBaixo"
-    );
-
-  const esgotado =
-    document.getElementById(
-      "stockEsgotado"
-    );
-
-  const statEstoque =
-    document.getElementById(
-      "statEstoque"
-    );
-
-
-  if (total)
-    total.textContent =
-      produtos.length;
-
-
-  if (baixo)
-    baixo.textContent =
-      baixos;
-
-
-  if (esgotado)
-    esgotado.textContent =
-      esgotados;
-
-
-  if (statEstoque)
-    statEstoque.textContent =
-      baixos + esgotados;
-
+  document.getElementById("stockTotalProdutos").textContent=produtos.length;
+  document.getElementById("stockBaixo").textContent=baixos;
+  document.getElementById("stockEsgotado").textContent=esgotados;
+  document.getElementById("statEstoque").textContent=baixos+esgotados;
 
   renderizarDashboardEstoque();
-
 }
 
+function renderizarDashboardEstoque(){
+  const area=document.getElementById("dashboardEstoque");
 
-/* =========================================================
-   DASHBOARD — ESTOQUE
-========================================================= */
+  const problemas=produtos.filter(p=>{
+    const estoque=Number(p.stock??0);
+    const minimo=Number(p.min_stock??5);
+    return estoque<=minimo;
+  }).slice(0,5);
 
-function renderizarDashboardEstoque() {
-
-  const area =
-    document.getElementById(
-      "dashboardEstoque"
-    );
-
-
-  if (!area) return;
-
-
-  const problemas =
-    produtos
-      .filter(produto => {
-
-        const estoque =
-          Number(
-            produto.stock ?? 0
-          );
-
-
-        const minimo =
-          Number(
-            produto.min_stock ?? 5
-          );
-
-
-        return estoque <= minimo;
-
-      })
-      .slice(0, 5);
-
-
-  if (!problemas.length) {
-
-    area.innerHTML =
-      `<div class="small">
-        ✅ Nenhum produto precisa de reposição.
-      </div>`;
-
+  if(!problemas.length){
+    area.innerHTML=`<div class="small">✅ Nenhum produto precisa de reposição.</div>`;
     return;
-
   }
 
-
-  area.innerHTML =
-    problemas
-      .map(produto => {
-
-        const estoque =
-          Number(
-            produto.stock ?? 0
-          );
-
-
-        return `
-
-          <div
-            style="
-              display:flex;
-              justify-content:space-between;
-              padding:10px 0;
-              border-bottom:1px solid #eee5e0;
-            ">
-
-            <strong>
-              ${escapeHTML(produto.name)}
-            </strong>
-
-            <span
-              class="${
-                estoque <= 0
-                  ? "stock-out"
-                  : "stock-low"
-              }">
-
-              ${
-                estoque <= 0
-                  ? "Esgotado"
-                  : estoque + " un."
-              }
-
-            </span>
-
-          </div>
-
-        `;
-
-      })
-      .join("");
-
+  area.innerHTML=problemas.map(p=>{
+    const estoque=Number(p.stock??0);
+    return `
+      <div style="display:flex;justify-content:space-between;padding:10px 0;border-bottom:1px solid #eee5e0">
+        <strong>${escapeHTML(p.name)}</strong>
+        <span class="${estoque<=0?'stock-out':'stock-low'}">${estoque<=0?'Esgotado':estoque+' un.'}</span>
+      </div>`;
+  }).join("");
 }
-
 
 /* =========================================================
    PEDIDOS
-========================================================= */
+   ========================================================= */
 
-async function carregarPedidos() {
+async function carregarPedidos(){
+  const area=document.getElementById("ordersList");
+  area.innerHTML=`<div class="small">Carregando pedidos...</div>`;
 
-  const area =
-    document.getElementById(
-      "ordersList"
-    );
+  try{
+    const {data,error}=await supabaseClient
+      .from("orders")
+      .select("*")
+      .order("created_at",{ascending:false});
 
+    if(error) throw error;
 
-  if (area) {
-
-    area.innerHTML =
-      `<div class="small">
-        Carregando pedidos...
-      </div>`;
-
-  }
-
-
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("orders")
-        .select("*")
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        );
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    pedidos =
-      Array.isArray(data)
-        ? data
-        : [];
-
-
+    pedidos=Array.isArray(data)?data:[];
     renderizarPedidos();
-
     atualizarDashboard();
-
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao carregar pedidos:",
-      error
-    );
-
-
-    if (area) {
-
-      area.innerHTML =
-        `<div class="small">
-
-          Não foi possível carregar os pedidos.
-
-          <br><br>
-
-          ${escapeHTML(error.message)}
-
-        </div>`;
-
-    }
-
+    renderizarClientes();
+  }catch(error){
+    console.error(error);
+    area.innerHTML=`
+      <div class="notice show error">
+        Não foi possível carregar os pedidos.<br><br>
+        ${escapeHTML(error.message)}
+      </div>`;
   }
-
 }
 
+function filtrarPedidos(status,botao){
+  filtroAtual=status;
 
-/* =========================================================
-   FILTRO DE PEDIDOS
-========================================================= */
-
-function filtrarPedidos(
-  status,
-  botao
-) {
-
-  filtroAtual =
-    status;
-
-
-  document
-    .querySelectorAll(".order-tab")
-    .forEach(btn => {
-
-      btn.classList.remove(
-        "active"
-      );
-
-    });
-
-
-  if (botao) {
-
-    botao.classList.add(
-      "active"
-    );
-
-  }
-
+  document.querySelectorAll(".order-tab").forEach(btn=>btn.classList.remove("active"));
+  if(botao) botao.classList.add("active");
 
   renderizarPedidos();
-
 }
 
+function renderizarPedidos(){
+  const area=document.getElementById("ordersList");
+  if(!area) return;
 
-/* =========================================================
-   RENDERIZAR PEDIDOS
-========================================================= */
+  let lista=[...pedidos];
 
-function renderizarPedidos() {
-
-  const area =
-    document.getElementById(
-      "ordersList"
-    );
-
-
-  if (!area) return;
-
-
-  let lista =
-    [...pedidos];
-
-
-  if (
-    filtroAtual !==
-    "todos"
-  ) {
-
-    lista =
-      lista.filter(
-        pedido =>
-
-          (
-            pedido.status ||
-            "pendente"
-          ) ===
-          filtroAtual
-      );
-
+  if(filtroAtual!=="todos"){
+    lista=lista.filter(p=>(p.status||"pendente")===filtroAtual);
   }
 
+  if(!lista.length){
+    area.innerHTML=`<div class="small">Nenhum pedido encontrado.</div>`;
+    return;
+  }
 
-  if (!lista.length) {
+  area.innerHTML=lista.map(p=>{
+    const status=p.status||"pendente";
+    const cliente=p.customer_name||p.name||p.customer||"Cliente";
+    const data=p.created_at
+      ? new Date(p.created_at).toLocaleString("pt-BR",{dateStyle:"short",timeStyle:"short"})
+      : "";
 
-    area.innerHTML =
-      `<div class="small">
-        Nenhum pedido encontrado.
+    return `
+      <div class="order-row" onclick="abrirDetalhePedidoPorId(${Number(p.id)})">
+        <div>
+          <div class="order-number">Pedido #${escapeHTML(p.id)}</div>
+          <div class="order-client">${escapeHTML(cliente)}</div>
+          <div class="order-meta"><span class="tag tag-${escapeHTML(status)}">${escapeHTML(status)}</span></div>
+        </div>
+        <div>
+          <div class="order-total">R$ ${dinheiro(p.total)}</div>
+          <div class="order-time">${escapeHTML(data)}</div>
+        </div>
       </div>`;
-
-    return;
-
-  }
-
-
-  area.innerHTML =
-    lista
-      .map(pedido => {
-
-        const status =
-          pedido.status ||
-          "pendente";
-
-
-        const cliente =
-          pedido.customer_name ||
-          pedido.name ||
-          pedido.customer ||
-          "Cliente";
-
-
-        const data =
-          pedido.created_at
-            ? new Date(
-                pedido.created_at
-              ).toLocaleString(
-                "pt-BR",
-                {
-                  dateStyle:
-                    "short",
-                  timeStyle:
-                    "short"
-                }
-              )
-            : "";
-
-
-        return `
-
-          <div
-            class="order-row"
-            onclick="abrirDetalhePedidoPorId(${Number(pedido.id)})">
-
-            <div>
-
-              <div
-                class="order-number">
-
-                Pedido #${escapeHTML(
-                  pedido.id
-                )}
-
-              </div>
-
-
-              <div
-                class="order-client">
-
-                ${escapeHTML(
-                  cliente
-                )}
-
-              </div>
-
-
-              <div
-                class="order-meta">
-
-                <span
-                  class="tag tag-${escapeHTML(
-                    status
-                  )}">
-
-                  ${escapeHTML(
-                    status
-                  )}
-
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <div>
-
-              <div
-                class="order-total">
-
-                R$
-                ${dinheiro(
-                  pedido.total
-                )}
-
-              </div>
-
-
-              <div
-                class="order-time">
-
-                ${escapeHTML(
-                  data
-                )}
-
-              </div>
-
-            </div>
-
-          </div>
-
-        `;
-
-      })
-      .join("");
-
+  }).join("");
 }
 
-
-/* =========================================================
-   ABRIR DETALHE DO PEDIDO
-========================================================= */
-
-async function abrirDetalhePedidoPorId(id) {
-
-  const pedido =
-    pedidos.find(
-      p =>
-        Number(p.id) ===
-        Number(id)
-    );
-
-
-  if (!pedido) {
-
-    mostrarMensagem(
-      "Pedido não encontrado.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  await abrirDetalhePedido(
-    pedido
-  );
-
+async function abrirDetalhePedidoPorId(id){
+  const pedido=pedidos.find(p=>Number(p.id)===Number(id));
+  if(!pedido) return;
+  await abrirDetalhePedido(pedido);
 }
 
+async function abrirDetalhePedido(pedido){
+  pedidoAtual=pedido;
 
-async function abrirDetalhePedido(
-  pedido
-) {
+  document.getElementById("pedidosListaView").style.display="none";
+  document.getElementById("pedidoDetalhe").classList.add("show");
 
-  pedidoAtual =
-    pedido;
-
-
-  const lista =
-    document.getElementById(
-      "pedidosListaView"
-    );
-
-
-  if (lista) {
-
-    lista.style.display =
-      "none";
-
-  }
-
-
-  document
-    .getElementById(
-      "pedidoDetalhe"
-    )
-    ?.classList
-    .add("show");
-
-
-  preencherDetalhePedido(
-    pedido
-  );
-
-
-  await carregarItensDoPedido(
-    pedido.id
-  );
-
+  preencherDetalhePedido(pedido);
+  await carregarItensDoPedido(pedido.id);
 }
 
+async function preencherDetalhePedido(pedido){
+  const status=pedido.status||"pendente";
 
-/* =========================================================
-   PREENCHER DETALHES
-========================================================= */
+  document.getElementById("detalheNumero").textContent="Pedido #"+pedido.id;
+  document.getElementById("detalheData").textContent=pedido.created_at
+    ? new Date(pedido.created_at).toLocaleString("pt-BR"):"";
 
-function preencherDetalhePedido(
-  pedido
-) {
+  const statusEl=document.getElementById("detalheStatus");
+  statusEl.textContent=status;
+  statusEl.className="tag tag-"+status;
 
-  const status =
-    pedido.status ||
-    "pendente";
+  document.getElementById("statusPedido").value=status;
 
+  const nome=pedido.customer_name||pedido.name||pedido.customer||"-";
+  const telefone=pedido.customer_phone||pedido.phone||pedido.whatsapp||pedido.customer_whatsapp||"-";
+  const endereco=pedido.address||pedido.customer_address||pedido.delivery_address||"-";
 
-  const numero =
-    document.getElementById(
-      "detalheNumero"
-    );
+  document.getElementById("clienteNome").textContent=nome;
+  document.getElementById("clienteTelefone").textContent=telefone;
+  document.getElementById("clienteEndereco").textContent=endereco;
+  document.getElementById("clienteTipo").textContent=pedido.order_type||pedido.type||pedido.delivery_type||"-";
 
+  document.getElementById("pagamentoForma").textContent=
+    pedido.payment_method||pedido.payment_type||pedido.payment||"-";
 
-  if (numero) {
+  document.getElementById("pagamentoStatus").textContent=
+    pedido.payment_status||pedido.payment_state||"-";
 
-    numero.textContent =
-      "Pedido #" +
-      pedido.id;
+  document.getElementById("pedidoObservacoes").textContent=
+    pedido.notes||pedido.observations||pedido.observation||"Nenhuma observação.";
 
-  }
+  document.getElementById("pedidoEntrega").textContent=
+    "R$ "+dinheiro(pedido.delivery_fee??pedido.delivery??0);
 
+  document.getElementById("pedidoDesconto").textContent=
+    "R$ "+dinheiro(pedido.discount??pedido.desconto??0);
 
-  const data =
-    document.getElementById(
-      "detalheData"
-    );
+  document.getElementById("pedidoTotal").textContent="R$ "+dinheiro(pedido.total);
 
-
-  if (data) {
-
-    data.textContent =
-      pedido.created_at
-        ? new Date(
-            pedido.created_at
-          ).toLocaleString(
-            "pt-BR"
-          )
-        : "";
-
-  }
-
-
-  const statusEl =
-    document.getElementById(
-      "detalheStatus"
-    );
-
-
-  if (statusEl) {
-
-    statusEl.textContent =
-      status;
-
-    statusEl.className =
-      "tag tag-" +
-      status;
-
-  }
-
-
-  const statusSelect =
-    document.getElementById(
-      "statusPedido"
-    );
-
-
-  if (statusSelect) {
-
-    statusSelect.value =
-      status;
-
-  }
-
-
-  /* CLIENTE */
-
-  document.getElementById(
-    "clienteNome"
-  ).textContent =
-
-    pedido.customer_name ||
-    pedido.name ||
-    pedido.customer ||
-    "-";
-
-
-  document.getElementById(
-    "clienteTelefone"
-  ).textContent =
-
-    pedido.customer_phone ||
-    pedido.phone ||
-    pedido.whatsapp ||
-    pedido.customer_whatsapp ||
-    "-";
-
-
-  document.getElementById(
-    "clienteEndereco"
-  ).textContent =
-
-    pedido.address ||
-    pedido.customer_address ||
-    pedido.delivery_address ||
-    "-";
-
-
-  document.getElementById(
-    "clienteTipo"
-  ).textContent =
-
-    pedido.order_type ||
-    pedido.type ||
-    pedido.delivery_type ||
-    "-";
-
-
-  /* PAGAMENTO MANUAL */
-
-  document.getElementById(
-    "pagamentoForma"
-  ).textContent =
-
-    pedido.payment_method ||
-    pedido.payment_type ||
-    pedido.payment ||
-    "-";
-
-
-  document.getElementById(
-    "pagamentoStatus"
-  ).textContent =
-
-    pedido.payment_status ||
-    pedido.payment_state ||
-    "Pendente";
-
-
-  /* OBSERVAÇÕES */
-
-  document.getElementById(
-    "pedidoObservacoes"
-  ).textContent =
-
-    pedido.notes ||
-    pedido.observations ||
-    pedido.observation ||
-    "Nenhuma observação.";
-
-
-  /* VALORES */
-
-  document.getElementById(
-    "pedidoEntrega"
-  ).textContent =
-
-    "R$ " +
-    dinheiro(
-      pedido.delivery_fee ??
-      pedido.delivery ??
-      0
-    );
-
-
-  document.getElementById(
-    "pedidoDesconto"
-  ).textContent =
-
-    "R$ " +
-    dinheiro(
-      pedido.discount ??
-      pedido.desconto ??
-      0
-    );
-
-
-  document.getElementById(
-    "pedidoTotal"
-  ).textContent =
-
-    "R$ " +
-    dinheiro(
-      pedido.total
-    );
-
-
-  atualizarPagamentoDinheiro(
-    pedido
-  );
-
+  atualizarPagamentoDinheiro(pedido);
+  atualizarFidelidadeDoCliente(nome,telefone);
 }
 
+async function carregarItensDoPedido(orderId){
+  const tbody=document.getElementById("pedidoItens");
+  const aviso=document.getElementById("pedidoItensAviso");
 
-/* =========================================================
-   ITENS DO PEDIDO
-========================================================= */
+  tbody.innerHTML=`<tr><td colspan="4" style="text-align:center">Carregando produtos...</td></tr>`;
+  aviso.className="notice error";
+  aviso.textContent="";
+  aviso.style.display="none";
+  itensPedidoAtual=[];
 
-async function carregarItensDoPedido(
-  orderId
-) {
+  try{
+    const {data,error}=await supabaseClient
+      .from("order_items")
+      .select("*")
+      .eq("order_id",Number(orderId))
+      .order("id",{ascending:true});
 
-  const tbody =
-    document.getElementById(
-      "pedidoItens"
-    );
+    if(error) throw error;
 
-
-  const aviso =
-    document.getElementById(
-      "pedidoItensAviso"
-    );
-
-
-  if (!tbody) return;
-
-
-  tbody.innerHTML = `
-
-    <tr>
-
-      <td
-        colspan="4"
-        style="text-align:center">
-
-        Carregando produtos...
-
-      </td>
-
-    </tr>
-
-  `;
-
-
-  if (aviso) {
-
-    aviso.style.display =
-      "none";
-
-  }
-
-
-  itensPedidoAtual = [];
-
-
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("order_items")
-        .select("*")
-        .eq(
-          "order_id",
-          Number(orderId)
-        )
-        .order(
-          "id",
-          {
-            ascending: true
-          }
-        );
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    itensPedidoAtual =
-      Array.isArray(data)
-        ? data
-        : [];
-
-
+    itensPedidoAtual=Array.isArray(data)?data:[];
     renderizarItensPedido();
+  }catch(error){
+    console.error("Erro ao carregar itens:",error);
 
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao carregar itens:",
-      error
-    );
-
-
-    tbody.innerHTML = `
-
-      <tr>
-
-        <td colspan="4">
-
-          Não foi possível carregar os produtos deste pedido.
-
-        </td>
-
-      </tr>
-
-    `;
-
-
-    if (aviso) {
-
-      aviso.textContent =
-        "Erro ao carregar os produtos: " +
-        error.message;
-
-      aviso.style.display =
-        "block";
-
-    }
-
+    tbody.innerHTML=`<tr><td colspan="4">Não foi possível carregar os produtos deste pedido.</td></tr>`;
+    aviso.textContent="Erro ao carregar os produtos: "+error.message;
+    aviso.style.display="block";
   }
-
 }
 
+function renderizarItensPedido(){
+  const tbody=document.getElementById("pedidoItens");
 
-/* =========================================================
-   RENDERIZAR ITENS
-========================================================= */
-
-function renderizarItensPedido() {
-
-  const tbody =
-    document.getElementById(
-      "pedidoItens"
-    );
-
-
-  if (!tbody) return;
-
-
-  if (!itensPedidoAtual.length) {
-
-    tbody.innerHTML = `
-
-      <tr>
-
-        <td
-          colspan="4"
-          style="text-align:center">
-
-          Nenhum produto encontrado neste pedido.
-
-        </td>
-
-      </tr>
-
-    `;
-
-
-    const subtotal =
-      document.getElementById(
-        "pedidoSubtotal"
-      );
-
-
-    if (subtotal) {
-
-      subtotal.textContent =
-        "R$ 0,00";
-
-    }
-
-
+  if(!itensPedidoAtual.length){
+    tbody.innerHTML=`<tr><td colspan="4" style="text-align:center">Nenhum produto encontrado neste pedido.</td></tr>`;
+    document.getElementById("pedidoSubtotal").textContent="R$ 0,00";
     return;
-
   }
 
+  let subtotal=0;
 
-  let subtotal =
-    0;
+  tbody.innerHTML=itensPedidoAtual.map(item=>{
+    const quantidade=Number(item.qty||0);
+    const preco=Number(item.price||0);
+    const totalItem=quantidade*preco;
+    subtotal+=totalItem;
 
+    return `
+      <tr>
+        <td><strong>${escapeHTML(item.name||"Produto")}</strong></td>
+        <td>${quantidade}</td>
+        <td>R$ ${dinheiro(preco)}</td>
+        <td><strong>R$ ${dinheiro(totalItem)}</strong></td>
+      </tr>`;
+  }).join("");
 
-  tbody.innerHTML =
-    itensPedidoAtual
-      .map(item => {
+  document.getElementById("pedidoSubtotal").textContent="R$ "+dinheiro(subtotal);
 
-        const quantidade =
-          Number(
-            item.qty ||
-            item.quantity ||
-            0
-          );
-
-
-        const preco =
-          Number(
-            item.price ||
-            0
-          );
-
-
-        const totalItem =
-          quantidade *
-          preco;
-
-
-        subtotal +=
-          totalItem;
-
-
-        return `
-
-          <tr>
-
-            <td>
-
-              <strong>
-
-                ${escapeHTML(
-                  item.name ||
-                  "Produto"
-                )}
-
-              </strong>
-
-            </td>
-
-
-            <td>
-
-              ${quantidade}
-
-            </td>
-
-
-            <td>
-
-              R$
-              ${dinheiro(
-                preco
-              )}
-
-            </td>
-
-
-            <td>
-
-              <strong>
-
-                R$
-                ${dinheiro(
-                  totalItem
-                )}
-
-              </strong>
-
-            </td>
-
-          </tr>
-
-        `;
-
-      })
-      .join("");
-
-
-  document.getElementById(
-    "pedidoSubtotal"
-  ).textContent =
-
-    "R$ " +
-    dinheiro(
-      subtotal
-    );
-
-
-  if (
-    pedidoAtual &&
-    (
-      pedidoAtual.total ===
-      null ||
-      pedidoAtual.total ===
-      undefined
-    )
-  ) {
-
-    document.getElementById(
-      "pedidoTotal"
-    ).textContent =
-
-      "R$ " +
-      dinheiro(
-        subtotal
-      );
-
+  if(pedidoAtual && (pedidoAtual.total===null || pedidoAtual.total===undefined)){
+    document.getElementById("pedidoTotal").textContent="R$ "+dinheiro(subtotal);
   }
-
 }
 
+function fecharPedido(){
+  pedidoAtual=null;
+  itensPedidoAtual=[];
 
-/* =========================================================
-   FECHAR PEDIDO
-========================================================= */
-
-function fecharPedido() {
-
-  pedidoAtual =
-    null;
-
-  itensPedidoAtual =
-    [];
-
-
-  document
-    .getElementById(
-      "pedidoDetalhe"
-    )
-    ?.classList
-    .remove("show");
-
-
-  const lista =
-    document.getElementById(
-      "pedidosListaView"
-    );
-
-
-  if (lista) {
-
-    lista.style.display =
-      "block";
-
-  }
-
-
-  const itens =
-    document.getElementById(
-      "pedidoItens"
-    );
-
-
-  if (itens) {
-
-    itens.innerHTML =
-      "";
-
-  }
-
+  document.getElementById("pedidoDetalhe").classList.remove("show");
+  document.getElementById("pedidosListaView").style.display="block";
+  document.getElementById("pedidoItens").innerHTML="";
 }
 
+async function alterarStatusPedidoAtual(novoStatus){
+  if(!pedidoAtual) return;
 
-/* =========================================================
-   ALTERAR STATUS
-========================================================= */
+  try{
+    const {data,error}=await supabaseClient
+      .from("orders")
+      .update({status:novoStatus})
+      .eq("id",Number(pedidoAtual.id))
+      .select().single();
 
-async function alterarStatusPedidoAtual(
-  novoStatus
-) {
+    if(error) throw error;
 
-  if (!pedidoAtual) return;
+    pedidoAtual=data;
 
+    const indice=pedidos.findIndex(p=>Number(p.id)===Number(data.id));
+    if(indice!==-1) pedidos[indice]=data;
 
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("orders")
-        .update({
-
-          status:
-            novoStatus
-
-        })
-        .eq(
-          "id",
-          Number(
-            pedidoAtual.id
-          )
-        )
-        .select()
-        .single();
-
-
-    if (error) {
-
-      throw error;
-
-    }
-
-
-    pedidoAtual =
-      data;
-
-
-    const indice =
-      pedidos.findIndex(
-        p =>
-          Number(p.id) ===
-          Number(data.id)
-      );
-
-
-    if (indice !== -1) {
-
-      pedidos[indice] =
-        data;
-
-    }
-
-
-    preencherDetalhePedido(
-      data
-    );
-
-
+    preencherDetalhePedido(data);
     renderizarPedidos();
-
     atualizarDashboard();
 
-
-    mostrarMensagem(
-      "Status do pedido atualizado!"
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      error
-    );
-
-
-    mostrarMensagem(
-      "Não foi possível alterar o status: " +
-      error.message,
-      "error"
-    );
-
+    mostrarMensagem("Status do pedido atualizado!");
+  }catch(error){
+    console.error(error);
+    mostrarMensagem("Não foi possível alterar o status: "+error.message,"error");
   }
-
 }
 
+function atualizarPagamentoDinheiro(pedido){
+  const forma=String(
+    pedido.payment_method||pedido.payment_type||pedido.payment||""
+  ).toLowerCase();
 
-/* =========================================================
-   PAGAMENTO EM DINHEIRO
-========================================================= */
+  const cashBox=document.getElementById("cashBox");
 
-function atualizarPagamentoDinheiro(
-  pedido
-) {
-
-  const forma =
-    String(
-
-      pedido.payment_method ||
-      pedido.payment_type ||
-      pedido.payment ||
-      ""
-
-    ).toLowerCase();
-
-
-  const cashBox =
-    document.getElementById(
-      "cashBox"
-    );
-
-
-  if (!cashBox) return;
-
-
-  const eDinheiro =
-    forma.includes(
-      "dinheiro"
-    ) ||
-    forma.includes(
-      "cash"
-    );
-
-
-  if (!eDinheiro) {
-
-    cashBox.classList.add(
-      "hidden"
-    );
-
-    return;
-
-  }
-
-
-  cashBox.classList.remove(
-    "hidden"
+  const dinheiroCliente=Number(
+    pedido.cash_received??
+    pedido.money_received??
+    pedido.amount_received??0
   );
 
+  const total=Number(pedido.total||0);
 
-  const recebido =
-    Number(
+  const eDinheiro=forma.includes("dinheiro")||forma.includes("cash");
 
-      pedido.cash_received ??
-      pedido.money_received ??
-      pedido.amount_received ??
-      0
-
-    );
-
-
-  const total =
-    Number(
-      pedido.total ||
-      0
-    );
-
-
-  document.getElementById(
-    "dinheiroCliente"
-  ).textContent =
-
-    "R$ " +
-    dinheiro(
-      recebido
-    );
-
-
-  let precisaTroco =
-    "-";
-
-
-  if (
-    recebido > 0 &&
-    recebido >= total
-  ) {
-
-    precisaTroco =
-      "Sim";
-
+  if(!eDinheiro){
+    cashBox.classList.add("hidden");
+    return;
   }
 
+  cashBox.classList.remove("hidden");
 
-  document.getElementById(
-    "precisaTroco"
-  ).textContent =
-    precisaTroco;
+  document.getElementById("dinheiroCliente").textContent="R$ "+dinheiro(dinheiroCliente);
 
+  const precisa=dinheiroCliente>0&&dinheiroCliente<total;
 
-  const troco =
-    recebido -
-    total;
+  document.getElementById("precisaTroco").textContent=
+    precisa?"Não":dinheiroCliente>=total?"Sim":"-";
 
+  const troco=dinheiroCliente-total;
 
-  document.getElementById(
-    "valorTroco"
-  ).textContent =
-
-    "R$ " +
-    dinheiro(
-      Math.max(
-        0,
-        troco
-      )
-    );
-
+  document.getElementById("valorTroco").textContent=
+    "R$ "+dinheiro(Math.max(0,troco));
 }
 
+/* =========================================================
+   CLIENTES + FIDELIDADE
+   ========================================================= */
+
+function normalizarTelefone(valor){
+  return String(valor||"").replace(/\D/g,"");
+}
+
+function obterClientes(){
+  const mapa=new Map();
+
+  pedidos.forEach(p=>{
+    const nome=p.customer_name||p.name||p.customer||"Cliente";
+    const telefone=p.customer_phone||p.phone||p.whatsapp||p.customer_whatsapp||"";
+    const endereco=p.address||p.customer_address||p.delivery_address||"";
+    const chave=normalizarTelefone(telefone)||nome.toLowerCase();
+
+    if(!mapa.has(chave)){
+      mapa.set(chave,{
+        nome,telefone,endereco,pedidos:[],total:0
+      });
+    }
+
+    const cliente=mapa.get(chave);
+    cliente.pedidos.push(p);
+
+    if((p.status||"pendente")!=="cancelado"){
+      cliente.total+=Number(p.total||0);
+    }
+
+    if(!cliente.endereco && endereco) cliente.endereco=endereco;
+  });
+
+  return [...mapa.values()].sort((a,b)=>b.total-a.total);
+}
+
+function calcularPontos(cliente){
+  // 1 ponto a cada R$10 em pedidos não cancelados
+  return Math.floor(Number(cliente.total||0)/10);
+}
+
+function nivelFidelidade(pontos){
+  if(pontos>=100) return "Dociê VIP";
+  if(pontos>=50) return "Dociê Ouro";
+  if(pontos>=20) return "Dociê Prata";
+  return "Dociê Inicial";
+}
+
+function renderizarClientes(){
+  const area=document.getElementById("clientesList");
+  if(!area) return;
+
+  const clientes=obterClientes();
+
+  if(!clientes.length){
+    area.innerHTML=`<div class="small">Nenhum cliente encontrado nos pedidos.</div>`;
+    renderizarDashboardClientes();
+    return;
+  }
+
+  area.innerHTML=clientes.map((c,index)=>{
+    const pontos=calcularPontos(c);
+    const nivel=nivelFidelidade(pontos);
+
+    return `
+      <div class="customer-card">
+        <div style="display:flex;justify-content:space-between;gap:10px">
+          <div>
+            <strong>${escapeHTML(c.nome)}</strong>
+            <div class="small">📱 ${escapeHTML(c.telefone||"Não informado")}</div>
+            <div class="small">📍 ${escapeHTML(c.endereco||"Endereço não informado")}</div>
+          </div>
+          <div style="text-align:right">
+            <strong>${pontos} pts</strong>
+            <div class="small">${nivel}</div>
+          </div>
+        </div>
+
+        <div class="loyalty-box" style="margin-top:10px">
+          ⭐ ${nivel} — ${pontos} pontos
+          <div class="small">
+            ${c.pedidos.length} pedido(s) • R$ ${dinheiro(c.total)} em compras
+          </div>
+        </div>
+
+        <div class="customer-actions">
+          <button class="btn btn-light" onclick="abrirDetalheCliente(${index})">Ver detalhes</button>
+          ${c.telefone ? `<button class="btn btn-whatsapp" onclick="abrirWhatsAppCliente('${escapeHTML(c.telefone)}','${escapeHTML(c.nome)}')">WhatsApp</button>` : ""}
+        </div>
+      </div>`;
+  }).join("");
+
+  window.__clientesAtuais=clientes;
+  renderizarDashboardClientes();
+}
+
+function abrirDetalheCliente(index){
+  const c=(window.__clientesAtuais||[])[index];
+  if(!c) return;
+
+  mostrarMensagem(
+    `${c.nome}: ${c.pedidos.length} pedido(s), R$ ${dinheiro(c.total)} em compras e ${calcularPontos(c)} pontos de fidelidade.`
+  );
+}
+
+function abrirWhatsAppCliente(telefone,nome){
+  const numero=normalizarTelefone(telefone);
+  if(!numero) return;
+
+  const mensagem=`Olá, ${nome}! Aqui é da Lá Dociê.`;
+  window.open(
+    "https://wa.me/55"+numero+"?text="+encodeURIComponent(mensagem),
+    "_blank"
+  );
+}
+
+function atualizarFidelidadeDoCliente(nome,telefone){
+  const clientes=obterClientes();
+  const alvo=clientes.find(c=>{
+    if(telefone && normalizarTelefone(c.telefone)===normalizarTelefone(telefone)) return true;
+    return c.nome.toLowerCase()===String(nome||"").toLowerCase();
+  });
+
+  const el=document.getElementById("clienteFidelidadePedido");
+  if(!el) return;
+
+  if(!alvo){
+    el.textContent="Cliente ainda não possui histórico suficiente.";
+    return;
+  }
+
+  const pontos=calcularPontos(alvo);
+  el.textContent=`${nivelFidelidade(pontos)} • ${pontos} pontos • ${alvo.pedidos.length} pedido(s) • R$ ${dinheiro(alvo.total)} em compras.`;
+}
+
+function renderizarDashboardClientes(){
+  const area=document.getElementById("dashboardClientes");
+  if(!area) return;
+
+  const clientes=obterClientes().slice(0,5);
+
+  if(!clientes.length){
+    area.textContent="Nenhum cliente ainda.";
+    return;
+  }
+
+  area.innerHTML=clientes.map(c=>{
+    const pontos=calcularPontos(c);
+    return `
+      <div style="display:flex;justify-content:space-between;padding:9px 0;border-bottom:1px solid #eee5e0">
+        <strong>${escapeHTML(c.nome)}</strong>
+        <span>${pontos} pts</span>
+      </div>`;
+  }).join("");
+}
 
 /* =========================================================
-   WHATSAPP
-========================================================= */
+   WHATSAPP / IMPRESSÃO
+   ========================================================= */
 
-function chamarWhatsApp() {
+function chamarWhatsApp(){
+  if(!pedidoAtual) return;
 
-  if (!pedidoAtual) return;
-
-
-  const telefone =
-
-    pedidoAtual.customer_phone ||
-    pedidoAtual.phone ||
-    pedidoAtual.whatsapp ||
-    pedidoAtual.customer_whatsapp ||
+  const telefone=
+    pedidoAtual.customer_phone||
+    pedidoAtual.phone||
+    pedidoAtual.whatsapp||
+    pedidoAtual.customer_whatsapp||
     "";
 
-
-  if (!telefone) {
-
-    mostrarMensagem(
-      "Este pedido não possui WhatsApp cadastrado.",
-      "error"
-    );
-
+  if(!telefone){
+    mostrarMensagem("Este pedido não possui WhatsApp cadastrado.","error");
     return;
-
   }
 
+  const numero=normalizarTelefone(telefone);
+  const cliente=pedidoAtual.customer_name||pedidoAtual.name||"cliente";
 
-  const numero =
-    String(
-      telefone
-    ).replace(
-      /\D/g,
-      ""
-    );
-
-
-  const cliente =
-
-    pedidoAtual.customer_name ||
-    pedidoAtual.name ||
-    "cliente";
-
-
-  const mensagem =
-
+  const mensagem=
     `Olá, ${cliente}! Aqui é da Lá Dociê. Estou entrando em contato sobre o seu pedido #${pedidoAtual.id}.`;
 
-
   window.open(
-
-    "https://wa.me/55" +
-    numero +
-    "?text=" +
-    encodeURIComponent(
-      mensagem
-    ),
-
+    "https://wa.me/55"+numero+"?text="+encodeURIComponent(mensagem),
     "_blank"
-
   );
-
 }
 
-
-/* =========================================================
-   IMPRESSÃO
-========================================================= */
-
-function imprimirPedido() {
-
-  if (!pedidoAtual) return;
-
+function imprimirPedido(){
+  if(!pedidoAtual) return;
   window.print();
-
 }
 
-
 /* =========================================================
-   MINHA LOJA
-========================================================= */
+   LOJA
+   ========================================================= */
 
-async function carregarLoja() {
+async function carregarLoja(){
+  try{
+    const {data,error}=await supabaseClient
+      .from("store_settings")
+      .select("*")
+      .limit(1)
+      .maybeSingle();
 
-  try {
+    if(error) throw error;
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("store_settings")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
+    loja=data||null;
+    if(!loja) return;
 
+    document.getElementById("lojaNome").value=loja.store_name||"";
+    document.getElementById("lojaDescricao").value=loja.description||"";
+    document.getElementById("lojaTelefone").value=loja.phone||"";
+    document.getElementById("lojaWhatsapp").value=loja.whatsapp||"";
+    document.getElementById("lojaEndereco").value=loja.address||"";
+    document.getElementById("lojaInstagram").value=loja.instagram||"";
 
-    if (error) {
+    document.getElementById("lojaHorario").value=
+      loja.opening_hours||
+      "Terça a sexta: 14h às 22h\nSábado: 10h às 17h\nDomingo e segunda: fechado";
 
-      throw error;
+    document.getElementById("lojaPix").value=loja.pix_key||"";
+    document.getElementById("lojaTaxa").value=loja.delivery_fee??0;
 
-    }
-
-
-    loja =
-      data ||
-      null;
-
-
-    if (!loja) return;
-
-
-    document.getElementById(
-      "lojaNome"
-    ).value =
-      loja.store_name ||
-      "";
-
-
-    document.getElementById(
-      "lojaDescricao"
-    ).value =
-      loja.description ||
-      "";
-
-
-    document.getElementById(
-      "lojaTelefone"
-    ).value =
-      loja.phone ||
-      "";
-
-
-    document.getElementById(
-      "lojaWhatsapp"
-    ).value =
-      loja.whatsapp ||
-      "";
-
-
-    document.getElementById(
-      "lojaEndereco"
-    ).value =
-      loja.address ||
-      "";
-
-
-    document.getElementById(
-      "lojaInstagram"
-    ).value =
-      loja.instagram ||
-      "";
-
-
-    document.getElementById(
-      "lojaHorario"
-    ).value =
-
-      loja.opening_hours ||
-
-      "Terça a sexta: 14h às 22h\nSábado: 10h às 17h";
-
-
-    document.getElementById(
-      "lojaPix"
-    ).value =
-      loja.pix_key ||
-      "";
-
-
-    document.getElementById(
-      "lojaTaxa"
-    ).value =
-      loja.delivery_fee ??
-      0;
-
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao carregar loja:",
-      error
-    );
-
+  }catch(error){
+    console.error("Loja:",error);
   }
-
 }
 
-
-/* =========================================================
-   SALVAR LOJA
-========================================================= */
-
-async function salvarLoja() {
-
-  const dados = {
-
-    store_name:
-      document
-        .getElementById("lojaNome")
-        ?.value
-        .trim() || "",
-
-
-    description:
-      document
-        .getElementById("lojaDescricao")
-        ?.value
-        .trim() || "",
-
-
-    phone:
-      document
-        .getElementById("lojaTelefone")
-        ?.value
-        .trim() || "",
-
-
-    whatsapp:
-      document
-        .getElementById("lojaWhatsapp")
-        ?.value
-        .trim() || "",
-
-
-    address:
-      document
-        .getElementById("lojaEndereco")
-        ?.value
-        .trim() || "",
-
-
-    instagram:
-      document
-        .getElementById("lojaInstagram")
-        ?.value
-        .trim() || "",
-
-
-    opening_hours:
-      document
-        .getElementById("lojaHorario")
-        ?.value
-        .trim() || "",
-
-
-    pix_key:
-      document
-        .getElementById("lojaPix")
-        ?.value
-        .trim() || "",
-
-
-    delivery_fee:
-      Number(
-        document
-          .getElementById("lojaTaxa")
-          ?.value ||
-        0
-      ),
-
-
-    updated_at:
-      new Date()
-        .toISOString()
-
+async function salvarLoja(){
+  const dados={
+    store_name:document.getElementById("lojaNome").value.trim(),
+    description:document.getElementById("lojaDescricao").value.trim(),
+    phone:document.getElementById("lojaTelefone").value.trim(),
+    whatsapp:document.getElementById("lojaWhatsapp").value.trim(),
+    address:document.getElementById("lojaEndereco").value.trim(),
+    instagram:document.getElementById("lojaInstagram").value.trim(),
+    opening_hours:document.getElementById("lojaHorario").value.trim(),
+    pix_key:document.getElementById("lojaPix").value.trim(),
+    delivery_fee:Number(document.getElementById("lojaTaxa").value||0),
+    updated_at:new Date().toISOString()
   };
 
+  try{
+    if(loja&&loja.id){
+      const {data,error}=await supabaseClient
+        .from("store_settings")
+        .update(dados)
+        .eq("id",loja.id)
+        .select().single();
 
-  try {
+      if(error) throw error;
+      loja=data;
+    }else{
+      const {data,error}=await supabaseClient
+        .from("store_settings")
+        .insert([dados])
+        .select().single();
 
-    if (
-      loja &&
-      loja.id
-    ) {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("store_settings")
-          .update(dados)
-          .eq(
-            "id",
-            loja.id
-          )
-          .select()
-          .single();
-
-
-      if (error) {
-
-        throw error;
-
-      }
-
-
-      loja =
-        data;
-
-
-    } else {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("store_settings")
-          .insert([dados])
-          .select()
-          .single();
-
-
-      if (error) {
-
-        throw error;
-
-      }
-
-
-      loja =
-        data;
-
+      if(error) throw error;
+      loja=data;
     }
 
-
-    mostrarMensagem(
-      "Informações da loja salvas!"
-    );
-
-
-  } catch (error) {
-
-    console.error(
-      "Erro ao salvar loja:",
-      error
-    );
-
-
-    mostrarMensagem(
-      "Erro ao salvar: " +
-      error.message,
-      "error"
-    );
-
+    mostrarMensagem("Informações da loja salvas!");
+    carregarPagamentos();
+  }catch(error){
+    console.error(error);
+    mostrarMensagem("Erro ao salvar: "+error.message,"error");
   }
-
 }
-
 
 /* =========================================================
-   DASHBOARD
-========================================================= */
-
-function atualizarDashboard() {
-
-  const hoje =
-    new Date()
-      .toISOString()
-      .slice(
-        0,
-        10
-      );
-
-
-  const pedidosHoje =
-    pedidos.filter(
-      pedido => {
-
-        const data =
-          pedido.scheduled_date ||
-          pedido.created_at?.slice(
-            0,
-            10
-          );
-
-
-        return data === hoje;
-
-      }
-    );
-
-
-  const faturamento =
-    pedidosHoje
-
-      .filter(
-        pedido =>
-
-          (
-            pedido.status ||
-            "pendente"
-          ) !==
-          "cancelado"
-      )
-
-      .reduce(
-
-        (
-          total,
-          pedido
-        ) =>
-
-          total +
-          Number(
-            pedido.total ||
-            0
-          ),
-
-        0
-
-      );
-
-
-  const pendentes =
-    pedidos.filter(
-      pedido =>
-
-        (
-          pedido.status ||
-          "pendente"
-        ) ===
-        "pendente"
-    ).length;
-
-
-  const statPedidos =
-    document.getElementById(
-      "statPedidos"
-    );
-
-
-  const statFaturamento =
-    document.getElementById(
-      "statFaturamento"
-    );
-
-
-  const statPendentes =
-    document.getElementById(
-      "statPendentes"
-    );
-
-
-  if (statPedidos) {
-
-    statPedidos.textContent =
-      pedidosHoje.length;
-
-  }
-
-
-  if (statFaturamento) {
-
-    statFaturamento.textContent =
-      "R$ " +
-      dinheiro(
-        faturamento
-      );
-
-  }
-
-
-  if (statPendentes) {
-
-    statPendentes.textContent =
-      pendentes;
-
-  }
-
-
-  const badge =
-    document.getElementById(
-      "badgePedidos"
-    );
-
-
-  if (badge) {
-
-    badge.textContent =
-      pendentes;
-
-  }
-
-
-  const area =
-    document.getElementById(
-      "dashboardPedidos"
-    );
-
-
-  if (!area) return;
-
-
-  const recentes =
-    pedidos.slice(
-      0,
-      5
-    );
-
-
-  if (!recentes.length) {
-
-    area.innerHTML =
-      `<div class="small">
-        Nenhum pedido ainda.
-      </div>`;
-
-    return;
-
-  }
-
-
-  area.innerHTML =
-    recentes
-      .map(pedido => {
-
-        const status =
-          pedido.status ||
-          "pendente";
-
-
-        return `
-
-          <div
-            class="order-row"
-            onclick="
-              abrirPaginaPorNome('pedidos');
-              abrirDetalhePedidoPorId(${Number(pedido.id)});
-            ">
-
-            <div>
-
-              <div
-                class="order-number">
-
-                Pedido #${escapeHTML(
-                  pedido.id
-                )}
-
-              </div>
-
-
-              <div class="small">
-
-                ${escapeHTML(
-                  pedido.customer_name ||
-                  pedido.name ||
-                  "Cliente"
-                )}
-
-              </div>
-
-
-              <div
-                class="order-meta">
-
-                <span
-                  class="tag tag-${escapeHTML(
-                    status
-                  )}">
-
-                  ${escapeHTML(
-                    status
-                  )}
-
-                </span>
-
-              </div>
-
-            </div>
-
-
-            <div
-              class="order-total">
-
-              R$
-              ${dinheiro(
-                pedido.total
-              )}
-
-            </div>
-
-          </div>
-
-        `;
-
-      })
-      .join("");
-
+   PAGAMENTOS MANUAIS
+   ========================================================= */
+
+function carregarPagamentos(){
+  const pix=document.getElementById("pagPix");
+  if(!pix) return;
+
+  pix.value=localStorage.getItem("la_docie_pix")||(loja?.pix_key||"");
+  document.getElementById("pagLink").value=localStorage.getItem("la_docie_pag_link")||"";
+  document.getElementById("taxaDebito").value=localStorage.getItem("la_docie_taxa_debito")||"";
+  document.getElementById("taxaCredito").value=localStorage.getItem("la_docie_taxa_credito")||"";
+  document.getElementById("parcelamento").value=localStorage.getItem("la_docie_parcelamento")||"2";
 }
 
+function salvarPagamentos(){
+  const pix=document.getElementById("pagPix").value.trim();
 
-/* =========================================================
-   FIDELIDADE
-========================================================= */
+  localStorage.setItem("la_docie_pix",pix);
+  localStorage.setItem("la_docie_pag_link",document.getElementById("pagLink").value.trim());
+  localStorage.setItem("la_docie_taxa_debito",document.getElementById("taxaDebito").value);
+  localStorage.setItem("la_docie_taxa_credito",document.getElementById("taxaCredito").value);
+  localStorage.setItem("la_docie_parcelamento",document.getElementById("parcelamento").value);
 
-async function carregarFidelidadeCliente(
-  telefone
-) {
-
-  if (!telefone) {
-
-    return null;
-
+  // Também atualiza a chave Pix da loja quando possível.
+  if(document.getElementById("lojaPix")){
+    document.getElementById("lojaPix").value=pix;
   }
 
-
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("customers")
-        .select("*")
-        .eq(
-          "phone",
-          telefone
-        )
-        .maybeSingle();
-
-
-    if (error) {
-
-      console.warn(
-        "Fidelidade:",
-        error.message
-      );
-
-      return null;
-
-    }
-
-
-    return data || null;
-
-
-  } catch (error) {
-
-    console.warn(
-      "Erro fidelidade:",
-      error
-    );
-
-    return null;
-
-  }
-
+  mostrarMensagem("Configurações de pagamento salvas. Pagamentos continuam manuais.");
 }
-
 
 /* =========================================================
    NOTIFICAÇÕES
-========================================================= */
+   ========================================================= */
 
-async function carregarNotificacoes() {
+function carregarPreferenciasNotificacoes(){
+  document.getElementById("notificacoesAtivas").checked=
+    localStorage.getItem("la_docie_notificacoes")!=="0";
 
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("notifications")
-        .select("*")
-        .order(
-          "created_at",
-          {
-            ascending: false
-          }
-        )
-        .limit(20);
-
-
-    if (error) {
-
-      console.warn(
-        "Notificações:",
-        error.message
-      );
-
-      return [];
-
-    }
-
-
-    return data || [];
-
-
-  } catch (error) {
-
-    console.warn(
-      "Erro notificações:",
-      error
-    );
-
-    return [];
-
-  }
-
+  document.getElementById("somPedidos").checked=
+    localStorage.getItem("la_docie_som")!=="0";
 }
 
+function salvarPreferenciaNotificacoes(){
+  localStorage.setItem(
+    "la_docie_notificacoes",
+    document.getElementById("notificacoesAtivas").checked?"1":"0"
+  );
+
+  localStorage.setItem(
+    "la_docie_som",
+    document.getElementById("somPedidos").checked?"1":"0"
+  );
+}
+
+async function pedirPermissaoNotificacao(){
+  if(!("Notification" in window)){
+    mostrarMensagem("Seu navegador não oferece notificações.","error");
+    return;
+  }
+
+  const permissao=await Notification.requestPermission();
+
+  if(permissao==="granted"){
+    mostrarMensagem("Notificações do navegador ativadas!");
+  }else{
+    mostrarMensagem("A permissão não foi concedida.","error");
+  }
+}
+
+function notificarNovoPedido(pedido){
+  if(localStorage.getItem("la_docie_notificacoes")==="0") return;
+
+  const cliente=pedido.customer_name||pedido.name||"Cliente";
+  const texto=`Novo pedido #${pedido.id} de ${cliente} — R$ ${dinheiro(pedido.total)}`;
+
+  mostrarMensagem("🔔 "+texto);
+
+  if(
+    "Notification" in window &&
+    Notification.permission==="granted"
+  ){
+    new Notification("Lá Dociê — Novo pedido",{
+      body:texto
+    });
+  }
+
+  if(localStorage.getItem("la_docie_som")!=="0"){
+    tocarSom();
+  }
+}
+
+function tocarSom(){
+  try{
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator();
+    const gain=ctx.createGain();
+
+    osc.frequency.value=880;
+    gain.gain.value=.06;
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime+.18);
+  }catch(e){
+    console.log("Som bloqueado pelo navegador.");
+  }
+}
+
+/* =========================================================
+   DASHBOARD
+   ========================================================= */
+
+function atualizarDashboard(){
+  const hoje=new Date().toISOString().slice(0,10);
+
+  const pedidosHoje=pedidos.filter(p=>{
+    const data=p.scheduled_date||p.created_at?.slice(0,10);
+    return data===hoje;
+  });
+
+  const faturamento=pedidosHoje
+    .filter(p=>(p.status||"pendente")!=="cancelado")
+    .reduce((total,p)=>total+Number(p.total||0),0);
+
+  const pendentes=pedidos.filter(
+    p=>(p.status||"pendente")==="pendente"
+  ).length;
+
+  document.getElementById("statPedidos").textContent=pedidosHoje.length;
+  document.getElementById("statFaturamento").textContent="R$ "+dinheiro(faturamento);
+  document.getElementById("statPendentes").textContent=pendentes;
+
+  document.getElementById("badgePedidos").textContent=
+    pendentes?pendentes:"";
+
+  const area=document.getElementById("dashboardPedidos");
+  const recentes=pedidos.slice(0,5);
+
+  if(!recentes.length){
+    area.innerHTML=`<div class="small">Nenhum pedido ainda.</div>`;
+  }else{
+    area.innerHTML=recentes.map(p=>{
+      const status=p.status||"pendente";
+
+      return `
+        <div class="order-row"
+          onclick="abrirPaginaPorNome('pedidos');setTimeout(()=>abrirDetalhePedidoPorId(${Number(p.id)}),100)">
+          <div>
+            <div class="order-number">Pedido #${escapeHTML(p.id)}</div>
+            <div class="small">${escapeHTML(p.customer_name||p.name||"Cliente")}</div>
+            <div class="order-meta"><span class="tag tag-${escapeHTML(status)}">${escapeHTML(status)}</span></div>
+          </div>
+          <div class="order-total">R$ ${dinheiro(p.total)}</div>
+        </div>`;
+    }).join("");
+  }
+
+  renderizarDashboardClientes();
+}
 
 /* =========================================================
    REALTIME
-========================================================= */
-
-function iniciarRealtime() {
-
-  if (realtimeChannel) {
-
-    return;
-
-  }
-
-
-  realtimeChannel =
-
-    supabaseClient
-      .channel(
-        "admin-orders-realtime"
-      )
-
-      .on(
-
-        "postgres_changes",
-
-        {
-
-          event: "*",
-
-          schema: "public",
-
-          table: "orders"
-
-        },
-
-        async payload => {
-
-
-          console.log(
-            "Pedido atualizado:",
-            payload
-          );
-
-
-          if (
-            payload.eventType ===
-            "INSERT"
-          ) {
-
-            pedidos.unshift(
-              payload.new
-            );
-
-          }
-
-
-          if (
-            payload.eventType ===
-            "UPDATE"
-          ) {
-
-            const indice =
-              pedidos.findIndex(
-                pedido =>
-
-                  Number(
-                    pedido.id
-                  ) ===
-
-                  Number(
-                    payload.new.id
-                  )
-              );
-
-
-            if (
-              indice !==
-              -1
-            ) {
-
-              pedidos[indice] =
-                payload.new;
-
-            } else {
-
-              pedidos.unshift(
-                payload.new
-              );
-
-            }
-
-
-            if (
-
-              pedidoAtual &&
-
-              Number(
-                pedidoAtual.id
-              ) ===
-
-              Number(
-                payload.new.id
-              )
-
-            ) {
-
-              pedidoAtual =
-                payload.new;
-
-
-              preencherDetalhePedido(
-                pedidoAtual
-              );
-
-
-              await carregarItensDoPedido(
-                pedidoAtual.id
-              );
-
-            }
-
-          }
-
-
-          if (
-            payload.eventType ===
-            "DELETE"
-          ) {
-
-            pedidos =
-              pedidos.filter(
-                pedido =>
-
-                  Number(
-                    pedido.id
-                  ) !==
-
-                  Number(
-                    payload.old.id
-                  )
-              );
-
-
-            if (
-
-              pedidoAtual &&
-
-              Number(
-                pedidoAtual.id
-              ) ===
-
-              Number(
-                payload.old.id
-              )
-
-            ) {
-
-              fecharPedido();
-
-            }
-
-          }
-
-
-          renderizarPedidos();
-
-          atualizarDashboard();
-
-
-          mostrarMensagem(
-            "Pedido atualizado em tempo real."
-          );
-
+   ========================================================= */
+
+function iniciarRealtime(){
+  if(realtimeChannel) return;
+
+  realtimeChannel=supabaseClient
+    .channel("admin-orders-realtime")
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"orders"
+      },
+      async payload=>{
+
+        console.log("Realtime pedido:",payload);
+
+        if(payload.eventType==="INSERT"){
+          pedidos.unshift(payload.new);
+          notificarNovoPedido(payload.new);
         }
 
-      )
-
-      .subscribe(
-        status => {
-
-          console.log(
-            "Realtime:",
-            status
+        if(payload.eventType==="UPDATE"){
+          const indice=pedidos.findIndex(
+            p=>Number(p.id)===Number(payload.new.id)
           );
 
-        }
-      );
+          if(indice!==-1){
+            pedidos[indice]=payload.new;
+          }else{
+            pedidos.unshift(payload.new);
+          }
 
+          if(
+            pedidoAtual &&
+            Number(pedidoAtual.id)===Number(payload.new.id)
+          ){
+            pedidoAtual=payload.new;
+            preencherDetalhePedido(pedidoAtual);
+            await carregarItensDoPedido(pedidoAtual.id);
+          }
+        }
+
+        if(payload.eventType==="DELETE"){
+          pedidos=pedidos.filter(
+            p=>Number(p.id)!==Number(payload.old.id)
+          );
+
+          if(
+            pedidoAtual &&
+            Number(pedidoAtual.id)===Number(payload.old.id)
+          ){
+            fecharPedido();
+          }
+        }
+
+        renderizarPedidos();
+        atualizarDashboard();
+        renderizarClientes();
+      }
+    )
+    .subscribe(status=>{
+      console.log("Realtime:",status);
+    });
 }
-
 
 /* =========================================================
    CARREGAR TUDO
-========================================================= */
+   ========================================================= */
 
-async function carregarTudo() {
-
-  console.log(
-    "Carregando painel..."
-  );
-
-
-  await Promise.allSettled([
-
+async function carregarTudo(){
+  await Promise.all([
     carregarProdutos(),
-
     carregarPedidos(),
-
     carregarLoja()
-
   ]);
 
-
+  carregarPagamentos();
+  carregarPreferenciasNotificacoes();
   atualizarDashboard();
-
-
-  console.log(
-    "Painel carregado."
-  );
-
 }
-
 
 /* =========================================================
    INICIALIZAÇÃO
-========================================================= */
+   ========================================================= */
 
-async function iniciar() {
+async function iniciar(){
+  try{
+    const {data}=await supabaseClient.auth.getSession();
 
-  try {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .auth
-        .getSession();
-
-
-    if (error) {
-
-      console.error(
-        "Sessão:",
-        error
-      );
-
-      return;
-
-    }
-
-
-    if (
-      data &&
-      data.session
-    ) {
-
+    if(data && data.session){
       await abrirAdmin();
-
     }
-
-  } catch (error) {
-
-    console.error(
-      "Inicialização:",
-      error
-    );
-
+  }catch(error){
+    console.error("Inicialização:",error);
   }
-
 }
 
-</script>
-
-
-/* =========================================================
-   INICIAR SISTEMA
-========================================================= */
+/* ENTER NO LOGIN */
+document.getElementById("loginPassword").addEventListener("keydown",e=>{
+  if(e.key==="Enter") entrar();
+});
 
 iniciar();
+</script>
 
-
-      </script>
-      </body>
-
-</html>
-
+</body>
+                                        </html>

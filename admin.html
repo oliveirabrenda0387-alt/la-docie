@@ -1,58 +1,65 @@
-<!DOCTYPE html> <html lang="pt-BR"> <head> <meta charset="UTF-8"> <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!DOCTYPE html>
+<html lang="pt-BR">
 
-<title>Painel Administrativo | Lá Dociê</title>
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Painel Administrativo - Lá Dociê</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root{
-  --marrom:#4b281d;
-  --marrom-claro:#765043;
-  --dourado:#d9ad58;
-  --dourado-claro:#f2dfb5;
-  --creme:#f8f3ef;
-  --creme-2:#eee3dc;
-  --branco:#fff;
-  --verde:#2e7d32;
-  --verde-bg:#e4f4e5;
-  --vermelho:#a33e3e;
-  --vermelho-bg:#f9dddd;
-  --laranja:#b66a16;
-  --azul:#315d91;
-  --sombra:0 8px 28px rgba(75,40,29,.08);
+
+*{
+  box-sizing:border-box;
 }
-
-*{box-sizing:border-box}
-
-html{scroll-behavior:smooth}
 
 body{
   margin:0;
   font-family:Arial,Helvetica,sans-serif;
-  background:var(--creme);
-  color:var(--marrom);
+  background:#faf7f5;
+  color:#3b2923;
 }
 
-.hidden{display:none!important}
+button,
+input,
+select,
+textarea{
+  font:inherit;
+}
 
-.login{
+button{
+  cursor:pointer;
+}
+
+.hidden{
+  display:none !important;
+}
+
+/* =========================
+LOGIN
+========================= */
+
+.login-screen{
   min-height:100vh;
   display:flex;
   align-items:center;
   justify-content:center;
   padding:20px;
-  background:
-    radial-gradient(circle at top right,#f4dfb4 0,transparent 30%),
-    var(--creme);
+  background:#f7eee8;
 }
 
 .login-box{
   width:100%;
-  max-width:430px;
-  background:#fff;
-  border-radius:24px;
-  padding:34px;
-  box-shadow:0 15px 45px rgba(75,40,29,.14);
+  max-width:420px;
+  background:white;
+  border-radius:20px;
+  padding:30px;
+  box-shadow:0 10px 35px rgba(70,40,25,.12);
 }
 
 .login-logo{
@@ -62,207 +69,211 @@ body{
 
 .login-logo h1{
   margin:0;
+  color:#8b5e3c;
   font-size:30px;
-  letter-spacing:1px;
 }
-
-.login-logo span{color:var(--dourado)}
 
 .login-logo p{
   margin:8px 0 0;
-  color:var(--marrom-claro);
+  color:#8a7a72;
 }
 
-.admin-layout{
+.field{
+  margin-bottom:16px;
+}
+
+.field label{
+  display:block;
+  margin-bottom:7px;
+  font-weight:600;
+  font-size:14px;
+}
+
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  border:1px solid #ddd0c8;
+  border-radius:10px;
+  padding:11px 13px;
+  outline:none;
+  background:#fff;
+  color:#3b2923;
+}
+
+.field textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border-color:#b98a63;
+}
+
+.login-btn{
+  width:100%;
+  border:0;
+  border-radius:10px;
+  padding:13px;
+  background:#9b6a43;
+  color:white;
+  font-weight:bold;
+}
+
+/* =========================
+LAYOUT
+========================= */
+
+.admin-screen{
   min-height:100vh;
   display:flex;
 }
 
 .sidebar{
-  width:260px;
-  background:var(--marrom);
-  color:white;
+  width:250px;
+  background:#fff;
+  border-right:1px solid #eaded7;
+  padding:20px 14px;
   position:fixed;
-  left:0;
   top:0;
   bottom:0;
+  left:0;
   z-index:100;
-  padding:22px 15px;
   overflow-y:auto;
-  transition:.25s;
 }
 
-.brand{
-  padding:5px 12px 25px;
-  border-bottom:1px solid rgba(255,255,255,.12);
-  margin-bottom:18px;
+.sidebar-logo{
+  padding:10px 12px 25px;
+  text-align:center;
 }
 
-.brand-title{
-  font-size:23px;
-  font-weight:bold;
+.sidebar-logo h2{
+  margin:0;
+  color:#8b5e3c;
 }
 
-.brand-title span{color:var(--dourado)}
-
-.brand small{
+.sidebar-logo span{
   display:block;
   margin-top:5px;
-  color:#dbcfc9;
+  font-size:12px;
+  color:#9a8980;
 }
 
-.menu-title{
-  font-size:11px;
-  text-transform:uppercase;
-  color:#cbb8af;
-  padding:12px;
-  letter-spacing:1px;
+.menu{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
 }
 
 .menu-btn{
   width:100%;
   border:0;
   background:transparent;
-  color:#f8eee9;
+  color:#5d4a41;
   text-align:left;
-  padding:13px 14px;
-  border-radius:12px;
-  margin-bottom:5px;
-  cursor:pointer;
-  font-size:14px;
+  border-radius:10px;
+  padding:12px;
   display:flex;
   align-items:center;
-  gap:12px;
-  transition:.2s;
+  gap:10px;
 }
 
-.menu-btn:hover{background:rgba(255,255,255,.08)}
-
+.menu-btn:hover,
 .menu-btn.active{
-  background:var(--dourado);
-  color:var(--marrom);
-  font-weight:bold;
+  background:#f5e9e1;
+  color:#8b5e3c;
 }
 
 .menu-icon{
-  width:23px;
+  width:25px;
   text-align:center;
-  font-size:18px;
-}
-
-.menu-badge{
-  margin-left:auto;
-  background:#fff;
-  color:var(--marrom);
-  min-width:22px;
-  height:22px;
-  border-radius:20px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:11px;
-  font-weight:bold;
 }
 
 .sidebar-bottom{
   margin-top:25px;
-  border-top:1px solid rgba(255,255,255,.12);
   padding-top:15px;
+  border-top:1px solid #eee3dd;
 }
 
-.logout-menu{color:#ffd5d5}
+.logout-menu{
+  color:#a63d32;
+}
 
 .main{
-  margin-left:260px;
-  width:calc(100% - 260px);
-  min-width:0;
+  margin-left:250px;
+  width:calc(100% - 250px);
+  min-height:100vh;
 }
 
 .topbar{
-  height:72px;
+  height:70px;
   background:white;
-  border-bottom:1px solid #eadfd9;
+  border-bottom:1px solid #eaded7;
   display:flex;
   align-items:center;
   justify-content:space-between;
   padding:0 25px;
   position:sticky;
   top:0;
-  z-index:70;
+  z-index:50;
 }
 
 .topbar-left{
   display:flex;
   align-items:center;
-  gap:12px;
-}
-
-.mobile-menu{
-  display:none;
-  border:0;
-  background:var(--marrom);
-  color:white;
-  width:42px;
-  height:42px;
-  border-radius:11px;
-  font-size:21px;
+  gap:15px;
 }
 
 .page-title{
-  font-size:20px;
+  font-size:21px;
   font-weight:bold;
 }
 
 .store-status{
+  font-size:13px;
+  color:#58734f;
   display:flex;
   align-items:center;
   gap:7px;
-  font-size:13px;
-  color:var(--verde);
 }
 
 .store-dot{
   width:9px;
   height:9px;
   border-radius:50%;
-  background:#48a84d;
+  background:#5b9b55;
+}
+
+.mobile-menu{
+  display:none;
+  border:0;
+  background:transparent;
+  font-size:24px;
 }
 
 .content{
   padding:25px;
-  max-width:1500px;
-  margin:auto;
 }
 
-.notice{
+.panel{
   display:none;
-  padding:13px 16px;
-  border-radius:12px;
-  margin-bottom:18px;
-  font-weight:bold;
 }
 
-.notice.show{display:block}
-
-.notice.success{
-  background:var(--verde-bg);
-  color:#236329;
+.panel.active{
+  display:block;
 }
 
-.notice.error{
-  background:var(--vermelho-bg);
-  color:#8b2525;
-}
-
-.panel{display:none}
-
-.panel.active{display:block}
+/* =========================
+GERAL
+========================= */
 
 .card{
   background:white;
-  border-radius:18px;
+  border:1px solid #eaded7;
+  border-radius:16px;
   padding:20px;
-  box-shadow:var(--sombra);
   margin-bottom:20px;
 }
 
@@ -271,138 +282,110 @@ body{
   justify-content:space-between;
   align-items:center;
   gap:15px;
-  flex-wrap:wrap;
   margin-bottom:18px;
 }
 
 .card-header h2{
   margin:0;
-  font-size:18px;
+  font-size:19px;
 }
 
 .small{
+  color:#8a7a72;
   font-size:13px;
-  color:#80675c;
+  line-height:1.5;
 }
 
 .btn{
   border:0;
-  border-radius:10px;
-  padding:11px 15px;
-  font-weight:bold;
-  cursor:pointer;
-  transition:.2s;
+  border-radius:9px;
+  padding:10px 14px;
+  font-weight:600;
 }
 
-.btn:hover{transform:translateY(-1px)}
-
 .btn-primary{
-  background:var(--marrom);
+  background:#8f6545;
   color:white;
 }
 
 .btn-gold{
-  background:var(--dourado);
-  color:var(--marrom);
+  background:#b38a52;
+  color:white;
 }
 
 .btn-light{
-  background:var(--creme-2);
-  color:var(--marrom);
+  background:#f2eae5;
+  color:#624c40;
 }
 
 .btn-danger{
-  background:var(--vermelho);
+  background:#b94a43;
   color:white;
 }
 
 .btn-success{
-  background:var(--verde);
+  background:#548454;
   color:white;
 }
 
 .btn-whatsapp{
-  background:#25D366;
+  background:#25d366;
   color:white;
 }
 
 .btn-print{
-  background:#333;
+  background:#555;
   color:white;
 }
 
-.field{margin-bottom:14px}
-
-.field label{
-  display:block;
-  margin-bottom:6px;
-  font-size:13px;
-  font-weight:bold;
-}
-
-.field input,
-.field textarea,
-.field select{
-  width:100%;
-  padding:11px 12px;
-  border:1px solid #d9cbc4;
+.notice{
+  display:none;
+  padding:12px 15px;
   border-radius:10px;
-  background:white;
-  color:var(--marrom);
-  outline:none;
+  margin-bottom:18px;
+  background:#f1eadf;
+  color:#614a39;
 }
 
-.field input:focus,
-.field textarea:focus,
-.field select:focus{
-  border-color:var(--dourado);
-  box-shadow:0 0 0 3px rgba(217,173,88,.15);
+.notice.show{
+  display:block;
 }
 
-.field textarea{
-  min-height:90px;
-  resize:vertical;
+.notice.error{
+  background:#f9e2e0;
+  color:#8d3129;
 }
 
 .grid-2{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:15px;
+  gap:18px;
 }
 
-.grid-3{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:15px;
+/* =========================
+DASHBOARD
+========================= */
+
+.welcome{
+  margin-bottom:20px;
 }
-
-.grid-4{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:15px;
-}
-
-/* DASHBOARD */
-
-.welcome{margin-bottom:22px}
 
 .welcome h1{
   margin:0 0 5px;
-  font-size:27px;
 }
 
 .stats{
   display:grid;
   grid-template-columns:repeat(4,1fr);
-  gap:16px;
-  margin-bottom:22px;
+  gap:15px;
+  margin-bottom:20px;
 }
 
 .stat{
   background:white;
-  border-radius:17px;
-  padding:20px;
-  box-shadow:var(--sombra);
+  border:1px solid #eaded7;
+  border-radius:15px;
+  padding:18px;
 }
 
 .stat-top{
@@ -411,172 +394,152 @@ body{
   align-items:center;
 }
 
-.stat-icon{
-  width:43px;
-  height:43px;
-  border-radius:13px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:var(--dourado-claro);
-  font-size:21px;
-}
-
 .stat-label{
   font-size:13px;
-  color:#80675c;
+  color:#8a7a72;
+}
+
+.stat-icon{
+  font-size:22px;
 }
 
 .stat-value{
-  font-size:28px;
+  margin-top:10px;
+  font-size:25px;
   font-weight:bold;
-  margin-top:12px;
 }
 
 .dashboard-grid{
   display:grid;
-  grid-template-columns:1.35fr .65fr;
+  grid-template-columns:1.5fr 1fr;
   gap:20px;
 }
 
-/* PEDIDOS */
+/* =========================
+PEDIDOS
+========================= */
 
 .order-tabs{
   display:flex;
-  gap:7px;
-  overflow-x:auto;
-  padding-bottom:5px;
+  gap:8px;
+  flex-wrap:wrap;
   margin-bottom:18px;
 }
 
 .order-tab{
-  border:1px solid #dfd1ca;
+  border:1px solid #dfd0c8;
   background:white;
-  color:var(--marrom);
+  padding:9px 13px;
   border-radius:20px;
-  padding:9px 14px;
-  white-space:nowrap;
-  cursor:pointer;
 }
 
 .order-tab.active{
-  background:var(--marrom);
+  background:#8f6545;
   color:white;
+  border-color:#8f6545;
 }
 
 .orders-list{
-  display:grid;
-  gap:12px;
+  display:flex;
+  flex-direction:column;
 }
 
 .order-row{
-  background:white;
-  border:1px solid #e8ddd7;
-  border-radius:16px;
-  padding:17px;
-  display:grid;
-  grid-template-columns:1fr auto;
+  display:flex;
+  justify-content:space-between;
   gap:15px;
+  padding:15px 5px;
+  border-bottom:1px solid #eee4de;
   cursor:pointer;
-  transition:.2s;
-}
-
-.order-row:hover{
-  border-color:var(--dourado);
-  box-shadow:0 5px 20px rgba(75,40,29,.08);
 }
 
 .order-number{
   font-weight:bold;
-  font-size:16px;
 }
 
-.order-client{margin-top:6px}
+.order-client{
+  margin-top:4px;
+}
 
 .order-meta{
-  display:flex;
-  flex-wrap:wrap;
-  gap:7px;
-  margin-top:10px;
-}
-
-.tag{
-  display:inline-flex;
-  align-items:center;
-  border-radius:20px;
-  padding:5px 9px;
-  font-size:11px;
-  font-weight:bold;
-}
-
-.tag-pendente{
-  background:#fff0d8;
-  color:#9b5b0d;
-}
-
-.tag-confirmado{
-  background:#e5eef9;
-  color:#315d91;
-}
-
-.tag-preparando{
-  background:#eee6fa;
-  color:#67419a;
-}
-
-.tag-pronto{
-  background:#e4f4e5;
-  color:#2d7131;
-}
-
-.tag-entregue{
-  background:#dff3df;
-  color:#236329;
-}
-
-.tag-cancelado{
-  background:#f9dddd;
-  color:#8b2525;
+  margin-top:7px;
 }
 
 .order-total{
-  font-size:19px;
   font-weight:bold;
-  color:#a67420;
-  text-align:right;
 }
 
 .order-time{
+  color:#998980;
   font-size:12px;
-  color:#80675c;
-  margin-top:6px;
-  text-align:right;
+  margin-top:5px;
 }
 
-.order-detail{display:none}
+.tag{
+  display:inline-block;
+  padding:5px 9px;
+  border-radius:15px;
+  font-size:11px;
+  font-weight:bold;
+  background:#eee;
+}
 
-.order-detail.show{display:block}
+.tag-pendente{
+  background:#fff0c8;
+  color:#886719;
+}
+
+.tag-confirmado{
+  background:#dceeff;
+  color:#275d8c;
+}
+
+.tag-preparando{
+  background:#eee0ff;
+  color:#694092;
+}
+
+.tag-pronto{
+  background:#dff4df;
+  color:#34703a;
+}
+
+.tag-entregue{
+  background:#d7f2e4;
+  color:#26704a;
+}
+
+.tag-cancelado{
+  background:#f7dedd;
+  color:#9b3934;
+}
+
+.order-detail{
+  display:none;
+}
+
+.order-detail.show{
+  display:block;
+}
 
 .back-btn{
   border:0;
   background:transparent;
-  color:var(--marrom);
-  font-weight:bold;
-  cursor:pointer;
   padding:0;
-  margin-bottom:18px;
+  margin-bottom:15px;
+  color:#8f6545;
+  font-weight:bold;
 }
 
 .order-detail-head{
   display:flex;
   justify-content:space-between;
-  gap:20px;
-  flex-wrap:wrap;
-  align-items:flex-start;
+  align-items:center;
+  gap:15px;
 }
 
 .order-detail-title{
-  font-size:25px;
+  font-size:22px;
   font-weight:bold;
 }
 
@@ -588,77 +551,64 @@ body{
 
 .info-grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
 }
 
 .info-item{
-  background:var(--creme);
-  border-radius:12px;
-  padding:13px;
+  padding:10px 0;
 }
 
 .info-label{
-  color:#80675c;
-  font-size:11px;
-  text-transform:uppercase;
+  color:#8a7a72;
+  font-size:12px;
   margin-bottom:5px;
 }
 
 .info-value{
-  font-weight:bold;
-  word-break:break-word;
+  font-weight:600;
 }
 
-.items-table{
+.items-table,
+.stock-table{
   width:100%;
   border-collapse:collapse;
 }
 
 .items-table th,
-.items-table td{
-  padding:12px 8px;
-  border-bottom:1px solid #eee5e0;
+.items-table td,
+.stock-table th,
+.stock-table td{
   text-align:left;
-}
-
-.items-table th{
-  font-size:12px;
-  color:#80675c;
-  text-transform:uppercase;
-}
-
-.items-table td:last-child,
-.items-table th:last-child{
-  text-align:right;
+  padding:12px 10px;
+  border-bottom:1px solid #eee4de;
 }
 
 .order-summary{
-  margin-top:18px;
+  margin-top:20px;
   margin-left:auto;
-  max-width:350px;
+  max-width:400px;
 }
 
 .summary-line{
   display:flex;
   justify-content:space-between;
-  padding:7px 0;
+  padding:8px 0;
 }
 
 .summary-total{
-  border-top:1px solid #dfd1ca;
+  border-top:2px solid #eaded7;
   margin-top:8px;
-  padding-top:12px;
-  font-size:21px;
+  padding-top:15px;
+  font-size:18px;
   font-weight:bold;
 }
 
 .cash-box{
-  background:#fff8ea;
-  border:1px solid #eed7a9;
-  border-radius:14px;
+  margin-top:20px;
   padding:15px;
-  margin-top:15px;
+  border-radius:12px;
+  background:#f7f0df;
 }
 
 .cash-title{
@@ -667,43 +617,38 @@ body{
 }
 
 .change-positive{
-  color:var(--verde);
-  font-size:19px;
+  font-size:20px;
   font-weight:bold;
+  color:#438149;
 }
 
-.change-warning{
-  color:var(--vermelho);
-  font-weight:bold;
-}
-
-/* PRODUTOS */
+/* =========================
+PRODUTOS
+========================= */
 
 .products{
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
-  gap:17px;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
 }
 
 .product-card{
+  border:1px solid #eaded7;
+  border-radius:14px;
+  padding:15px;
   background:white;
-  border:1px solid #e7dcd6;
-  border-radius:17px;
-  padding:14px;
-  overflow:hidden;
 }
 
 .product-image{
-  width:100%;
-  height:180px;
-  border-radius:12px;
-  background:var(--creme-2);
+  height:150px;
   display:flex;
   align-items:center;
   justify-content:center;
-  overflow:hidden;
-  font-size:50px;
+  background:#f7f0ec;
+  border-radius:10px;
   margin-bottom:12px;
+  overflow:hidden;
+  font-size:45px;
 }
 
 .product-image img{
@@ -714,1064 +659,2338 @@ body{
 
 .product-name{
   font-weight:bold;
-  font-size:17px;
+  margin-bottom:4px;
 }
 
 .product-price{
-  color:#a67420;
+  margin-top:8px;
+  color:#8f6545;
+  font-size:18px;
   font-weight:bold;
-  font-size:19px;
-  margin:8px 0;
 }
 
 .product-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
+  display:flex;
+  gap:7px;
   margin-top:12px;
 }
 
-/* ESTOQUE */
+/* =========================
+ESTOQUE
+========================= */
 
 .stock-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:16px;
+  gap:15px;
   margin-bottom:20px;
 }
 
 .stock-stat{
   background:white;
+  border:1px solid #eaded7;
+  border-radius:14px;
   padding:18px;
-  border-radius:16px;
-  box-shadow:var(--sombra);
 }
 
-.stock-table-wrap{overflow-x:auto}
-
-.stock-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:700px;
-}
-
-.stock-table th,
-.stock-table td{
-  padding:13px;
-  border-bottom:1px solid #eee5e0;
-  text-align:left;
-}
-
-.stock-table th{
-  font-size:12px;
-  color:#80675c;
+.stock-table-wrap{
+  overflow-x:auto;
 }
 
 .stock-number{
-  font-size:18px;
   font-weight:bold;
 }
 
-.stock-low{color:#b66a16}
+.stock-ok{
+  color:#438149;
+}
 
-.stock-out{color:var(--vermelho)}
+.stock-low{
+  color:#b17b19;
+}
 
-.stock-ok{color:var(--verde)}
+.stock-out{
+  color:#b4433d;
+}
 
-/* MODAL */
+/* =========================
+LOJA
+========================= */
+
+#lojaHorario{
+  min-height:120px;
+}
+
+/* =========================
+PAGAMENTOS
+========================= */
+
+.payment-section{
+  border:1px solid #eaded7;
+  border-radius:14px;
+  padding:20px;
+  margin-bottom:18px;
+  background:#fffdfa;
+}
+
+.payment-section h3{
+  margin:0 0 6px;
+  color:#805b40;
+}
+
+.payment-section h4{
+  margin:20px 0 12px;
+}
+
+.parcelas{
+  display:flex;
+  gap:18px;
+  flex-wrap:wrap;
+  margin:12px 0 18px;
+}
+
+.parcelas label{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  background:#f4ebe5;
+  padding:9px 13px;
+  border-radius:9px;
+}
+
+.payment-help{
+  background:#f4eee7;
+  border-radius:10px;
+  padding:12px;
+  color:#69564b;
+  font-size:13px;
+  margin-top:12px;
+}
+
+/* =========================
+MODAL
+========================= */
 
 .modal-bg{
   display:none;
   position:fixed;
   inset:0;
-  background:rgba(40,20,14,.55);
-  z-index:300;
+  background:rgba(30,20,15,.55);
   align-items:center;
   justify-content:center;
   padding:20px;
+  z-index:500;
 }
 
-.modal-bg.show{display:flex}
+.modal-bg.show{
+  display:flex;
+}
 
 .modal{
+  background:white;
+  border-radius:17px;
   width:100%;
-  max-width:650px;
+  max-width:600px;
   max-height:90vh;
   overflow-y:auto;
-  background:white;
-  border-radius:20px;
-  padding:24px;
+  padding:22px;
 }
 
 .modal-header{
   display:flex;
-  justify-content:space-between;
   align-items:center;
-  gap:10px;
+  justify-content:space-between;
   margin-bottom:20px;
+}
+
+.modal-header h2{
+  margin:0;
 }
 
 .close-modal{
   border:0;
-  background:var(--creme-2);
-  width:35px;
-  height:35px;
-  border-radius:50%;
-  cursor:pointer;
+  background:transparent;
+  font-size:28px;
 }
 
-.overlay{display:none}
+/* =========================
+RESPONSIVO
+========================= */
 
-@media(max-width:900px){
+@media(max-width:1000px){
 
-  .sidebar{transform:translateX(-100%)}
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
 
-  .sidebar.open{transform:translateX(0)}
+  .dashboard-grid{
+    grid-template-columns:1fr;
+  }
+
+  .products{
+    grid-template-columns:1fr 1fr;
+  }
+
+}
+
+@media(max-width:750px){
+
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.25s;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
 
   .main{
     margin-left:0;
     width:100%;
   }
 
-  .mobile-menu{display:block}
-
-  .overlay.show{
+  .mobile-menu{
     display:block;
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.35);
-    z-index:90;
   }
 
-  .stats{grid-template-columns:1fr 1fr}
+  .topbar{
+    padding:0 15px;
+  }
 
-  .dashboard-grid{grid-template-columns:1fr}
+  .content{
+    padding:15px;
+  }
 
-  .grid-4{grid-template-columns:1fr 1fr}
-
-  .stock-grid{grid-template-columns:1fr 1fr}
-}
-
-@media(max-width:600px){
-
-  .topbar{padding:0 13px}
-
-  .content{padding:15px 12px 40px}
+  .grid-2{
+    grid-template-columns:1fr;
+  }
 
   .stats{
     grid-template-columns:1fr 1fr;
-    gap:10px;
   }
 
-  .stat{padding:14px}
+  .products{
+    grid-template-columns:1fr;
+  }
 
-  .stat-value{font-size:22px}
+  .order-detail-head{
+    flex-direction:column;
+    align-items:flex-start;
+  }
 
-  .grid-2,
-  .grid-3,
-  .grid-4,
   .info-grid{
     grid-template-columns:1fr;
   }
 
-  .order-row{grid-template-columns:1fr}
-
-  .order-total,
-  .order-time{
-    text-align:left;
-  }
-
-  .order-detail-title{font-size:21px}
-
-  .order-actions{width:100%}
-
-  .order-actions .btn{flex:1}
-
-  .items-table{min-width:600px}
-
-  .card{padding:15px}
 }
 
-@media print{
+/* OVERLAY */
 
-  body{background:white}
-
-  .sidebar,
-  .topbar,
-  .order-actions,
-  .back-btn,
-  .notice,
-  .no-print{
-    display:none!important;
-  }
-
-  .main{
-    margin:0;
-    width:100%;
-  }
-
-  .content{padding:0}
-
-  .card{
-    box-shadow:none;
-    border:0;
-  }
+.overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.35);
+  z-index:90;
 }
+
+.overlay.show{
+  display:block;
+}
+
 </style>
+
 </head>
 
 <body>
 
-<!-- LOGIN -->
-<div id="loginScreen" class="login">
+
+<!-- =========================================================
+LOGIN
+========================================================= -->
+
+<div id="loginScreen" class="login-screen">
 
   <div class="login-box">
 
     <div class="login-logo">
-      <h1>LÁ <span>DOCIÊ</span></h1>
+
+      <h1>LÁ DOCIÊ</h1>
+
       <p>Painel Administrativo</p>
-    </div>
 
-    <div class="field">
-      <label>E-mail</label>
-      <input id="loginEmail" type="email" placeholder="Seu e-mail">
-    </div>
-
-    <div class="field">
-      <label>Senha</label>
-      <input id="loginPassword" type="password" placeholder="Sua senha">
     </div>
 
     <div id="loginError" class="notice error"></div>
 
-    <button class="btn btn-primary" style="width:100%;padding:14px" onclick="entrar()">
+    <div class="field">
+
+      <label>E-mail</label>
+
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="Seu e-mail"
+      >
+
+    </div>
+
+    <div class="field">
+
+      <label>Senha</label>
+
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Sua senha"
+      >
+
+    </div>
+
+    <button
+      class="login-btn"
+      onclick="entrar()"
+    >
       Entrar
     </button>
 
   </div>
+
 </div>
 
-<!-- ADMIN -->
-<div id="adminScreen" class="admin-layout hidden">
 
-  <div id="overlay" class="overlay" onclick="fecharMenu()"></div>
+<!-- =========================================================
+ADMIN
+========================================================= -->
 
-  <aside id="sidebar" class="sidebar">
+<div id="adminScreen" class="admin-screen hidden">
 
-    <div class="brand">
-      <div class="brand-title">
-        LÁ <span>DOCIÊ</span>
-      </div>
-      <small>Gestão da confeitaria</small>
-    </div>
 
-    <div class="menu-title">Principal</div>
+<!-- =========================================================
+SIDEBAR
+========================================================= -->
 
-    <button class="menu-btn active" onclick="abrirPagina('dashboard',this)">
+<aside id="sidebar" class="sidebar">
+
+  <div class="sidebar-logo">
+
+    <h2>LÁ DOCIÊ</h2>
+
+    <span>Painel Administrativo</span>
+
+  </div>
+
+
+  <div class="menu">
+
+    <button
+      class="menu-btn active"
+      onclick="abrirPagina('dashboard',this)"
+    >
       <span class="menu-icon">📊</span>
       Dashboard
     </button>
 
-    <button class="menu-btn" onclick="abrirPagina('pedidos',this)">
+
+    <button
+      class="menu-btn"
+      onclick="abrirPagina('pedidos',this)"
+    >
       <span class="menu-icon">📦</span>
       Pedidos
-      <span id="badgePedidos" class="menu-badge">0</span>
+
+      <span
+        id="badgePedidos"
+        style="
+          margin-left:auto;
+          background:#b98a63;
+          color:white;
+          border-radius:20px;
+          padding:2px 7px;
+          font-size:11px;
+        "
+      >
+        0
+      </span>
+
     </button>
 
-    <button class="menu-btn" onclick="abrirPagina('produtos',this)">
+
+    <button
+      class="menu-btn"
+      onclick="abrirPagina('produtos',this)"
+    >
       <span class="menu-icon">🍰</span>
       Produtos
     </button>
 
-    <button class="menu-btn" onclick="abrirPagina('estoque',this)">
+
+    <button
+      class="menu-btn"
+      onclick="abrirPagina('estoque',this)"
+    >
       <span class="menu-icon">📋</span>
       Estoque
     </button>
 
-    <div class="menu-title">Configurações</div>
 
-    <button class="menu-btn" onclick="abrirPagina('loja',this)">
-      <span class="menu-icon">⚙️</span>
+    <button
+      class="menu-btn"
+      onclick="abrirPagina('loja',this)"
+    >
+      <span class="menu-icon">🏪</span>
       Minha loja
     </button>
 
-    <button class="menu-btn" onclick="abrirPagina('cupons',this)">
+
+    <button
+      class="menu-btn"
+      onclick="abrirPagina('pagamentos',this)"
+    >
+      <span class="menu-icon">💳</span>
+      Pagamentos
+    </button>
+
+
+    <button
+      class="menu-btn"
+      onclick="abrirPagina('cupons',this)"
+    >
       <span class="menu-icon">🎟️</span>
       Cupons
     </button>
 
-    <button class="menu-btn" onclick="abrirPagina('config',this)">
+
+    <button
+      class="menu-btn"
+      onclick="abrirPagina('config',this)"
+    >
       <span class="menu-icon">🔧</span>
       Configurações
     </button>
 
-    <div class="sidebar-bottom">
-      <button class="menu-btn logout-menu" onclick="sair()">
-        <span class="menu-icon">↪️</span>
-        Sair
-      </button>
+  </div>
+
+
+  <div class="sidebar-bottom">
+
+    <button
+      class="menu-btn logout-menu"
+      onclick="sair()"
+    >
+      <span class="menu-icon">↪️</span>
+      Sair
+    </button>
+
+  </div>
+
+</aside>
+
+
+<!-- =========================================================
+MAIN
+========================================================= -->
+
+<main class="main">
+
+
+<header class="topbar">
+
+  <div class="topbar-left">
+
+    <button
+      class="mobile-menu"
+      onclick="abrirMenu()"
+    >
+      ☰
+    </button>
+
+    <div
+      id="pageTitle"
+      class="page-title"
+    >
+      Dashboard
     </div>
 
-  </aside>
+  </div>
 
-  <main class="main">
 
-    <header class="topbar">
+  <div class="store-status">
 
-      <div class="topbar-left">
+    <span class="store-dot"></span>
 
-        <button class="mobile-menu" onclick="abrirMenu()">☰</button>
+    Sistema online
 
-        <div id="pageTitle" class="page-title">
-          Dashboard
+  </div>
+
+</header>
+
+
+<div class="content">
+
+  <div
+    id="globalNotice"
+    class="notice"
+  ></div>
+
+
+<!-- =========================================================
+DASHBOARD
+========================================================= -->
+
+<section
+  id="dashboard"
+  class="panel active"
+>
+
+  <div class="welcome">
+
+    <h1>Olá! 👋</h1>
+
+    <div class="small">
+      Aqui está o resumo da Lá Dociê.
+    </div>
+
+  </div>
+
+
+  <div class="stats">
+
+
+    <div class="stat">
+
+      <div class="stat-top">
+
+        <div class="stat-label">
+          Pedidos hoje
+        </div>
+
+        <div class="stat-icon">
+          📦
         </div>
 
       </div>
 
-      <div class="store-status">
-        <span class="store-dot"></span>
-        Sistema online
+      <div
+        id="statPedidos"
+        class="stat-value"
+      >
+        0
       </div>
 
-    </header>
+    </div>
 
-    <div class="content">
 
-      <div id="globalNotice" class="notice"></div>
+    <div class="stat">
 
-      <!-- DASHBOARD -->
-      <section id="dashboard" class="panel active">
+      <div class="stat-top">
 
-        <div class="welcome">
-          <h1>Olá! 👋</h1>
-          <div class="small">
-            Aqui está o resumo da Lá Dociê.
-          </div>
+        <div class="stat-label">
+          Faturamento hoje
         </div>
 
-        <div class="stats">
-
-          <div class="stat">
-            <div class="stat-top">
-              <div class="stat-label">Pedidos hoje</div>
-              <div class="stat-icon">📦</div>
-            </div>
-            <div id="statPedidos" class="stat-value">0</div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-top">
-              <div class="stat-label">Faturamento hoje</div>
-              <div class="stat-icon">💰</div>
-            </div>
-            <div id="statFaturamento" class="stat-value">R$ 0,00</div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-top">
-              <div class="stat-label">Pendentes</div>
-              <div class="stat-icon">⏳</div>
-            </div>
-            <div id="statPendentes" class="stat-value">0</div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-top">
-              <div class="stat-label">Estoque baixo</div>
-              <div class="stat-icon">⚠️</div>
-            </div>
-            <div id="statEstoque" class="stat-value">0</div>
-          </div>
-
+        <div class="stat-icon">
+          💰
         </div>
 
-        <div class="dashboard-grid">
+      </div>
 
-          <div class="card">
+      <div
+        id="statFaturamento"
+        class="stat-value"
+      >
+        R$ 0,00
+      </div>
 
-            <div class="card-header">
-              <div>
-                <h2>Pedidos recentes</h2>
-                <div class="small">
-                  Acompanhe os últimos pedidos.
-                </div>
-              </div>
+    </div>
 
-              <button class="btn btn-light" onclick="abrirPaginaPorNome('pedidos')">
-                Ver todos
-              </button>
-            </div>
 
-            <div id="dashboardPedidos" class="orders-list">
-              <div class="small">Carregando...</div>
-            </div>
+    <div class="stat">
 
-          </div>
+      <div class="stat-top">
 
-          <div class="card">
-
-            <div class="card-header">
-              <div>
-                <h2>Estoque</h2>
-                <div class="small">
-                  Produtos que precisam de atenção.
-                </div>
-              </div>
-            </div>
-
-            <div id="dashboardEstoque">
-              <div class="small">Carregando...</div>
-            </div>
-
-          </div>
-
+        <div class="stat-label">
+          Pendentes
         </div>
 
-      </section>
-
-      <!-- PEDIDOS -->
-      <section id="pedidos" class="panel">
-
-        <div id="pedidosListaView">
-
-          <div class="card">
-
-            <div class="card-header">
-
-              <div>
-                <h2>Pedidos</h2>
-                <div class="small">
-                  Gerencie seus pedidos em tempo real.
-                </div>
-              </div>
-
-              <button class="btn btn-gold" onclick="carregarPedidos()">
-                🔄 Atualizar
-              </button>
-
-            </div>
-
-            <div class="order-tabs">
-
-              <button class="order-tab active" onclick="filtrarPedidos('todos',this)">
-                Todos
-              </button>
-
-              <button class="order-tab" onclick="filtrarPedidos('pendente',this)">
-                Pendentes
-              </button>
-
-              <button class="order-tab" onclick="filtrarPedidos('confirmado',this)">
-                Confirmados
-              </button>
-
-              <button class="order-tab" onclick="filtrarPedidos('preparando',this)">
-                Preparando
-              </button>
-
-              <button class="order-tab" onclick="filtrarPedidos('pronto',this)">
-                Prontos
-              </button>
-
-              <button class="order-tab" onclick="filtrarPedidos('entregue',this)">
-                Entregues
-              </button>
-
-              <button class="order-tab" onclick="filtrarPedidos('cancelado',this)">
-                Cancelados
-              </button>
-
-            </div>
-
-            <div id="ordersList" class="orders-list">
-              <div class="small">Carregando pedidos...</div>
-            </div>
-
-          </div>
-
+        <div class="stat-icon">
+          ⏳
         </div>
 
-        <!-- DETALHE DO PEDIDO -->
-        <div id="pedidoDetalhe" class="order-detail">
+      </div>
 
-          <button class="back-btn" onclick="fecharPedido()">
-            ← Voltar para pedidos
-          </button>
+      <div
+        id="statPendentes"
+        class="stat-value"
+      >
+        0
+      </div>
 
-          <div class="card">
+    </div>
 
-            <div class="order-detail-head">
 
-              <div>
+    <div class="stat">
 
-                <div id="detalheNumero" class="order-detail-title">
-                  Pedido
-                </div>
+      <div class="stat-top">
 
-                <div id="detalheData" class="small"></div>
-
-                <div style="margin-top:10px">
-                  <span id="detalheStatus" class="tag"></span>
-                </div>
-
-              </div>
-
-              <div class="order-actions">
-
-                <button class="btn btn-whatsapp" onclick="chamarWhatsApp()">
-                  💬 WhatsApp
-                </button>
-
-                <button class="btn btn-print" onclick="imprimirPedido()">
-                  🖨️ Imprimir
-                </button>
-
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="grid-2">
-
-            <div class="card">
-
-              <div class="card-header">
-                <h2>Cliente</h2>
-              </div>
-
-              <div class="info-grid">
-
-                <div class="info-item">
-                  <div class="info-label">Nome</div>
-                  <div id="clienteNome" class="info-value">-</div>
-                </div>
-
-                <div class="info-item">
-                  <div class="info-label">WhatsApp</div>
-                  <div id="clienteTelefone" class="info-value">-</div>
-                </div>
-
-                <div class="info-item">
-                  <div class="info-label">Endereço</div>
-                  <div id="clienteEndereco" class="info-value">-</div>
-                </div>
-
-                <div class="info-item">
-                  <div class="info-label">Tipo</div>
-                  <div id="clienteTipo" class="info-value">-</div>
-                </div>
-
-              </div>
-
-            </div>
-
-            <div class="card">
-
-              <div class="card-header">
-                <h2>Status do pedido</h2>
-              </div>
-
-              <div class="field">
-
-                <label>Atualizar status</label>
-
-                <select id="statusPedido" onchange="alterarStatusPedidoAtual(this.value)">
-
-                  <option value="pendente">Pendente</option>
-                  <option value="confirmado">Confirmado</option>
-                  <option value="preparando">Preparando</option>
-                  <option value="pronto">Pronto</option>
-                  <option value="entregue">Entregue</option>
-                  <option value="cancelado">Cancelado</option>
-
-                </select>
-
-              </div>
-
-              <div class="small">
-                A alteração será sincronizada em tempo real.
-              </div>
-
-            </div>
-
-          </div>
-
-          <!-- ITENS DO PEDIDO -->
-          <div class="card">
-
-            <div class="card-header">
-
-              <div>
-                <h2>Produtos do pedido</h2>
-                <div class="small">
-                  Itens, quantidades e valores.
-                </div>
-              </div>
-
-            </div>
-
-            <div style="overflow-x:auto">
-
-              <table class="items-table">
-
-                <thead>
-                  <tr>
-                    <th>Produto</th>
-                    <th>Quantidade</th>
-                    <th>Preço</th>
-                    <th>Total</th>
-                  </tr>
-                </thead>
-
-                <tbody id="pedidoItens">
-                </tbody>
-
-              </table>
-
-            </div>
-
-            <div id="pedidoItensAviso" class="notice error" style="margin-top:15px"></div>
-
-            <div class="order-summary">
-
-              <div class="summary-line">
-                <span>Subtotal</span>
-                <strong id="pedidoSubtotal">R$ 0,00</strong>
-              </div>
-
-              <div class="summary-line">
-                <span>Entrega</span>
-                <strong id="pedidoEntrega">R$ 0,00</strong>
-              </div>
-
-              <div class="summary-line">
-                <span>Desconto</span>
-                <strong id="pedidoDesconto">R$ 0,00</strong>
-              </div>
-
-              <div class="summary-line summary-total">
-                <span>Total</span>
-                <span id="pedidoTotal">R$ 0,00</span>
-              </div>
-
-            </div>
-
-          </div>
-
-          <div class="grid-2">
-
-            <div class="card">
-
-              <div class="card-header">
-                <h2>Pagamento</h2>
-              </div>
-
-              <div class="info-grid">
-
-                <div class="info-item">
-                  <div class="info-label">Forma</div>
-                  <div id="pagamentoForma" class="info-value">-</div>
-                </div>
-
-                <div class="info-item">
-                  <div class="info-label">Status</div>
-                  <div id="pagamentoStatus" class="info-value">-</div>
-                </div>
-
-              </div>
-
-              <div id="cashBox" class="cash-box hidden">
-
-                <div class="cash-title">
-                  💵 Pagamento em dinheiro
-                </div>
-
-                <div class="info-grid">
-
-                  <div class="info-item">
-                    <div class="info-label">Cliente possui</div>
-                    <div id="dinheiroCliente" class="info-value">
-                      R$ 0,00
-                    </div>
-                  </div>
-
-                  <div class="info-item">
-                    <div class="info-label">Precisa de troco?</div>
-                    <div id="precisaTroco" class="info-value">
-                      -
-                    </div>
-                  </div>
-
-                </div>
-
-                <div style="margin-top:12px">
-                  <div class="info-label">Troco</div>
-                  <div id="valorTroco" class="change-positive">
-                    R$ 0,00
-                  </div>
-                </div>
-
-              </div>
-
-            </div>
-
-            <div class="card">
-
-              <div class="card-header">
-                <h2>Observações</h2>
-              </div>
-
-              <div id="pedidoObservacoes" class="small">
-                Nenhuma observação.
-              </div>
-
-            </div>
-
-          </div>
-
+        <div class="stat-label">
+          Estoque baixo
         </div>
 
-      </section>
-
-      <!-- PRODUTOS -->
-      <section id="produtos" class="panel">
-
-        <div class="card">
-
-          <div class="card-header">
-
-            <div>
-              <h2>Produtos</h2>
-              <div class="small">
-                Cadastre e gerencie os produtos da Lá Dociê.
-              </div>
-            </div>
-
-            <button class="btn btn-gold" onclick="abrirEditorProduto()">
-              + Novo produto
-            </button>
-
-          </div>
-
-          <div id="productsList" class="products">
-            <div class="small">Carregando...</div>
-          </div>
-
+        <div class="stat-icon">
+          ⚠️
         </div>
 
-      </section>
+      </div>
 
-      <!-- ESTOQUE -->
-      <section id="estoque" class="panel">
+      <div
+        id="statEstoque"
+        class="stat-value"
+      >
+        0
+      </div>
 
-        <div class="stock-grid">
+    </div>
 
-          <div class="stock-stat">
-            <div class="small">Produtos cadastrados</div>
-            <div id="stockTotalProdutos" class="stat-value">0</div>
-          </div>
 
-          <div class="stock-stat">
-            <div class="small">Estoque baixo</div>
-            <div id="stockBaixo" class="stat-value">0</div>
-          </div>
+  </div>
 
-          <div class="stock-stat">
-            <div class="small">Esgotados</div>
-            <div id="stockEsgotado" class="stat-value">0</div>
-          </div>
 
-        </div>
+  <div class="dashboard-grid">
 
-        <div class="card">
 
-          <div class="card-header">
+    <div class="card">
 
-            <div>
-              <h2>Controle de estoque</h2>
-              <div class="small">
-                Controle a quantidade disponível de cada produto.
-              </div>
-            </div>
+      <div class="card-header">
 
-            <button class="btn btn-gold" onclick="carregarProdutos()">
-              🔄 Atualizar
-            </button>
+        <div>
 
-          </div>
-
-          <div class="stock-table-wrap">
-
-            <table class="stock-table">
-
-              <thead>
-                <tr>
-                  <th>Produto</th>
-                  <th>Estoque</th>
-                  <th>Estoque mínimo</th>
-                  <th>Status</th>
-                  <th>Ação</th>
-                </tr>
-              </thead>
-
-              <tbody id="stockTable"></tbody>
-
-            </table>
-
-          </div>
-
-        </div>
-
-      </section>
-
-      <!-- LOJA -->
-      <section id="loja" class="panel">
-
-        <div class="card">
-
-          <div class="card-header">
-
-            <div>
-              <h2>Minha loja</h2>
-              <div class="small">
-                Informações exibidas para seus clientes.
-              </div>
-            </div>
-
-          </div>
-
-          <div class="grid-2">
-
-            <div class="field">
-              <label>Nome da loja</label>
-              <input id="lojaNome">
-            </div>
-
-            <div class="field">
-              <label>Telefone</label>
-              <input id="lojaTelefone">
-            </div>
-
-          </div>
-
-          <div class="field">
-            <label>Descrição</label>
-            <textarea id="lojaDescricao"></textarea>
-          </div>
-
-          <div class="grid-2">
-
-            <div class="field">
-              <label>WhatsApp</label>
-              <input id="lojaWhatsapp">
-            </div>
-
-            <div class="field">
-              <label>Instagram</label>
-              <input id="lojaInstagram">
-            </div>
-
-          </div>
-
-          <div class="field">
-            <label>Endereço</label>
-            <input id="lojaEndereco">
-          </div>
-
-          <div class="field">
-            <label>Horário de funcionamento</label>
-            <textarea id="lojaHorario">Terça a sábado: 14h às 21h
-Domingo: 15h30 às 20h</textarea>
-          </div>
-
-          <div class="grid-2">
-
-            <div class="field">
-              <label>Chave Pix</label>
-              <input id="lojaPix">
-            </div>
-
-            <div class="field">
-              <label>Taxa de entrega</label>
-              <input id="lojaTaxa" type="number" step="0.01" min="0">
-            </div>
-
-          </div>
-
-          <button class="btn btn-primary" onclick="salvarLoja()">
-            💾 Salvar informações
-          </button>
-
-        </div>
-
-      </section>
-
-      <!-- CUPONS -->
-      <section id="cupons" class="panel">
-
-        <div class="card">
-
-          <div class="card-header">
-
-            <div>
-              <h2>Cupons</h2>
-              <div class="small">
-                Área preparada para o sistema de descontos.
-              </div>
-            </div>
-
-            <button class="btn btn-gold"
-              onclick="mostrarMensagem('O sistema de cupons será conectado ao banco na próxima etapa.')">
-              + Novo cupom
-            </button>
-
-          </div>
+          <h2>
+            Pedidos recentes
+          </h2>
 
           <div class="small">
-            Aqui vamos controlar códigos, porcentagem de desconto,
-            validade, limite de utilização e ativação/desativação.
+            Acompanhe os últimos pedidos.
           </div>
 
         </div>
 
-      </section>
+        <button
+          class="btn btn-light"
+          onclick="abrirPaginaPorNome('pedidos')"
+        >
+          Ver todos
+        </button>
 
-      <!-- CONFIGURAÇÕES -->
-      <section id="config" class="panel">
+      </div>
 
-        <div class="card">
 
-          <div class="card-header">
+      <div
+        id="dashboardPedidos"
+        class="orders-list"
+      >
 
-            <div>
-              <h2>Configurações</h2>
-              <div class="small">
-                Ferramentas administrativas da Lá Dociê.
-              </div>
-            </div>
+        <div class="small">
+          Carregando...
+        </div>
 
-          </div>
+      </div>
 
-          <div class="grid-2">
+    </div>
 
-            <div class="info-item">
-              <div class="info-label">Banco de dados</div>
-              <div class="info-value">Supabase</div>
-            </div>
 
-            <div class="info-item">
-              <div class="info-label">Pedidos em tempo real</div>
-              <div class="info-value">Ativo</div>
-            </div>
+    <div class="card">
 
+      <div class="card-header">
+
+        <div>
+
+          <h2>
+            Estoque
+          </h2>
+
+          <div class="small">
+            Produtos que precisam de atenção.
           </div>
 
         </div>
 
-      </section>
-
-    </div>
-  </main>
-</div>
-
-<!-- MODAL PRODUTO -->
-<div id="productModal" class="modal-bg">
-
-  <div class="modal">
-
-    <div class="modal-header">
-
-      <h2 id="productModalTitle">Novo produto</h2>
-
-      <button class="close-modal" onclick="fecharEditorProduto()">
-        ×
-      </button>
-
-    </div>
-
-    <input id="produtoId" type="hidden">
-
-    <div class="field">
-      <label>Nome</label>
-      <input id="produtoNome" placeholder="Ex.: Bolo de Chocolate">
-    </div>
-
-    <div class="grid-2">
-
-      <div class="field">
-
-        <label>Categoria</label>
-
-        <select id="produtoCategoria">
-          <option value="bolos">Bolos</option>
-          <option value="doces">Doces</option>
-          <option value="kits">Kits</option>
-          <option value="outros">Outros</option>
-        </select>
-
       </div>
 
-      <div class="field">
-        <label>Preço</label>
-        <input id="produtoPreco" type="number" min="0" step="0.01">
+
+      <div id="dashboardEstoque">
+
+        <div class="small">
+          Carregando...
+        </div>
+
       </div>
 
     </div>
 
-    <div class="field">
-      <label>Descrição</label>
-      <textarea id="produtoDescricao"></textarea>
-    </div>
 
-    <div class="field">
-      <label>URL da imagem</label>
-      <input id="produtoImagem" type="url" placeholder="https://...">
-    </div>
+  </div>
 
-    <div class="grid-2">
+</section>
 
-      <div class="field">
-        <label>Estoque atual</label>
-        <input id="produtoEstoque" type="number" min="0" step="1" value="0">
+
+<!-- =========================================================
+PEDIDOS
+========================================================= -->
+
+<section
+  id="pedidos"
+  class="panel"
+>
+
+  <div id="pedidosListaView">
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <div>
+
+          <h2>Pedidos</h2>
+
+          <div class="small">
+            Gerencie seus pedidos em tempo real.
+          </div>
+
+        </div>
+
+        <button
+          class="btn btn-gold"
+          onclick="carregarPedidos()"
+        >
+          🔄 Atualizar
+        </button>
+
       </div>
 
-      <div class="field">
-        <label>Estoque mínimo</label>
-        <input id="produtoEstoqueMinimo" type="number" min="0" step="1" value="5">
+
+      <div class="order-tabs">
+
+        <button
+          class="order-tab active"
+          onclick="filtrarPedidos('todos',this)"
+        >
+          Todos
+        </button>
+
+        <button
+          class="order-tab"
+          onclick="filtrarPedidos('pendente',this)"
+        >
+          Pendentes
+        </button>
+
+        <button
+          class="order-tab"
+          onclick="filtrarPedidos('confirmado',this)"
+        >
+          Confirmados
+        </button>
+
+        <button
+          class="order-tab"
+          onclick="filtrarPedidos('preparando',this)"
+        >
+          Preparando
+        </button>
+
+        <button
+          class="order-tab"
+          onclick="filtrarPedidos('pronto',this)"
+        >
+          Prontos
+        </button>
+
+        <button
+          class="order-tab"
+          onclick="filtrarPedidos('entregue',this)"
+        >
+          Entregues
+        </button>
+
+        <button
+          class="order-tab"
+          onclick="filtrarPedidos('cancelado',this)"
+        >
+          Cancelados
+        </button>
+
       </div>
 
-    </div>
 
-    <div class="field">
+      <div
+        id="ordersList"
+        class="orders-list"
+      >
 
-      <label>
-        <input id="produtoAtivo" type="checkbox" checked style="width:auto">
-        Produto disponível no site
-      </label>
+        <div class="small">
+          Carregando pedidos...
+        </div>
 
-    </div>
-
-    <div style="display:flex;gap:8px">
-
-      <button class="btn btn-primary" style="flex:1" onclick="salvarProduto()">
-        💾 Salvar
-      </button>
-
-      <button class="btn btn-light" onclick="fecharEditorProduto()">
-        Cancelar
-      </button>
+      </div>
 
     </div>
 
   </div>
+
+
+  <!-- DETALHE PEDIDO -->
+
+  <div
+    id="pedidoDetalhe"
+    class="order-detail"
+  >
+
+    <button
+      class="back-btn"
+      onclick="fecharPedido()"
+    >
+      ← Voltar para pedidos
+    </button>
+
+
+    <div class="card">
+
+      <div class="order-detail-head">
+
+        <div>
+
+          <div
+            id="detalheNumero"
+            class="order-detail-title"
+          >
+            Pedido
+          </div>
+
+          <div
+            id="detalheData"
+            class="small"
+          ></div>
+
+          <div style="margin-top:10px">
+
+            <span
+              id="detalheStatus"
+              class="tag"
+            ></span>
+
+          </div>
+
+        </div>
+
+
+        <div class="order-actions">
+
+          <button
+            class="btn btn-whatsapp"
+            onclick="chamarWhatsApp()"
+          >
+            💬 WhatsApp
+          </button>
+
+          <button
+            class="btn btn-print"
+            onclick="imprimirPedido()"
+          >
+            🖨️ Imprimir
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="grid-2">
+
+
+      <div class="card">
+
+        <div class="card-header">
+
+          <h2>Cliente</h2>
+
+        </div>
+
+
+        <div class="info-grid">
+
+
+          <div class="info-item">
+
+            <div class="info-label">
+              Nome
+            </div>
+
+            <div
+              id="clienteNome"
+              class="info-value"
+            >
+              -
+            </div>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <div class="info-label">
+              WhatsApp
+            </div>
+
+            <div
+              id="clienteTelefone"
+              class="info-value"
+            >
+              -
+            </div>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <div class="info-label">
+              Endereço
+            </div>
+
+            <div
+              id="clienteEndereco"
+              class="info-value"
+            >
+              -
+            </div>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <div class="info-label">
+              Tipo
+            </div>
+
+            <div
+              id="clienteTipo"
+              class="info-value"
+            >
+              -
+            </div>
+
+          </div>
+
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="card-header">
+
+          <h2>
+            Status do pedido
+          </h2>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Atualizar status
+          </label>
+
+          <select
+            id="statusPedido"
+            onchange="alterarStatusPedidoAtual(this.value)"
+          >
+
+            <option value="pendente">
+              Pendente
+            </option>
+
+            <option value="confirmado">
+              Confirmado
+            </option>
+
+            <option value="preparando">
+              Preparando
+            </option>
+
+            <option value="pronto">
+              Pronto
+            </option>
+
+            <option value="entregue">
+              Entregue
+            </option>
+
+            <option value="cancelado">
+              Cancelado
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="small">
+          A alteração será sincronizada em tempo real.
+        </div>
+
+      </div>
+
+
+    </div>
+
+
+    <!-- ITENS -->
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <div>
+
+          <h2>
+            Produtos do pedido
+          </h2>
+
+          <div class="small">
+            Itens, quantidades e valores.
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div style="overflow-x:auto">
+
+        <table class="items-table">
+
+          <thead>
+
+            <tr>
+
+              <th>
+                Produto
+              </th>
+
+              <th>
+                Quantidade
+              </th>
+
+              <th>
+                Preço
+              </th>
+
+              <th>
+                Total
+              </th>
+
+            </tr>
+
+          </thead>
+
+
+          <tbody id="pedidoItens"></tbody>
+
+        </table>
+
+      </div>
+
+
+      <div
+        id="pedidoItensAviso"
+        class="notice error"
+        style="margin-top:15px"
+      ></div>
+
+
+      <div class="order-summary">
+
+
+        <div class="summary-line">
+
+          <span>
+            Subtotal
+          </span>
+
+          <strong id="pedidoSubtotal">
+            R$ 0,00
+          </strong>
+
+        </div>
+
+
+        <div class="summary-line">
+
+          <span>
+            Entrega
+          </span>
+
+          <strong id="pedidoEntrega">
+            R$ 0,00
+          </strong>
+
+        </div>
+
+
+        <div class="summary-line">
+
+          <span>
+            Desconto
+          </span>
+
+          <strong id="pedidoDesconto">
+            R$ 0,00
+          </strong>
+
+        </div>
+
+
+        <div class="summary-line summary-total">
+
+          <span>
+            Total
+          </span>
+
+          <span id="pedidoTotal">
+            R$ 0,00
+          </span>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+    <div class="grid-2">
+
+
+      <div class="card">
+
+        <div class="card-header">
+
+          <h2>
+            Pagamento
+          </h2>
+
+        </div>
+
+
+        <div class="info-grid">
+
+
+          <div class="info-item">
+
+            <div class="info-label">
+              Forma
+            </div>
+
+            <div
+              id="pagamentoForma"
+              class="info-value"
+            >
+              -
+            </div>
+
+          </div>
+
+
+          <div class="info-item">
+
+            <div class="info-label">
+              Status
+            </div>
+
+            <div
+              id="pagamentoStatus"
+              class="info-value"
+            >
+              -
+            </div>
+
+          </div>
+
+
+        </div>
+
+
+        <div
+          id="cashBox"
+          class="cash-box hidden"
+        >
+
+          <div class="cash-title">
+            💵 Pagamento em dinheiro
+          </div>
+
+          <div class="info-grid">
+
+            <div class="info-item">
+
+              <div class="info-label">
+                Cliente possui
+              </div>
+
+              <div
+                id="dinheiroCliente"
+                class="info-value"
+              >
+                R$ 0,00
+              </div>
+
+            </div>
+
+
+            <div class="info-item">
+
+              <div class="info-label">
+                Precisa de troco?
+              </div>
+
+              <div
+                id="precisaTroco"
+                class="info-value"
+              >
+                -
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div style="margin-top:12px">
+
+            <div class="info-label">
+              Troco
+            </div>
+
+            <div
+              id="valorTroco"
+              class="change-positive"
+            >
+              R$ 0,00
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="card">
+
+        <div class="card-header">
+
+          <h2>
+            Observações
+          </h2>
+
+        </div>
+
+
+        <div
+          id="pedidoObservacoes"
+          class="small"
+        >
+          Nenhuma observação.
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+PRODUTOS
+========================================================= -->
+
+<section
+  id="produtos"
+  class="panel"
+>
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <div>
+
+        <h2>
+          Produtos
+        </h2>
+
+        <div class="small">
+          Cadastre e gerencie os produtos da Lá Dociê.
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn btn-gold"
+        onclick="abrirEditorProduto()"
+      >
+        + Novo produto
+      </button>
+
+    </div>
+
+
+    <div
+      id="productsList"
+      class="products"
+    >
+
+      <div class="small">
+        Carregando...
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+ESTOQUE
+========================================================= -->
+
+<section
+  id="estoque"
+  class="panel"
+>
+
+
+  <div class="stock-grid">
+
+
+    <div class="stock-stat">
+
+      <div class="small">
+        Produtos cadastrados
+      </div>
+
+      <div
+        id="stockTotalProdutos"
+        class="stat-value"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="stock-stat">
+
+      <div class="small">
+        Estoque baixo
+      </div>
+
+      <div
+        id="stockBaixo"
+        class="stat-value"
+      >
+        0
+      </div>
+
+    </div>
+
+
+    <div class="stock-stat">
+
+      <div class="small">
+        Esgotados
+      </div>
+
+      <div
+        id="stockEsgotado"
+        class="stat-value"
+      >
+        0
+      </div>
+
+    </div>
+
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <div>
+
+        <h2>
+          Controle de estoque
+        </h2>
+
+        <div class="small">
+          Controle a quantidade disponível de cada produto.
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn btn-gold"
+        onclick="carregarProdutos()"
+      >
+        🔄 Atualizar
+      </button>
+
+    </div>
+
+
+    <div class="stock-table-wrap">
+
+      <table class="stock-table">
+
+        <thead>
+
+          <tr>
+
+            <th>
+              Produto
+            </th>
+
+            <th>
+              Estoque
+            </th>
+
+            <th>
+              Estoque mínimo
+            </th>
+
+            <th>
+              Status
+            </th>
+
+            <th>
+              Ação
+            </th>
+
+          </tr>
+
+        </thead>
+
+
+        <tbody id="stockTable"></tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+LOJA
+========================================================= -->
+
+<section
+  id="loja"
+  class="panel"
+>
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <div>
+
+        <h2>
+          Minha loja
+        </h2>
+
+        <div class="small">
+          Informações exibidas para seus clientes.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="grid-2">
+
+
+      <div class="field">
+
+        <label>
+          Nome da loja
+        </label>
+
+        <input id="lojaNome">
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Telefone
+        </label>
+
+        <input id="lojaTelefone">
+
+      </div>
+
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Descrição
+      </label>
+
+      <textarea id="lojaDescricao"></textarea>
+
+    </div>
+
+
+    <div class="grid-2">
+
+
+      <div class="field">
+
+        <label>
+          WhatsApp
+        </label>
+
+        <input id="lojaWhatsapp">
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Instagram
+        </label>
+
+        <input id="lojaInstagram">
+
+      </div>
+
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Endereço
+      </label>
+
+      <input id="lojaEndereco">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Horário de funcionamento
+      </label>
+
+      <textarea id="lojaHorario">Terça a sábado: 14h às 21h
+Domingo: 15h30 às 20h</textarea>
+
+    </div>
+
+
+    <div class="grid-2">
+
+
+      <div class="field">
+
+        <label>
+          Chave Pix
+        </label>
+
+        <input id="lojaPix">
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          Taxa de entrega
+        </label>
+
+        <input
+          id="lojaTaxa"
+          type="number"
+          step="0.01"
+          min="0"
+        >
+
+      </div>
+
+
+    </div>
+
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarLoja()"
+    >
+      💾 Salvar informações
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+PAGAMENTOS
+========================================================= -->
+
+<section
+  id="pagamentos"
+  class="panel"
+>
+
+  <div class="card">
+
+
+    <div class="card-header">
+
+      <div>
+
+        <h2>
+          Pagamentos
+        </h2>
+
+        <div class="small">
+          Configure como seus clientes poderão pagar.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- PIX -->
+
+    <div class="payment-section">
+
+      <h3>
+        🟢 Pix
+      </h3>
+
+      <div class="small">
+
+        O cliente poderá pagar utilizando
+        a chave Pix cadastrada.
+
+      </div>
+
+
+      <div class="grid-2">
+
+
+        <div class="field">
+
+          <label>
+            Chave Pix
+          </label>
+
+          <input
+            id="pagamentoPixChave"
+            type="text"
+            placeholder="Digite sua chave Pix"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Status
+          </label>
+
+          <label>
+
+            <input
+              id="pagamentoPixAtivo"
+              type="checkbox"
+              checked
+              style="width:auto"
+            >
+
+            Permitir pagamento via Pix
+
+          </label>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+
+    <!-- MERCADO PAGO -->
+
+    <div class="payment-section">
+
+      <h3>
+        💳 Mercado Pago
+      </h3>
+
+      <div class="small">
+
+        O Mercado Pago será utilizado para
+        gerar o link de pagamento do cliente.
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+
+          <input
+            id="mercadoPagoAtivo"
+            type="checkbox"
+            checked
+            style="width:auto"
+          >
+
+          Ativar pagamento por link
+
+        </label>
+
+      </div>
+
+
+      <h4>
+        Cartão de crédito
+      </h4>
+
+
+      <div class="parcelas">
+
+
+        <label>
+
+          <input
+            id="credito2x"
+            type="checkbox"
+            checked
+            style="width:auto"
+          >
+
+          2x
+
+        </label>
+
+
+        <label>
+
+          <input
+            id="credito3x"
+            type="checkbox"
+            checked
+            style="width:auto"
+          >
+
+          3x
+
+        </label>
+
+
+        <label>
+
+          <input
+            id="credito4x"
+            type="checkbox"
+            checked
+            style="width:auto"
+          >
+
+          4x
+
+        </label>
+
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+
+          <input
+            id="mercadoPagoDebito"
+            type="checkbox"
+            checked
+            style="width:auto"
+          >
+
+          Permitir cartão de débito
+
+        </label>
+
+      </div>
+
+
+      <div class="payment-help">
+
+        💰 A Lá Dociê absorverá as taxas do pagamento
+        realizado pelo cliente através do Mercado Pago.
+
+      </div>
+
+    </div>
+
+
+    <!-- MAQUININHA -->
+
+    <div class="payment-section">
+
+      <h3>
+        🏦 Maquininha física
+      </h3>
+
+      <div class="small">
+
+        Esta forma de pagamento ficará disponível
+        <strong>somente para pedidos com retirada na loja.</strong>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+
+          <input
+            id="maquininhaAtiva"
+            type="checkbox"
+            checked
+            style="width:auto"
+          >
+
+          Ativar pagamento na maquininha
+
+        </label>
+
+      </div>
+
+
+      <div class="grid-2">
+
+
+        <div class="field">
+
+          <label>
+            Taxa débito (%)
+          </label>
+
+          <input
+            id="taxaDebito"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ex.: 1.99"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Taxa crédito à vista (%)
+          </label>
+
+          <input
+            id="taxaCreditoVista"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ex.: 3.99"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Taxa crédito 2x (%)
+          </label>
+
+          <input
+            id="taxaCredito2x"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ex.: 5.99"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Taxa crédito 3x (%)
+          </label>
+
+          <input
+            id="taxaCredito3x"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ex.: 6.99"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>
+            Taxa crédito 4x (%)
+          </label>
+
+          <input
+            id="taxaCredito4x"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Ex.: 7.99"
+          >
+
+        </div>
+
+
+      </div>
+
+
+      <div class="payment-help">
+
+        📦 <strong>Importante:</strong>
+        cartão na maquininha física aparecerá
+        para o cliente somente quando ele escolher
+        <strong>retirada na loja</strong>.
+
+      </div>
+
+    </div>
+
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarConfiguracoesPagamento()"
+    >
+      💾 Salvar configurações de pagamento
+    </button>
+
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+CUPONS
+========================================================= -->
+
+<section
+  id="cupons"
+  class="panel"
+>
+
+  <div class="card">
+
+
+    <div class="card-header">
+
+      <div>
+
+        <h2>
+          Cupons
+        </h2>
+
+        <div class="small">
+          Área preparada para o sistema de descontos.
+        </div>
+
+      </div>
+
+
+      <button
+        class="btn btn-gold"
+        onclick="mostrarMensagem('O sistema de cupons será conectado ao banco na próxima etapa.')"
+      >
+        + Novo cupom
+      </button>
+
+    </div>
+
+
+    <div class="small">
+
+      Aqui vamos controlar códigos,
+      porcentagem de desconto,
+      validade,
+      limite de utilização
+      e ativação/desativação.
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+CONFIGURAÇÕES
+========================================================= -->
+
+<section
+  id="config"
+  class="panel"
+>
+
+  <div class="card">
+
+
+    <div class="card-header">
+
+      <div>
+
+        <h2>
+          Configurações
+        </h2>
+
+        <div class="small">
+          Ferramentas administrativas da Lá Dociê.
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <div class="grid-2">
+
+
+      <div class="info-item">
+
+        <div class="info-label">
+          Banco de dados
+        </div>
+
+        <div class="info-value">
+          Supabase
+        </div>
+
+      </div>
+
+
+      <div class="info-item">
+
+        <div class="info-label">
+          Pedidos em tempo real
+        </div>
+
+        <div class="info-value">
+          Ativo
+        </div>
+
+      </div>
+
+
+    </div>
+
+  </div>
+
+</section>
+
+
 </div>
+
+</main>
+
+</div>
+
+
+<!-- =========================================================
+MODAL PRODUTO
+========================================================= -->
+
+<div
+  id="productModal"
+  class="modal-bg"
+>
+
+
+<div class="modal">
+
+
+  <div class="modal-header">
+
+    <h2 id="productModalTitle">
+      Novo produto
+    </h2>
+
+    <button
+      class="close-modal"
+      onclick="fecharEditorProduto()"
+    >
+      ×
+    </button>
+
+  </div>
+
+
+  <input
+    id="produtoId"
+    type="hidden"
+  >
+
+
+  <div class="field">
+
+    <label>
+      Nome
+    </label>
+
+    <input
+      id="produtoNome"
+      placeholder="Ex.: Bolo de Chocolate"
+    >
+
+  </div>
+
+
+  <div class="grid-2">
+
+
+    <div class="field">
+
+      <label>
+        Categoria
+      </label>
+
+      <select id="produtoCategoria">
+
+        <option value="bolos">
+          Bolos
+        </option>
+
+        <option value="doces">
+          Doces
+        </option>
+
+        <option value="kits">
+          Kits
+        </option>
+
+        <option value="outros">
+          Outros
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Preço
+      </label>
+
+      <input
+        id="produtoPreco"
+        type="number"
+        min="0"
+        step="0.01"
+      >
+
+    </div>
+
+
+  </div>
+
+
+  <div class="field">
+
+    <label>
+      Descrição
+    </label>
+
+    <textarea
+      id="produtoDescricao"
+    ></textarea>
+
+  </div>
+
+
+  <div class="field">
+
+    <label>
+      URL da imagem
+    </label>
+
+    <input
+      id="produtoImagem"
+      type="url"
+      placeholder="https://..."
+    >
+
+  </div>
+
+
+  <div class="grid-2">
+
+
+    <div class="field">
+
+      <label>
+        Estoque atual
+      </label>
+
+      <input
+        id="produtoEstoque"
+        type="number"
+        min="0"
+        step="1"
+        value="0"
+      >
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Estoque mínimo
+      </label>
+
+      <input
+        id="produtoEstoqueMinimo"
+        type="number"
+        min="0"
+        step="1"
+        value="5"
+      >
+
+    </div>
+
+
+  </div>
+
+
+  <div class="field">
+
+    <label>
+
+      <input
+        id="produtoAtivo"
+        type="checkbox"
+        checked
+        style="width:auto"
+      >
+
+      Produto disponível no site
+
+    </label>
+
+  </div>
+
+
+  <div
+    style="
+      display:flex;
+      gap:8px;
+    "
+  >
+
+
+    <button
+      class="btn btn-primary"
+      style="flex:1"
+      onclick="salvarProduto()"
+    >
+      💾 Salvar
+    </button>
+
+
+    <button
+      class="btn btn-light"
+      onclick="fecharEditorProduto()"
+    >
+      Cancelar
+    </button>
+
+
+  </div>
+
+
+</div>
+
+</div>
+
+
+<!-- =========================================================
+OVERLAY
+========================================================= -->
+
+<div
+  id="overlay"
+  class="overlay"
+  onclick="fecharMenu()"
+></div>
+
+
+<!-- =========================================================
+JAVASCRIPT
+========================================================= -->
 
 <script>
 
-/* =========================================================
-   SUPABASE
-========================================================= */
+/*
+=========================================================
+SUPABASE
+=========================================================
+*/
 
 const SUPABASE_URL =
 "https://lzihqkpscesurkfmcasb.supabase.co";
@@ -1785,21 +3004,33 @@ window.supabase.createClient(
   SUPABASE_KEY
 );
 
-/* =========================================================
-   ESTADO
-========================================================= */
+
+/*
+=========================================================
+ESTADO
+=========================================================
+*/
 
 let produtos = [];
+
 let pedidos = [];
+
 let loja = null;
+
 let pedidoAtual = null;
+
 let itensPedidoAtual = [];
+
 let filtroAtual = "todos";
+
 let realtimeChannel = null;
 
-/* =========================================================
-   UTILIDADES
-========================================================= */
+
+/*
+=========================================================
+UTILIDADES
+=========================================================
+*/
 
 function escapeHTML(valor){
 
@@ -1812,6 +3043,7 @@ function escapeHTML(valor){
 
 }
 
+
 function dinheiro(valor){
 
   return Number(valor || 0)
@@ -1820,46 +3052,67 @@ function dinheiro(valor){
 
 }
 
-function mostrarMensagem(mensagem,tipo="success"){
+
+function mostrarMensagem(
+  mensagem,
+  tipo="success"
+){
 
   const box =
-    document.getElementById("globalNotice");
+    document.getElementById(
+      "globalNotice"
+    );
 
-  box.textContent = mensagem;
+  box.textContent =
+    mensagem;
 
   box.className =
     "notice show " + tipo;
 
   setTimeout(()=>{
+
     box.classList.remove("show");
+
   },5000);
 
 }
 
-function mostrarLoginErro(mensagem){
+
+function mostrarLoginErro(
+  mensagem
+){
 
   const box =
-    document.getElementById("loginError");
+    document.getElementById(
+      "loginError"
+    );
 
-  box.textContent = mensagem;
+  box.textContent =
+    mensagem;
 
   box.className =
     "notice show error";
 
 }
 
-/* =========================================================
-   LOGIN
-========================================================= */
+
+/*
+=========================================================
+LOGIN
+=========================================================
+*/
 
 async function entrar(){
 
   const email =
-    document.getElementById("loginEmail")
-      .value.trim();
+    document
+      .getElementById("loginEmail")
+      .value
+      .trim();
 
   const senha =
-    document.getElementById("loginPassword")
+    document
+      .getElementById("loginPassword")
       .value;
 
   if(!email || !senha){
@@ -1869,26 +3122,41 @@ async function entrar(){
     );
 
     return;
+
   }
+
 
   try{
 
-    const {data,error} =
+    const {
+      data,
+      error
+    } =
       await supabaseClient.auth
         .signInWithPassword({
+
           email,
+
           password:senha
+
         });
 
-    if(error) throw error;
+
+    if(error)
+      throw error;
+
 
     if(!data.session){
+
       throw new Error(
         "Não foi possível iniciar a sessão."
       );
+
     }
 
+
     abrirAdmin();
+
 
   }catch(error){
 
@@ -1903,15 +3171,18 @@ async function entrar(){
 
 }
 
+
 async function abrirAdmin(){
 
   document
     .getElementById("loginScreen")
     .classList.add("hidden");
 
+
   document
     .getElementById("adminScreen")
     .classList.remove("hidden");
+
 
   await carregarTudo();
 
@@ -1919,25 +3190,38 @@ async function abrirAdmin(){
 
 }
 
+
 async function sair(){
 
   try{
-    await supabaseClient.auth.signOut();
+
+    await supabaseClient
+      .auth
+      .signOut();
+
   }catch(error){
+
     console.error(error);
+
   }
+
 
   if(realtimeChannel){
 
     await supabaseClient
-      .removeChannel(realtimeChannel);
+      .removeChannel(
+        realtimeChannel
+      );
 
     realtimeChannel = null;
+
   }
+
 
   document
     .getElementById("adminScreen")
     .classList.add("hidden");
+
 
   document
     .getElementById("loginScreen")
@@ -1945,9 +3229,12 @@ async function sair(){
 
 }
 
-/* =========================================================
-   MENU
-========================================================= */
+
+/*
+=========================================================
+MENU
+=========================================================
+*/
 
 function abrirMenu(){
 
@@ -1955,11 +3242,13 @@ function abrirMenu(){
     .getElementById("sidebar")
     .classList.add("open");
 
+
   document
     .getElementById("overlay")
     .classList.add("show");
 
 }
+
 
 function fecharMenu(){
 
@@ -1967,1698 +3256,155 @@ function fecharMenu(){
     .getElementById("sidebar")
     .classList.remove("open");
 
+
   document
     .getElementById("overlay")
     .classList.remove("show");
 
 }
 
-function abrirPagina(nome,botao){
+
+function abrirPagina(
+  nome,
+  botao
+){
 
   document
     .querySelectorAll(".panel")
     .forEach(p=>{
-      p.classList.remove("active");
+
+      p.classList.remove(
+        "active"
+      );
+
     });
 
+
   const painel =
-    document.getElementById(nome);
+    document.getElementById(
+      nome
+    );
+
 
   if(painel){
-    painel.classList.add("active");
+
+    painel.classList.add(
+      "active"
+    );
+
   }
+
 
   document
     .querySelectorAll(".menu-btn")
     .forEach(b=>{
-      b.classList.remove("active");
+
+      b.classList.remove(
+        "active"
+      );
+
     });
 
+
   if(botao){
-    botao.classList.add("active");
+
+    botao.classList.add(
+      "active"
+    );
+
   }
 
+
   const titulos = {
+
     dashboard:"Dashboard",
+
     pedidos:"Pedidos",
+
     produtos:"Produtos",
+
     estoque:"Estoque",
+
     loja:"Minha loja",
+
+    pagamentos:"Pagamentos",
+
     cupons:"Cupons",
+
     config:"Configurações"
+
   };
 
+
   document
-    .getElementById("pageTitle")
+    .getElementById(
+      "pageTitle"
+    )
     .textContent =
-    titulos[nome] || "Painel";
+      titulos[nome] ||
+      "Painel";
+
 
   fecharMenu();
 
+
+  if(nome === "pagamentos"){
+
+    carregarConfiguracoesPagamento();
+
+  }
+
 }
 
-function abrirPaginaPorNome(nome){
+
+function abrirPaginaPorNome(
+  nome
+){
 
   const botao =
-    [...document.querySelectorAll(".menu-btn")]
-      .find(btn =>
-        btn.textContent
-          .toLowerCase()
-          .includes(nome)
-      );
-
-  abrirPagina(nome,botao);
-
-}
-
-/* =========================================================
-   PRODUTOS
-========================================================= */
-
-async function carregarProdutos(){
-
-  try{
-
-    const {data,error} =
-      await supabaseClient
-        .from("products")
-        .select("*")
-        .order("created_at",{ascending:false});
-
-    if(error) throw error;
-
-    produtos =
-      Array.isArray(data)
-        ? data
-        : [];
-
-    renderizarProdutos();
-    renderizarEstoque();
-
-  }catch(error){
-
-    console.error("Produtos:",error);
-
-    document.getElementById("productsList").innerHTML =
-      `<div class="small">
-        Não foi possível carregar os produtos.<br><br>
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
-
-}
-
-function abrirEditorProduto(id=null){
-
-  document
-    .getElementById("productModal")
-    .classList.add("show");
-
-  if(id){
-
-    const produto =
-      produtos.find(
-        p => Number(p.id) === Number(id)
-      );
-
-    if(!produto) return;
-
-    document.getElementById("productModalTitle")
-      .textContent = "Editar produto";
-
-    document.getElementById("produtoId")
-      .value = produto.id;
-
-    document.getElementById("produtoNome")
-      .value = produto.name || "";
-
-    document.getElementById("produtoCategoria")
-      .value = produto.category || "bolos";
-
-    document.getElementById("produtoPreco")
-      .value = produto.price ?? "";
-
-    document.getElementById("produtoDescricao")
-      .value = produto.description || "";
-
-    document.getElementById("produtoImagem")
-      .value = produto.image || "";
-
-    document.getElementById("produtoEstoque")
-      .value = produto.stock ?? 0;
-
-    document.getElementById("produtoEstoqueMinimo")
-      .value = produto.min_stock ?? 5;
-
-    document.getElementById("produtoAtivo")
-      .checked = produto.active !== false;
-
-  }else{
-
-    document.getElementById("productModalTitle")
-      .textContent = "Novo produto";
-
-    document.getElementById("produtoId").value="";
-    document.getElementById("produtoNome").value="";
-    document.getElementById("produtoCategoria").value="bolos";
-    document.getElementById("produtoPreco").value="";
-    document.getElementById("produtoDescricao").value="";
-    document.getElementById("produtoImagem").value="";
-    document.getElementById("produtoEstoque").value=0;
-    document.getElementById("produtoEstoqueMinimo").value=5;
-    document.getElementById("produtoAtivo").checked=true;
-
-  }
-
-}
-
-function fecharEditorProduto(){
-
-  document
-    .getElementById("productModal")
-    .classList.remove("show");
-
-}
-
-async function salvarProduto(){
-
-  const id =
-    document.getElementById("produtoId").value;
-
-  const dados = {
-
-    name:
-      document.getElementById("produtoNome")
-        .value.trim(),
-
-    category:
-      document.getElementById("produtoCategoria")
-        .value,
-
-    price:
-      Number(
-        document.getElementById("produtoPreco")
-          .value || 0
-      ),
-
-    description:
-      document.getElementById("produtoDescricao")
-        .value.trim() || null,
-
-    image:
-      document.getElementById("produtoImagem")
-        .value.trim() || null,
-
-    active:
-      document.getElementById("produtoAtivo")
-        .checked,
-
-    stock:
-      Number(
-        document.getElementById("produtoEstoque")
-          .value || 0
-      ),
-
-    min_stock:
-      Number(
-        document.getElementById("produtoEstoqueMinimo")
-          .value || 0
-      )
-
-  };
-
-  if(!dados.name){
-
-    mostrarMensagem(
-      "Digite o nome do produto.",
-      "error"
+    [
+      ...document
+        .querySelectorAll(
+          ".menu-btn"
+        )
+    ]
+    .find(btn=>
+      btn.textContent
+        .toLowerCase()
+        .includes(nome)
     );
 
-    return;
-  }
 
-  try{
-
-    if(id){
-
-      const {data,error} =
-        await supabaseClient
-          .from("products")
-          .update(dados)
-          .eq("id",Number(id))
-          .select()
-          .single();
-
-      if(error) throw error;
-
-      const indice =
-        produtos.findIndex(
-          p => Number(p.id) === Number(id)
-        );
-
-      if(indice !== -1){
-        produtos[indice] = data;
-      }
-
-      mostrarMensagem(
-        "Produto atualizado com sucesso!"
-      );
-
-    }else{
-
-      const {data,error} =
-        await supabaseClient
-          .from("products")
-          .insert([dados])
-          .select()
-          .single();
-
-      if(error) throw error;
-
-      produtos.unshift(data);
-
-      mostrarMensagem(
-        "Produto criado com sucesso!"
-      );
-
-    }
-
-    renderizarProdutos();
-    renderizarEstoque();
-
-    fecharEditorProduto();
-
-  }catch(error){
-
-    console.error(error);
-
-    mostrarMensagem(
-      "Não foi possível salvar o produto: " +
-      error.message,
-      "error"
-    );
-
-  }
-
-}
-
-function renderizarProdutos(){
-
-  const area =
-    document.getElementById("productsList");
-
-  if(!produtos.length){
-
-    area.innerHTML =
-      `<div class="small">
-        Nenhum produto cadastrado.
-      </div>`;
-
-    return;
-  }
-
-  area.innerHTML = "";
-
-  produtos.forEach(produto=>{
-
-    const card =
-      document.createElement("div");
-
-    card.className =
-      "product-card";
-
-    const imagem =
-      produto.image
-        ? `<img src="${escapeHTML(produto.image)}"
-                alt="${escapeHTML(produto.name)}">`
-        : "🍰";
-
-    const estoque =
-      Number(produto.stock ?? 0);
-
-    card.innerHTML = `
-
-      <div class="product-image">
-        ${imagem}
-      </div>
-
-      <div class="product-name">
-        ${escapeHTML(produto.name)}
-      </div>
-
-      <div class="small">
-        ${escapeHTML(produto.category || "Produto")}
-      </div>
-
-      <div class="product-price">
-        R$ ${dinheiro(produto.price)}
-      </div>
-
-      <div class="small">
-        Estoque: <strong>${estoque}</strong>
-      </div>
-
-      <div class="product-actions">
-
-        <button
-          class="btn btn-primary"
-          onclick="abrirEditorProduto(${produto.id})">
-          ✏️ Editar
-        </button>
-
-        <button
-          class="btn ${produto.active ? "btn-danger":"btn-success"}"
-          onclick="alternarProduto(${produto.id})">
-          ${produto.active ? "Desativar":"Ativar"}
-        </button>
-
-      </div>
-    `;
-
-    area.appendChild(card);
-
-  });
-
-}
-
-async function alternarProduto(id){
-
-  const produto =
-    produtos.find(
-      p => Number(p.id) === Number(id)
-    );
-
-  if(!produto) return;
-
-  try{
-
-    const {data,error} =
-      await supabaseClient
-        .from("products")
-        .update({
-          active:!produto.active
-        })
-        .eq("id",Number(id))
-        .select()
-        .single();
-
-    if(error) throw error;
-
-    const indice =
-      produtos.findIndex(
-        p => Number(p.id) === Number(id)
-      );
-
-    produtos[indice] = data;
-
-    renderizarProdutos();
-
-    mostrarMensagem(
-      data.active
-        ? "Produto ativado."
-        : "Produto retirado do site."
-    );
-
-  }catch(error){
-
-    mostrarMensagem(
-      error.message,
-      "error"
-    );
-
-  }
-
-}
-
-/* =========================================================
-   ESTOQUE
-========================================================= */
-
-function renderizarEstoque(){
-
-  const tbody =
-    document.getElementById("stockTable");
-
-  if(!produtos.length){
-
-    tbody.innerHTML =
-      `<tr>
-        <td colspan="5">
-          Nenhum produto cadastrado.
-        </td>
-      </tr>`;
-
-    return;
-  }
-
-  let baixos=0;
-  let esgotados=0;
-
-  tbody.innerHTML="";
-
-  produtos.forEach(produto=>{
-
-    const estoque =
-      Number(produto.stock ?? 0);
-
-    const minimo =
-      Number(produto.min_stock ?? 5);
-
-    let status;
-    let classe;
-
-    if(estoque <= 0){
-
-      status="ESGOTADO";
-      classe="stock-out";
-      esgotados++;
-
-    }else if(estoque <= minimo){
-
-      status="ESTOQUE BAIXO";
-      classe="stock-low";
-      baixos++;
-
-    }else{
-
-      status="NORMAL";
-      classe="stock-ok";
-
-    }
-
-    const tr =
-      document.createElement("tr");
-
-    tr.innerHTML = `
-
-      <td>
-        <strong>${escapeHTML(produto.name)}</strong>
-      </td>
-
-      <td>
-        <span class="stock-number ${classe}">
-          ${estoque}
-        </span>
-      </td>
-
-      <td>${minimo}</td>
-
-      <td>
-        <strong class="${classe}">
-          ${status}
-        </strong>
-      </td>
-
-      <td>
-        <button
-          class="btn btn-light"
-          onclick="abrirEditorProduto(${produto.id})">
-          Ajustar
-        </button>
-      </td>
-    `;
-
-    tbody.appendChild(tr);
-
-  });
-
-  document.getElementById("stockTotalProdutos")
-    .textContent = produtos.length;
-
-  document.getElementById("stockBaixo")
-    .textContent = baixos;
-
-  document.getElementById("stockEsgotado")
-    .textContent = esgotados;
-
-  document.getElementById("statEstoque")
-    .textContent = baixos + esgotados;
-
-  renderizarDashboardEstoque();
-
-}
-
-function renderizarDashboardEstoque(){
-
-  const area =
-    document.getElementById("dashboardEstoque");
-
-  const problemas =
-    produtos.filter(p=>{
-
-      const estoque =
-        Number(p.stock ?? 0);
-
-      const minimo =
-        Number(p.min_stock ?? 5);
-
-      return estoque <= minimo;
-
-    }).slice(0,5);
-
-  if(!problemas.length){
-
-    area.innerHTML =
-      `<div class="small">
-        ✅ Nenhum produto precisa de reposição.
-      </div>`;
-
-    return;
-  }
-
-  area.innerHTML =
-    problemas.map(p=>{
-
-      const estoque =
-        Number(p.stock ?? 0);
-
-      return `
-        <div style="
-          display:flex;
-          justify-content:space-between;
-          padding:10px 0;
-          border-bottom:1px solid #eee5e0;
-        ">
-          <strong>${escapeHTML(p.name)}</strong>
-
-          <span class="${estoque<=0?'stock-out':'stock-low'}">
-            ${estoque<=0?'Esgotado':estoque+' un.'}
-          </span>
-        </div>
-      `;
-
-    }).join("");
-
-}
-
-/* =========================================================
-   PEDIDOS
-========================================================= */
-
-async function carregarPedidos(){
-
-  const area =
-    document.getElementById("ordersList");
-
-  area.innerHTML =
-    `<div class="small">
-      Carregando pedidos...
-    </div>`;
-
-  try{
-
-    const {data,error} =
-      await supabaseClient
-        .from("orders")
-        .select("*")
-        .order("created_at",{ascending:false});
-
-    if(error) throw error;
-
-    pedidos =
-      Array.isArray(data)
-        ? data
-        : [];
-
-    renderizarPedidos();
-    atualizarDashboard();
-
-  }catch(error){
-
-    console.error(error);
-
-    area.innerHTML =
-      `<div class="small">
-        Não foi possível carregar os pedidos.<br><br>
-        ${escapeHTML(error.message)}
-      </div>`;
-
-  }
-
-}
-
-function filtrarPedidos(status,botao){
-
-  filtroAtual = status;
-
-  document
-    .querySelectorAll(".order-tab")
-    .forEach(btn=>{
-      btn.classList.remove("active");
-    });
-
-  if(botao){
-    botao.classList.add("active");
-  }
-
-  renderizarPedidos();
-
-}
-
-function renderizarPedidos(){
-
-  const area =
-    document.getElementById("ordersList");
-
-  if(!area) return;
-
-  let lista = [...pedidos];
-
-  if(filtroAtual !== "todos"){
-
-    lista =
-      lista.filter(p =>
-        (p.status || "pendente") === filtroAtual
-      );
-
-  }
-
-  if(!lista.length){
-
-    area.innerHTML =
-      `<div class="small">
-        Nenhum pedido encontrado.
-      </div>`;
-
-    return;
-  }
-
-  area.innerHTML =
-    lista.map(p=>{
-
-      const status =
-        p.status || "pendente";
-
-      const cliente =
-        p.customer_name ||
-        p.name ||
-        p.customer ||
-        "Cliente";
-
-      const data =
-        p.created_at
-          ? new Date(p.created_at).toLocaleString(
-              "pt-BR",
-              {
-                dateStyle:"short",
-                timeStyle:"short"
-              }
-            )
-          : "";
-
-      return `
-
-        <div
-          class="order-row"
-          onclick="abrirDetalhePedidoPorId(${Number(p.id)})">
-
-          <div>
-
-            <div class="order-number">
-              Pedido #${escapeHTML(p.id)}
-            </div>
-
-            <div class="order-client">
-              ${escapeHTML(cliente)}
-            </div>
-
-            <div class="order-meta">
-
-              <span class="tag tag-${escapeHTML(status)}">
-                ${escapeHTML(status)}
-              </span>
-
-            </div>
-
-          </div>
-
-          <div>
-
-            <div class="order-total">
-              R$ ${dinheiro(p.total)}
-            </div>
-
-            <div class="order-time">
-              ${escapeHTML(data)}
-            </div>
-
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
-
-}
-
-/* =========================================================
-   DETALHE DO PEDIDO
-========================================================= */
-
-async function abrirDetalhePedidoPorId(id){
-
-  const pedido =
-    pedidos.find(
-      p => Number(p.id) === Number(id)
-    );
-
-  if(!pedido) return;
-
-  await abrirDetalhePedido(pedido);
-
-}
-
-async function abrirDetalhePedido(pedido){
-
-  pedidoAtual = pedido;
-
-  document
-    .getElementById("pedidosListaView")
-    .style.display = "none";
-
-  document
-    .getElementById("pedidoDetalhe")
-    .classList.add("show");
-
-  preencherDetalhePedido(pedido);
-
-  await carregarItensDoPedido(pedido.id);
-
-}
-
-function preencherDetalhePedido(pedido){
-
-  const status =
-    pedido.status || "pendente";
-
-  document.getElementById("detalheNumero")
-    .textContent =
-    "Pedido #" + pedido.id;
-
-  document.getElementById("detalheData")
-    .textContent =
-    pedido.created_at
-      ? new Date(pedido.created_at)
-          .toLocaleString("pt-BR")
-      : "";
-
-  const statusEl =
-    document.getElementById("detalheStatus");
-
-  statusEl.textContent = status;
-  statusEl.className =
-    "tag tag-" + status;
-
-  document.getElementById("statusPedido")
-    .value = status;
-
-  document.getElementById("clienteNome")
-    .textContent =
-      pedido.customer_name ||
-      pedido.name ||
-      pedido.customer ||
-      "-";
-
-  document.getElementById("clienteTelefone")
-    .textContent =
-      pedido.customer_phone ||
-      pedido.phone ||
-      pedido.whatsapp ||
-      pedido.customer_whatsapp ||
-      "-";
-
-  document.getElementById("clienteEndereco")
-    .textContent =
-      pedido.address ||
-      pedido.customer_address ||
-      pedido.delivery_address ||
-      "-";
-
-  document.getElementById("clienteTipo")
-    .textContent =
-      pedido.order_type ||
-      pedido.type ||
-      pedido.delivery_type ||
-      "-";
-
-  document.getElementById("pagamentoForma")
-    .textContent =
-      pedido.payment_method ||
-      pedido.payment_type ||
-      pedido.payment ||
-      "-";
-
-  document.getElementById("pagamentoStatus")
-    .textContent =
-      pedido.payment_status ||
-      pedido.payment_state ||
-      "-";
-
-  document.getElementById("pedidoObservacoes")
-    .textContent =
-      pedido.notes ||
-      pedido.observations ||
-      pedido.observation ||
-      "Nenhuma observação.";
-
-  document.getElementById("pedidoEntrega")
-    .textContent =
-      "R$ " +
-      dinheiro(
-        pedido.delivery_fee ??
-        pedido.delivery ??
-        0
-      );
-
-  document.getElementById("pedidoDesconto")
-    .textContent =
-      "R$ " +
-      dinheiro(
-        pedido.discount ??
-        pedido.desconto ??
-        0
-      );
-
-  document.getElementById("pedidoTotal")
-    .textContent =
-      "R$ " +
-      dinheiro(pedido.total);
-
-  atualizarPagamentoDinheiro(pedido);
-
-}
-
-async function carregarItensDoPedido(orderId){
-
-  const tbody =
-    document.getElementById("pedidoItens");
-
-  const aviso =
-    document.getElementById("pedidoItensAviso");
-
-  tbody.innerHTML = `
-    <tr>
-      <td colspan="4" style="text-align:center">
-        Carregando produtos...
-      </td>
-    </tr>
-  `;
-
-  aviso.className = "notice error";
-  aviso.textContent = "";
-  aviso.style.display = "none";
-
-  itensPedidoAtual = [];
-
-  try{
-
-    /*
-      AQUI ESTÁ A CORREÇÃO PRINCIPAL:
-
-      A tabela correta é order_items
-      e as colunas são:
-      order_id
-      product_id
-      name
-      qty
-      price
-    */
-
-    const {data,error} =
-      await supabaseClient
-        .from("order_items")
-        .select("*")
-        .eq("order_id",Number(orderId))
-        .order("id",{ascending:true});
-
-    if(error) throw error;
-
-    itensPedidoAtual =
-      Array.isArray(data)
-        ? data
-        : [];
-
-    renderizarItensPedido();
-
-  }catch(error){
-
-    console.error(
-      "Erro ao carregar itens do pedido:",
-      error
-    );
-
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="4">
-          Não foi possível carregar os produtos deste pedido.
-        </td>
-      </tr>
-    `;
-
-    aviso.textContent =
-      "Erro ao carregar os produtos: " +
-      error.message;
-
-    aviso.style.display = "block";
-
-  }
-
-}
-
-function renderizarItensPedido(){
-
-  const tbody =
-    document.getElementById("pedidoItens");
-
-  if(!itensPedidoAtual.length){
-
-    tbody.innerHTML = `
-      <tr>
-        <td colspan="4" style="text-align:center">
-          Nenhum produto encontrado neste pedido.
-        </td>
-      </tr>
-    `;
-
-    document.getElementById("pedidoSubtotal")
-      .textContent = "R$ 0,00";
-
-    return;
-  }
-
-  let subtotal = 0;
-
-  tbody.innerHTML =
-    itensPedidoAtual.map(item=>{
-
-      const quantidade =
-        Number(item.qty || 0);
-
-      const preco =
-        Number(item.price || 0);
-
-      const totalItem =
-        quantidade * preco;
-
-      subtotal += totalItem;
-
-      return `
-        <tr>
-
-          <td>
-            <strong>
-              ${escapeHTML(item.name || "Produto")}
-            </strong>
-          </td>
-
-          <td>
-            ${quantidade}
-          </td>
-
-          <td>
-            R$ ${dinheiro(preco)}
-          </td>
-
-          <td>
-            <strong>
-              R$ ${dinheiro(totalItem)}
-            </strong>
-          </td>
-
-        </tr>
-      `;
-
-    }).join("");
-
-  document.getElementById("pedidoSubtotal")
-    .textContent =
-    "R$ " + dinheiro(subtotal);
-
-  /*
-    Se o pedido já possui total salvo no banco,
-    usamos o total do pedido.
-    Caso não possua, mostramos o subtotal.
-  */
-
-  if(
-    pedidoAtual &&
-    (
-      pedidoAtual.total === null ||
-      pedidoAtual.total === undefined
-    )
-  ){
-
-    document.getElementById("pedidoTotal")
-      .textContent =
-      "R$ " + dinheiro(subtotal);
-
-  }
-
-}
-
-function fecharPedido(){
-
-  pedidoAtual = null;
-  itensPedidoAtual = [];
-
-  document
-    .getElementById("pedidoDetalhe")
-    .classList.remove("show");
-
-  document
-    .getElementById("pedidosListaView")
-    .style.display = "block";
-
-  document.getElementById("pedidoItens")
-    .innerHTML = "";
-
-}
-
-async function alterarStatusPedidoAtual(novoStatus){
-
-  if(!pedidoAtual) return;
-
-  try{
-
-    const {data,error} =
-      await supabaseClient
-        .from("orders")
-        .update({
-          status:novoStatus
-        })
-        .eq("id",Number(pedidoAtual.id))
-        .select()
-        .single();
-
-    if(error) throw error;
-
-    pedidoAtual = data;
-
-    const indice =
-      pedidos.findIndex(
-        p => Number(p.id) === Number(data.id)
-      );
-
-    if(indice !== -1){
-      pedidos[indice] = data;
-    }
-
-    preencherDetalhePedido(data);
-    renderizarPedidos();
-    atualizarDashboard();
-
-    mostrarMensagem(
-      "Status do pedido atualizado!"
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    mostrarMensagem(
-      "Não foi possível alterar o status: " +
-      error.message,
-      "error"
-    );
-
-  }
-
-}
-
-function atualizarPagamentoDinheiro(pedido){
-
-  const forma =
-    String(
-      pedido.payment_method ||
-      pedido.payment_type ||
-      pedido.payment ||
-      ""
-    ).toLowerCase();
-
-  const cashBox =
-    document.getElementById("cashBox");
-
-  const dinheiroCliente =
-    Number(
-      pedido.cash_received ??
-      pedido.money_received ??
-      pedido.amount_received ??
-      0
-    );
-
-  const total =
-    Number(pedido.total || 0);
-
-  const eDinheiro =
-    forma.includes("dinheiro") ||
-    forma.includes("cash");
-
-  if(!eDinheiro){
-
-    cashBox.classList.add("hidden");
-
-    return;
-  }
-
-  cashBox.classList.remove("hidden");
-
-  document.getElementById("dinheiroCliente")
-    .textContent =
-    "R$ " + dinheiro(dinheiroCliente);
-
-  const precisa =
-    dinheiroCliente > 0 &&
-    dinheiroCliente < total;
-
-  document.getElementById("precisaTroco")
-    .textContent =
-    precisa
-      ? "Não"
-      : dinheiroCliente >= total
-        ? "Sim"
-        : "-";
-
-  const troco =
-    dinheiroCliente - total;
-
-  document.getElementById("valorTroco")
-    .textContent =
-    "R$ " + dinheiro(Math.max(0,troco));
-
-}
-
-/* =========================================================
-   WHATSAPP
-========================================================= */
-
-function chamarWhatsApp(){
-
-  if(!pedidoAtual) return;
-
-  const telefone =
-    pedidoAtual.customer_phone ||
-    pedidoAtual.phone ||
-    pedidoAtual.whatsapp ||
-    pedidoAtual.customer_whatsapp ||
-    "";
-
-  if(!telefone){
-
-    mostrarMensagem(
-      "Este pedido não possui WhatsApp cadastrado.",
-      "error"
-    );
-
-    return;
-  }
-
-  const numero =
-    String(telefone)
-      .replace(/\D/g,"");
-
-  const cliente =
-    pedidoAtual.customer_name ||
-    pedidoAtual.name ||
-    "cliente";
-
-  const mensagem =
-    `Olá, ${cliente}! Aqui é da Lá Dociê. Estou entrando em contato sobre o seu pedido #${pedidoAtual.id}.`;
-
-  window.open(
-    "https://wa.me/55" +
-    numero +
-    "?text=" +
-    encodeURIComponent(mensagem),
-    "_blank"
+  abrirPagina(
+    nome,
+    botao
   );
 
 }
 
-/* =========================================================
-   IMPRESSÃO
-========================================================= */
 
-function imprimirPedido(){
-
-  if(!pedidoAtual) return;
-
-  window.print();
-
-}
-
-/* =========================================================
-   LOJA
-========================================================= */
-
-async function carregarLoja(){
-
-  try{
-
-    const {data,error} =
-      await supabaseClient
-        .from("store_settings")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
-
-    if(error) throw error;
-
-    loja=data || null;
-
-    if(!loja) return;
-
-    document.getElementById("lojaNome")
-      .value=loja.store_name || "";
-
-    document.getElementById("lojaDescricao")
-      .value=loja.description || "";
-
-    document.getElementById("lojaTelefone")
-      .value=loja.phone || "";
-
-    document.getElementById("lojaWhatsapp")
-      .value=loja.whatsapp || "";
-
-    document.getElementById("lojaEndereco")
-      .value=loja.address || "";
-
-    document.getElementById("lojaInstagram")
-      .value=loja.instagram || "";
-
-    document.getElementById("lojaHorario")
-      .value =
-        loja.opening_hours ||
-        "Terça a sábado: 14h às 21h\nDomingo: 15h30 às 20h";
-
-    document.getElementById("lojaPix")
-      .value=loja.pix_key || "";
-
-    document.getElementById("lojaTaxa")
-      .value=loja.delivery_fee ?? 0;
-
-  }catch(error){
-
-    console.error(error);
-
-  }
-
-}
-
-async function salvarLoja(){
-
-  const dados={
-
-    store_name:
-      document.getElementById("lojaNome")
-        .value.trim(),
-
-    description:
-      document.getElementById("lojaDescricao")
-        .value.trim(),
-
-    phone:
-      document.getElementById("lojaTelefone")
-        .value.trim(),
-
-    whatsapp:
-      document.getElementById("lojaWhatsapp")
-        .value.trim(),
-
-    address:
-      document.getElementById("lojaEndereco")
-        .value.trim(),
-
-    instagram:
-      document.getElementById("lojaInstagram")
-        .value.trim(),
-
-    opening_hours:
-      document.getElementById("lojaHorario")
-        .value.trim(),
-
-    pix_key:
-      document.getElementById("lojaPix")
-        .value.trim(),
-
-    delivery_fee:
-      Number(
-        document.getElementById("lojaTaxa")
-          .value || 0
-      ),
-
-    updated_at:
-      new Date().toISOString()
-
-  };
-
-  try{
-
-    if(loja && loja.id){
-
-      const {data,error} =
-        await supabaseClient
-          .from("store_settings")
-          .update(dados)
-          .eq("id",loja.id)
-          .select()
-          .single();
-
-      if(error) throw error;
-
-      loja=data;
-
-    }else{
-
-      const {data,error} =
-        await supabaseClient
-          .from("store_settings")
-          .insert([dados])
-          .select()
-          .single();
-
-      if(error) throw error;
-
-      loja=data;
-
-    }
-
-    mostrarMensagem(
-      "Informações da loja salvas!"
-    );
-
-  }catch(error){
-
-    console.error(error);
-
-    mostrarMensagem(
-      "Erro ao salvar: " + error.message,
-      "error"
-    );
-
-  }
-
-}
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-function atualizarDashboard(){
-
-  const hoje =
-    new Date().toISOString().slice(0,10);
-
-  const pedidosHoje =
-    pedidos.filter(p=>{
-
-      const data =
-        p.scheduled_date ||
-        p.created_at?.slice(0,10);
-
-      return data === hoje;
-
-    });
-
-  const faturamento =
-    pedidosHoje
-      .filter(p =>
-        (p.status || "pendente") !== "cancelado"
-      )
-      .reduce(
-        (total,p)=>
-          total + Number(p.total || 0),
-        0
-      );
-
-  const pendentes =
-    pedidos.filter(
-      p =>
-        (p.status || "pendente") === "pendente"
-    ).length;
-
-  document.getElementById("statPedidos")
-    .textContent=pedidosHoje.length;
-
-  document.getElementById("statFaturamento")
-    .textContent=
-    "R$ " + dinheiro(faturamento);
-
-  document.getElementById("statPendentes")
-    .textContent=pendentes;
-
-  document.getElementById("badgePedidos")
-    .textContent=pendentes;
-
-  const area =
-    document.getElementById("dashboardPedidos");
-
-  const recentes =
-    pedidos.slice(0,5);
-
-  if(!recentes.length){
-
-    area.innerHTML =
-      `<div class="small">
-        Nenhum pedido ainda.
-      </div>`;
-
-    return;
-  }
-
-  area.innerHTML =
-    recentes.map(p=>{
-
-      const status =
-        p.status || "pendente";
-
-      return `
-
-        <div
-          class="order-row"
-          onclick="abrirPaginaPorNome('pedidos');abrirDetalhePedidoPorId(${Number(p.id)})">
-
-          <div>
-
-            <div class="order-number">
-              Pedido #${escapeHTML(p.id)}
-            </div>
-
-            <div class="small">
-              ${escapeHTML(
-                p.customer_name ||
-                p.name ||
-                "Cliente"
-              )}
-            </div>
-
-            <div class="order-meta">
-
-              <span class="tag tag-${escapeHTML(status)}">
-                ${escapeHTML(status)}
-              </span>
-
-            </div>
-
-          </div>
-
-          <div class="order-total">
-            R$ ${dinheiro(p.total)}
-          </div>
-
-        </div>
-      `;
-
-    }).join("");
-
-}
-
-function abrirDetalhePedidoPorIdDashboard(id){
-
-  abrirPaginaPorNome("pedidos");
-
-  setTimeout(()=>{
-    abrirDetalhePedidoPorId(id);
-  },100);
-
-}
-
-/* =========================================================
-   REALTIME
-========================================================= */
-
-function iniciarRealtime(){
-
-  if(realtimeChannel) return;
-
-  realtimeChannel =
-    supabaseClient
-      .channel("admin-orders-realtime")
-
-      .on(
-        "postgres_changes",
-        {
-          event:"*",
-          schema:"public",
-          table:"orders"
-        },
-        async payload=>{
-
-          console.log(
-            "Realtime pedido:",
-            payload
-          );
-
-          if(
-            payload.eventType === "INSERT"
-          ){
-
-            pedidos.unshift(
-              payload.new
-            );
-
-          }
-
-          if(
-            payload.eventType === "UPDATE"
-          ){
-
-            const indice =
-              pedidos.findIndex(
-                p =>
-                  Number(p.id) ===
-                  Number(payload.new.id)
-              );
-
-            if(indice !== -1){
-
-              pedidos[indice] =
-                payload.new;
-
-            }else{
-
-              pedidos.unshift(
-                payload.new
-              );
-
-            }
-
-            if(
-              pedidoAtual &&
-              Number(pedidoAtual.id) ===
-              Number(payload.new.id)
-            ){
-
-              pedidoAtual =
-                payload.new;
-
-              preencherDetalhePedido(
-                pedidoAtual
-              );
-
-              await carregarItensDoPedido(
-                pedidoAtual.id
-              );
-
-            }
-
-          }
-
-          if(
-            payload.eventType === "DELETE"
-          ){
-
-            pedidos =
-              pedidos.filter(
-                p =>
-                  Number(p.id) !==
-                  Number(payload.old.id)
-              );
-
-            if(
-              pedidoAtual &&
-              Number(pedidoAtual.id) ===
-              Number(payload.old.id)
-            ){
-
-              fecharPedido();
-
-            }
-
-          }
-
-          renderizarPedidos();
-          atualizarDashboard();
-
-          mostrarMensagem(
-            "Pedido atualizado em tempo real."
-          );
-
-        }
-      )
-
-      .subscribe(status=>{
-
-        console.log(
-          "Realtime:",
-          status
-        );
-
-      });
-
-}
-
-/* =========================================================
-   CARREGAR TUDO
-========================================================= */
-
-async function carregarTudo(){
-
-  await Promise.all([
-    carregarProdutos(),
-    carregarPedidos(),
-    carregarLoja()
-  ]);
-
-  atualizarDashboard();
-
-}
-
-/* =========================================================
-   INICIALIZAÇÃO
-========================================================= */
-
-async function iniciar(){
-
-  try{
-
-    const {data} =
-      await supabaseClient.auth.getSession();
-
-    if(
-      data &&
-      data.session
-    ){
-
-      await abrirAdmin();
-
-    }
-
-  }catch(error){
-
-    console.error(
-      "Inicialização:",
-      error
-    );
-
-  }
-
-}
-
-iniciar();
+/*
+=========================================================
+AQUI CONTINUARÁ A PARTE 2
+=========================================================
+
+Na Parte 2 entraremos com:
+
+- carregarConfiguracoesPagamento()
+- salvarConfiguracoesPagamento()
+- leitura da tabela payment_settings
+- Pix
+- Mercado Pago
+- parcelas
+- taxas
+- maquininha
+- integração segura
+
+=========================================================
+*/
 
 </script>
 
 </body>
+
 </html>
-```

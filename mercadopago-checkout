@@ -1,0 +1,1007 @@
+ =========================================================
+     PAGAMENTOS — LÁ DOCIÊ
+     Integração da área administrativa
+     ========================================================= -->
+
+<!-- ADICIONE ESTE BOTÃO NO MENU LATERAL -->
+<button class="menu-btn" onclick="abrirPagina('pagamentos',this)">
+  <span class="menu-icon">💳</span>
+  Pagamentos
+</button>
+
+
+<!-- =========================================================
+     PÁGINA DE PAGAMENTOS
+     ========================================================= -->
+
+<section id="pagamentos" class="panel">
+
+  <div class="card">
+
+    <div class="card-header">
+
+      <div>
+        <h2>Pagamentos</h2>
+
+        <div class="small">
+          Configure as formas de pagamento disponíveis para seus clientes.
+        </div>
+      </div>
+
+    </div>
+
+
+    <!-- PIX -->
+    <div class="payment-section">
+
+      <div class="payment-title">
+        🟢 Pix
+      </div>
+
+      <div class="small">
+        O cliente poderá pagar utilizando a chave Pix cadastrada
+        pela administração.
+      </div>
+
+      <div class="grid-2">
+
+        <div class="field">
+
+          <label>Chave Pix</label>
+
+          <input
+            id="pagamentoPixChave"
+            type="text"
+            placeholder="Digite sua chave Pix"
+          >
+
+        </div>
+
+        <div class="field">
+
+          <label>Pix ativo</label>
+
+          <label class="switch">
+
+            <input
+              id="pagamentoPixAtivo"
+              type="checkbox"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- MERCADO PAGO -->
+    <div class="payment-section">
+
+      <div class="payment-title">
+        💳 Mercado Pago
+      </div>
+
+      <div class="small">
+        O Mercado Pago será utilizado para gerar links de pagamento
+        para os clientes.
+      </div>
+
+      <div class="grid-2">
+
+        <div class="field">
+
+          <label>Pagamento por link</label>
+
+          <label class="switch">
+
+            <input
+              id="mercadoPagoAtivo"
+              type="checkbox"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+        <div class="field">
+
+          <label>Quem absorve a taxa?</label>
+
+          <select id="mercadoPagoTaxaResponsavel">
+
+            <option value="loja">
+              Lá Dociê
+            </option>
+
+            <option value="cliente">
+              Cliente
+            </option>
+
+          </select>
+
+        </div>
+
+      </div>
+
+
+      <!-- CARTÃO DE CRÉDITO -->
+
+      <div class="payment-subsection">
+
+        <h3>Cartão de crédito</h3>
+
+        <div class="small">
+          Escolha quais opções de parcelamento estarão disponíveis.
+        </div>
+
+        <div class="parcelas">
+
+          <label>
+            <input
+              type="checkbox"
+              id="credito2x"
+              checked
+            >
+            2x
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              id="credito3x"
+              checked
+            >
+            3x
+          </label>
+
+          <label>
+            <input
+              type="checkbox"
+              id="credito4x"
+              checked
+            >
+            4x
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- DÉBITO -->
+
+      <div class="payment-subsection">
+
+        <h3>Cartão de débito</h3>
+
+        <div class="small">
+          O débito poderá ser utilizado pelo link do Mercado Pago,
+          caso habilitado na conta.
+        </div>
+
+        <label class="switch">
+
+          <input
+            id="mercadoPagoDebito"
+            type="checkbox"
+            checked
+          >
+
+          <span class="slider"></span>
+
+        </label>
+
+      </div>
+
+    </div>
+
+
+    <!-- MAQUININHA -->
+    <div class="payment-section">
+
+      <div class="payment-title">
+        🏦 Maquininha física
+      </div>
+
+      <div class="small">
+        Esta opção ficará disponível somente para pedidos com
+        <strong>retirada na loja</strong>.
+      </div>
+
+      <div class="notice">
+        ℹ️ O cliente não verá a opção de maquininha física
+        quando escolher entrega.
+      </div>
+
+      <div class="grid-2">
+
+        <div class="field">
+
+          <label>Maquininha ativa</label>
+
+          <label class="switch">
+
+            <input
+              id="maquininhaAtiva"
+              type="checkbox"
+              checked
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+        <div class="field">
+
+          <label>Permitir somente retirada</label>
+
+          <label class="switch">
+
+            <input
+              id="maquininhaSomenteRetirada"
+              type="checkbox"
+              checked
+              disabled
+            >
+
+            <span class="slider"></span>
+
+          </label>
+
+        </div>
+
+      </div>
+
+
+      <!-- TAXAS -->
+
+      <div class="payment-subsection">
+
+        <h3>Taxas da maquininha</h3>
+
+        <div class="small">
+          Informe as taxas utilizadas pela sua maquininha.
+          Essas taxas ficam disponíveis somente para controle
+          administrativo.
+        </div>
+
+
+        <div class="grid-2">
+
+          <div class="field">
+
+            <label>
+              Taxa débito (%)
+            </label>
+
+            <input
+              id="taxaDebito"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex.: 1.99"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Taxa crédito à vista (%)
+            </label>
+
+            <input
+              id="taxaCreditoVista"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex.: 3.99"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Taxa crédito 2x (%)
+            </label>
+
+            <input
+              id="taxaCredito2x"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex.: 5.99"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Taxa crédito 3x (%)
+            </label>
+
+            <input
+              id="taxaCredito3x"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex.: 6.99"
+            >
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Taxa crédito 4x (%)
+            </label>
+
+            <input
+              id="taxaCredito4x"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Ex.: 7.99"
+            >
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+
+    <!-- RESUMO -->
+
+    <div class="payment-summary">
+
+      <h3>Resumo das configurações</h3>
+
+      <div id="pagamentoResumo">
+        Carregando...
+      </div>
+
+    </div>
+
+
+    <button
+      class="btn btn-primary"
+      onclick="salvarConfiguracoesPagamento()"
+    >
+      💾 Salvar configurações
+    </button>
+
+  </div>
+
+</section>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+     ========================================================= -->
+
+<script>
+
+/* =========================================================
+   CONFIGURAÇÕES DE PAGAMENTO
+   ========================================================= */
+
+let configuracaoPagamento = null;
+
+
+/* =========================================================
+   CARREGAR CONFIGURAÇÕES
+   ========================================================= */
+
+async function carregarConfiguracoesPagamento(){
+
+  try{
+
+    const { data, error } =
+      await supabaseClient
+        .from("payment_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+
+    if(error) throw error;
+
+    configuracaoPagamento = data || null;
+
+    if(!data){
+
+      atualizarResumoPagamento();
+
+      return;
+    }
+
+
+    document.getElementById("pagamentoPixChave")
+      .value = data.pix_key || "";
+
+
+    document.getElementById("pagamentoPixAtivo")
+      .checked = data.pix_active !== false;
+
+
+    document.getElementById("mercadoPagoAtivo")
+      .checked = data.mercado_pago_active !== false;
+
+
+    document.getElementById("mercadoPagoTaxaResponsavel")
+      .value = data.fee_responsible || "loja";
+
+
+    document.getElementById("credito2x")
+      .checked = data.credit_2x !== false;
+
+
+    document.getElementById("credito3x")
+      .checked = data.credit_3x !== false;
+
+
+    document.getElementById("credito4x")
+      .checked = data.credit_4x !== false;
+
+
+    document.getElementById("mercadoPagoDebito")
+      .checked = data.debit_active !== false;
+
+
+    document.getElementById("maquininhaAtiva")
+      .checked = data.physical_machine_active !== false;
+
+
+    document.getElementById("taxaDebito")
+      .value = data.debit_fee ?? "";
+
+
+    document.getElementById("taxaCreditoVista")
+      .value = data.credit_cash_fee ?? "";
+
+
+    document.getElementById("taxaCredito2x")
+      .value = data.credit_2x_fee ?? "";
+
+
+    document.getElementById("taxaCredito3x")
+      .value = data.credit_3x_fee ?? "";
+
+
+    document.getElementById("taxaCredito4x")
+      .value = data.credit_4x_fee ?? "";
+
+
+    atualizarResumoPagamento();
+
+  }catch(error){
+
+    console.error(
+      "Erro ao carregar pagamentos:",
+      error
+    );
+
+    mostrarMensagem(
+      "Não foi possível carregar as configurações de pagamento.",
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   SALVAR CONFIGURAÇÕES
+   ========================================================= */
+
+async function salvarConfiguracoesPagamento(){
+
+  const dados = {
+
+    pix_key:
+      document.getElementById("pagamentoPixChave")
+        .value.trim() || null,
+
+    pix_active:
+      document.getElementById("pagamentoPixAtivo")
+        .checked,
+
+    mercado_pago_active:
+      document.getElementById("mercadoPagoAtivo")
+        .checked,
+
+    fee_responsible:
+      document.getElementById("mercadoPagoTaxaResponsavel")
+        .value,
+
+    credit_2x:
+      document.getElementById("credito2x")
+        .checked,
+
+    credit_3x:
+      document.getElementById("credito3x")
+        .checked,
+
+    credit_4x:
+      document.getElementById("credito4x")
+        .checked,
+
+    debit_active:
+      document.getElementById("mercadoPagoDebito")
+        .checked,
+
+    physical_machine_active:
+      document.getElementById("maquininhaAtiva")
+        .checked,
+
+    physical_machine_pickup_only:
+      true,
+
+    debit_fee:
+      Number(
+        document.getElementById("taxaDebito")
+          .value || 0
+      ),
+
+    credit_cash_fee:
+      Number(
+        document.getElementById("taxaCreditoVista")
+          .value || 0
+      ),
+
+    credit_2x_fee:
+      Number(
+        document.getElementById("taxaCredito2x")
+          .value || 0
+      ),
+
+    credit_3x_fee:
+      Number(
+        document.getElementById("taxaCredito3x")
+          .value || 0
+      ),
+
+    credit_4x_fee:
+      Number(
+        document.getElementById("taxaCredito4x")
+          .value || 0
+      ),
+
+    updated_at:
+      new Date().toISOString()
+
+  };
+
+
+  try{
+
+    let resultado;
+
+
+    /* ATUALIZA */
+
+    if(
+      configuracaoPagamento &&
+      configuracaoPagamento.id
+    ){
+
+      resultado =
+        await supabaseClient
+          .from("payment_settings")
+          .update(dados)
+          .eq(
+            "id",
+            configuracaoPagamento.id
+          )
+          .select()
+          .single();
+
+    }
+
+
+    /* CRIA */
+
+    else{
+
+      resultado =
+        await supabaseClient
+          .from("payment_settings")
+          .insert([dados])
+          .select()
+          .single();
+
+    }
+
+
+    if(resultado.error)
+      throw resultado.error;
+
+
+    configuracaoPagamento =
+      resultado.data;
+
+
+    atualizarResumoPagamento();
+
+
+    mostrarMensagem(
+      "Configurações de pagamento salvas com sucesso!"
+    );
+
+
+  }catch(error){
+
+    console.error(error);
+
+    mostrarMensagem(
+      "Erro ao salvar pagamentos: " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   RESUMO
+   ========================================================= */
+
+function atualizarResumoPagamento(){
+
+  const area =
+    document.getElementById("pagamentoResumo");
+
+  if(!area) return;
+
+
+  const pix =
+    document.getElementById("pagamentoPixAtivo")
+      ?.checked;
+
+
+  const mercadoPago =
+    document.getElementById("mercadoPagoAtivo")
+      ?.checked;
+
+
+  const maquininha =
+    document.getElementById("maquininhaAtiva")
+      ?.checked;
+
+
+  const parcelas = [];
+
+
+  if(
+    document.getElementById("credito2x")
+      ?.checked
+  ){
+
+    parcelas.push("2x");
+
+  }
+
+
+  if(
+    document.getElementById("credito3x")
+      ?.checked
+  ){
+
+    parcelas.push("3x");
+
+  }
+
+
+  if(
+    document.getElementById("credito4x")
+      ?.checked
+  ){
+
+    parcelas.push("4x");
+
+  }
+
+
+  area.innerHTML = `
+
+    <div class="payment-summary-row">
+      <span>Pix</span>
+      <strong>
+        ${pix ? "Ativo" : "Desativado"}
+      </strong>
+    </div>
+
+
+    <div class="payment-summary-row">
+      <span>Mercado Pago</span>
+      <strong>
+        ${mercadoPago ? "Ativo" : "Desativado"}
+      </strong>
+    </div>
+
+
+    <div class="payment-summary-row">
+      <span>Crédito</span>
+      <strong>
+        ${
+          parcelas.length
+            ? parcelas.join(", ")
+            : "Nenhum parcelamento"
+        }
+      </strong>
+    </div>
+
+
+    <div class="payment-summary-row">
+      <span>Maquininha física</span>
+      <strong>
+        ${
+          maquininha
+            ? "Ativa — somente retirada"
+            : "Desativada"
+        }
+      </strong>
+    </div>
+
+  `;
+
+}
+
+
+/* =========================================================
+   ATUALIZA RESUMO AO ALTERAR CAMPOS
+   ========================================================= */
+
+document.addEventListener(
+  "change",
+  function(event){
+
+    if(
+      event.target.closest("#pagamentos")
+    ){
+
+      atualizarResumoPagamento();
+
+    }
+
+  }
+);
+
+
+/* =========================================================
+   NOVO TÍTULO DO MENU
+   ========================================================= */
+
+const titulosOriginais =
+  window.titulos || {};
+
+</script>
+
+
+<!-- =========================================================
+     CSS DA ÁREA DE PAGAMENTO
+     ========================================================= -->
+
+<style>
+
+.payment-section{
+
+  border:1px solid #eee5e0;
+
+  border-radius:16px;
+
+  padding:20px;
+
+  margin-bottom:20px;
+
+  background:#fffaf7;
+
+}
+
+
+.payment-title{
+
+  font-size:18px;
+
+  font-weight:700;
+
+  margin-bottom:6px;
+
+}
+
+
+.payment-subsection{
+
+  margin-top:20px;
+
+  padding-top:18px;
+
+  border-top:1px solid #eee5e0;
+
+}
+
+
+.payment-subsection h3{
+
+  margin:0 0 6px;
+
+  font-size:16px;
+
+}
+
+
+.parcelas{
+
+  display:flex;
+
+  gap:20px;
+
+  margin-top:15px;
+
+  flex-wrap:wrap;
+
+}
+
+
+.parcelas label{
+
+  display:flex;
+
+  align-items:center;
+
+  gap:7px;
+
+  cursor:pointer;
+
+}
+
+
+.parcelas input{
+
+  width:auto;
+
+}
+
+
+.payment-summary{
+
+  background:#f8f1ed;
+
+  border-radius:16px;
+
+  padding:20px;
+
+  margin:20px 0;
+
+}
+
+
+.payment-summary h3{
+
+  margin-top:0;
+
+}
+
+
+.payment-summary-row{
+
+  display:flex;
+
+  justify-content:space-between;
+
+  gap:20px;
+
+  padding:10px 0;
+
+  border-bottom:1px solid #e8ddd7;
+
+}
+
+
+.payment-summary-row:last-child{
+
+  border-bottom:none;
+
+}
+
+
+.switch{
+
+  position:relative;
+
+  display:inline-block;
+
+  width:48px;
+
+  height:26px;
+
+}
+
+
+.switch input{
+
+  opacity:0;
+
+  width:0;
+
+  height:0;
+
+}
+
+
+.slider{
+
+  position:absolute;
+
+  cursor:pointer;
+
+  inset:0;
+
+  background:#ccc;
+
+  border-radius:30px;
+
+  transition:.2s;
+
+}
+
+
+.slider:before{
+
+  content:"";
+
+  position:absolute;
+
+  width:20px;
+
+  height:20px;
+
+  left:3px;
+
+  top:3px;
+
+  background:white;
+
+  border-radius:50%;
+
+  transition:.2s;
+
+}
+
+
+.switch input:checked + .slider{
+
+  background:#b89045;
+
+}
+
+
+.switch input:checked + .slider:before{
+
+  transform:translateX(22px);
+
+}
+
+</style>

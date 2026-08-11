@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -30,7 +29,7 @@
 
     header h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 25px;
     }
 
     header p {
@@ -39,7 +38,7 @@
     }
 
     .container {
-      max-width: 750px;
+      max-width: 800px;
       margin: auto;
       padding: 20px;
     }
@@ -89,11 +88,6 @@
       opacity: .9;
     }
 
-    button:disabled {
-      opacity: .6;
-      cursor: not-allowed;
-    }
-
     .hidden {
       display: none !important;
     }
@@ -106,8 +100,8 @@
     }
 
     .menu button {
-      margin: 0;
       min-height: 100px;
+      margin: 0;
     }
 
     .logout,
@@ -142,6 +136,10 @@
       flex-wrap: wrap;
     }
 
+    .topo h2 {
+      margin: 0;
+    }
+
     .topo button {
       width: auto;
       margin: 0;
@@ -149,18 +147,18 @@
 
     .produto,
     .pedido {
-      border: 1px solid #eee;
-      border-radius: 14px;
-      padding: 15px;
-      margin-top: 15px;
       background: #fffaf7;
+      border: 1px solid #eee1da;
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 15px;
     }
 
     .produto img {
       width: 100%;
       max-height: 230px;
       object-fit: cover;
-      border-radius: 10px;
+      border-radius: 12px;
       margin-bottom: 10px;
     }
 
@@ -170,56 +168,28 @@
       gap: 8px;
     }
 
-    .acoes button {
-      margin-top: 8px;
-    }
-
     .status {
       display: inline-block;
-      padding: 7px 10px;
+      padding: 7px 12px;
       border-radius: 20px;
       background: #eadbd3;
-      margin: 5px 0;
       font-size: 13px;
-    }
-
-    .pedido-item {
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-    }
-
-    .pedido-item:last-child {
-      border-bottom: 0;
-    }
-
-    .pedido-vazio,
-    .pedido-erro,
-    .vazio {
-      text-align: center;
-      padding: 25px 10px;
-      color: #777;
+      font-weight: bold;
     }
 
     .pedido-topo {
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
       gap: 10px;
-      padding-bottom: 12px;
+      align-items: center;
       border-bottom: 1px solid #eee;
+      padding-bottom: 12px;
     }
 
-    .pedido-topo h3 {
-      margin: 0;
-    }
-
-    .pedido-data {
-      color: #777;
-      font-size: 13px;
+    .pedido-topo small {
+      display: block;
       margin-top: 5px;
+      color: #777;
     }
 
     .pedido-info {
@@ -228,7 +198,6 @@
 
     .pedido-info p {
       margin: 8px 0;
-      line-height: 1.4;
     }
 
     .pedido-produtos {
@@ -237,25 +206,29 @@
       border-top: 1px solid #eee;
     }
 
-    .pedido-produtos h4 {
-      margin: 0 0 8px;
+    .pedido-item {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
     }
 
-    .pedido-total {
-      margin-top: 15px;
-      padding-top: 12px;
-      border-top: 1px solid #ddd;
-      font-size: 20px;
-      font-weight: bold;
-      text-align: right;
+    .pedido-item:last-child {
+      border-bottom: 0;
     }
 
     .pedido-acoes {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
       margin-top: 15px;
     }
 
-    .pedido-acoes select {
-      margin-top: 5px;
+    .vazio {
+      text-align: center;
+      padding: 30px 10px;
+      color: #777;
     }
 
     label {
@@ -264,17 +237,11 @@
       font-weight: bold;
     }
 
-    @media (max-width: 500px) {
-      .menu {
+    @media (max-width: 600px) {
+      .menu,
+      .acoes,
+      .pedido-acoes {
         grid-template-columns: 1fr 1fr;
-      }
-
-      .pedido-topo {
-        flex-direction: column;
-      }
-
-      .acoes {
-        grid-template-columns: 1fr;
       }
     }
   </style>
@@ -396,7 +363,7 @@
       </button>
 
       <div id="listaProdutos">
-        Carregando...
+        Carregando produtos...
       </div>
 
     </div>
@@ -420,7 +387,7 @@
       <input
         type="text"
         id="produtoNome"
-        placeholder="Ex.: Mini bolo"
+        placeholder="Ex.: Bolo de chocolate"
       >
 
       <label>Categoria</label>
@@ -440,6 +407,13 @@
         placeholder="Ex.: 89.90"
       >
 
+      <label>Descrição</label>
+
+      <textarea
+        id="produtoDescricao"
+        placeholder="Descrição do produto"
+      ></textarea>
+
       <label>Imagem</label>
 
       <input
@@ -452,7 +426,10 @@
         💾 Salvar produto
       </button>
 
-      <button class="secondary" onclick="abrirProdutos()">
+      <button
+        class="secondary"
+        onclick="abrirProdutos()"
+      >
         Voltar
       </button>
 
@@ -469,7 +446,10 @@
 
         <h2>📦 Pedidos</h2>
 
-        <button class="secondary" onclick="abrirMenu()">
+        <button
+          class="secondary"
+          onclick="abrirMenu()"
+        >
           Voltar
         </button>
 
@@ -497,7 +477,10 @@
 
         <h2>⚙️ Configurações</h2>
 
-        <button class="secondary" onclick="abrirMenu()">
+        <button
+          class="secondary"
+          onclick="abrirMenu()"
+        >
           Voltar
         </button>
 
@@ -512,7 +495,9 @@
 
       <label>Descrição</label>
 
-      <textarea id="configDescricao"></textarea>
+      <textarea
+        id="configDescricao"
+      ></textarea>
 
       <label>Telefone</label>
 
@@ -580,1490 +565,1234 @@
 
 <script>
 
-  /* =====================================
-     SUPABASE
-  ===================================== */
+const SUPABASE_URL =
+  "https://lzihqkpscesurkfmcasb.supabase.co";
 
-  const SUPABASE_URL =
-    "https://lzihqkpscesurkfmcasb.supabase.co";
+const SUPABASE_KEY =
+  "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
 
-  const SUPABASE_KEY =
-    "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
-
-
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+const supabaseClient =
+  supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-  /* =====================================
-     LOGIN
-  ===================================== */
+/* =========================
+   LOGIN
+========================= */
 
-  async function entrar() {
+async function entrar() {
 
-    const email =
-      document.getElementById("email").value.trim();
+  const email =
+    document.getElementById("email").value.trim();
 
-    const password =
-      document.getElementById("password").value;
+  const password =
+    document.getElementById("password").value;
 
-    const mensagem =
-      document.getElementById("loginMessage");
+  const mensagem =
+    document.getElementById("loginMessage");
 
-    mensagem.innerHTML = "";
+  mensagem.innerHTML = "";
 
-    if (!email || !password) {
+  if (!email || !password) {
 
-      mensagem.innerHTML =
-        '<div class="message">Preencha e-mail e senha.</div>';
+    mensagem.innerHTML =
+      '<div class="message">Preencha e-mail e senha.</div>';
 
-      return;
-    }
-
-
-    const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-
-
-    if (error) {
-
-      mensagem.innerHTML =
-        '<div class="message">E-mail ou senha incorretos.</div>';
-
-      return;
-    }
-
-
-    const user = data.user;
-
-
-    const { data: admin, error: adminError } =
-      await supabaseClient
-        .from("admin_users")
-        .select("user_id")
-        .eq("user_id", user.id)
-        .maybeSingle();
-
-
-    if (adminError || !admin) {
-
-      await supabaseClient.auth.signOut();
-
-      mensagem.innerHTML =
-        '<div class="message">Esta conta não possui acesso administrativo.</div>';
-
-      return;
-    }
-
-
-    document
-      .getElementById("loginArea")
-      .classList.add("hidden");
-
-
-    document
-      .getElementById("painel")
-      .classList.remove("hidden");
-
+    return;
   }
 
+  const { data, error } =
+    await supabaseClient.auth.signInWithPassword({
+      email: email,
+      password: password
+    });
 
-  /* =====================================
-     SAIR
-  ===================================== */
+  if (error) {
 
-  async function sair() {
+    mensagem.innerHTML =
+      '<div class="message">E-mail ou senha incorretos.</div>';
+
+    console.error(error);
+
+    return;
+  }
+
+  const user = data.user;
+
+  const { data: admin, error: adminError } =
+    await supabaseClient
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+  if (adminError || !admin) {
 
     await supabaseClient.auth.signOut();
 
-    document
-      .getElementById("painel")
-      .classList.add("hidden");
+    mensagem.innerHTML =
+      '<div class="message">Esta conta não possui acesso administrativo.</div>';
 
-    document
-      .getElementById("loginArea")
-      .classList.remove("hidden");
-
+    return;
   }
 
+  document
+    .getElementById("loginArea")
+    .classList.add("hidden");
 
-  /* =====================================
-     NAVEGAÇÃO
-  ===================================== */
+  document
+    .getElementById("painel")
+    .classList.remove("hidden");
 
-  function esconderAreas() {
-
-    document
-      .getElementById("menuArea")
-      .classList.add("hidden");
-
-    document
-      .getElementById("produtosArea")
-      .classList.add("hidden");
-
-    document
-      .getElementById("cadastroArea")
-      .classList.add("hidden");
-
-    document
-      .getElementById("pedidosArea")
-      .classList.add("hidden");
-
-    document
-      .getElementById("configArea")
-      .classList.add("hidden");
-
-  }
+}
 
 
-  function abrirMenu() {
+/* =========================
+   SAIR
+========================= */
 
-    esconderAreas();
+async function sair() {
 
-    document
-      .getElementById("menuArea")
-      .classList.remove("hidden");
+  await supabaseClient.auth.signOut();
 
-  }
+  document
+    .getElementById("painel")
+    .classList.add("hidden");
 
+  document
+    .getElementById("loginArea")
+    .classList.remove("hidden");
 
-  /* =====================================
-     PRODUTOS
-  ===================================== */
-
-  async function abrirProdutos() {
-
-    esconderAreas();
-
-    document
-      .getElementById("produtosArea")
-      .classList.remove("hidden");
-
-    await carregarProdutos();
-
-  }
+}
 
 
-  function abrirCadastroProduto() {
+/* =========================
+   NAVEGAÇÃO
+========================= */
 
-    esconderAreas();
+function esconderAreas() {
 
-    document
-      .getElementById("cadastroArea")
-      .classList.remove("hidden");
+  document
+    .getElementById("menuArea")
+    .classList.add("hidden");
 
-    document
-      .getElementById("tituloFormulario")
-      .innerText = "➕ Novo produto";
+  document
+    .getElementById("produtosArea")
+    .classList.add("hidden");
 
-    document
-      .getElementById("produtoId")
-      .value = "";
+  document
+    .getElementById("cadastroArea")
+    .classList.add("hidden");
 
-    document
-      .getElementById("produtoNome")
-      .value = "";
+  document
+    .getElementById("pedidosArea")
+    .classList.add("hidden");
 
-    document
-      .getElementById("produtoCategoria")
-      .value = "";
+  document
+    .getElementById("configArea")
+    .classList.add("hidden");
 
-    document
-      .getElementById("produtoPreco")
-      .value = "";
-
-    document
-      .getElementById("produtoImagem")
-      .value = "";
-
-    document
-      .getElementById("produtoMessage")
-      .innerHTML = "";
-
-  }
+}
 
 
-  async function carregarProdutos() {
+function abrirMenu() {
 
-    const lista =
-      document.getElementById("listaProdutos");
+  esconderAreas();
+
+  document
+    .getElementById("menuArea")
+    .classList.remove("hidden");
+
+}
+
+
+/* =========================
+   PRODUTOS
+========================= */
+
+async function abrirProdutos() {
+
+  esconderAreas();
+
+  document
+    .getElementById("produtosArea")
+    .classList.remove("hidden");
+
+  await carregarProdutos();
+
+}
+
+
+function abrirCadastroProduto() {
+
+  esconderAreas();
+
+  document
+    .getElementById("cadastroArea")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("tituloFormulario")
+    .innerText = "➕ Novo produto";
+
+  document
+    .getElementById("produtoId")
+    .value = "";
+
+  document
+    .getElementById("produtoNome")
+    .value = "";
+
+  document
+    .getElementById("produtoCategoria")
+    .value = "";
+
+  document
+    .getElementById("produtoPreco")
+    .value = "";
+
+  document
+    .getElementById("produtoDescricao")
+    .value = "";
+
+  document
+    .getElementById("produtoImagem")
+    .value = "";
+
+  document
+    .getElementById("produtoMessage")
+    .innerHTML = "";
+
+}
+
+
+async function carregarProdutos() {
+
+  const lista =
+    document.getElementById("listaProdutos");
+
+  lista.innerHTML =
+    "Carregando produtos...";
+
+  const { data, error } =
+    await supabaseClient
+      .from("products")
+      .select("*")
+      .order("name", {
+        ascending: true
+      });
+
+  if (error) {
+
+    console.error(error);
 
     lista.innerHTML =
-      "Carregando produtos...";
+      '<div class="message">Erro ao carregar produtos:<br>' +
+      error.message +
+      '</div>';
 
+    return;
+  }
 
-    const { data, error } =
-      await supabaseClient
-        .from("products")
-        .select("*")
-        .order("name", {
-          ascending: true
-        });
+  if (!data || data.length === 0) {
 
+    lista.innerHTML =
+      '<div class="vazio">Nenhum produto cadastrado.</div>';
 
-    if (error) {
+    return;
+  }
 
-      console.error(error);
+  lista.innerHTML = "";
 
-      lista.innerHTML =
-        '<div class="message">Erro ao carregar produtos: ' +
-        error.message +
-        '</div>';
+  data.forEach(produto => {
 
-      return;
+    const div =
+      document.createElement("div");
+
+    div.className = "produto";
+
+    if (produto.image) {
+
+      const img =
+        document.createElement("img");
+
+      img.src = produto.image;
+
+      img.alt =
+        produto.name || "Produto";
+
+      div.appendChild(img);
+
     }
 
+    const titulo =
+      document.createElement("h3");
 
-    if (!data || data.length === 0) {
+    titulo.innerText =
+      produto.name || "Sem nome";
 
-      lista.innerHTML =
-        '<div class="vazio">Nenhum produto cadastrado.</div>';
+    div.appendChild(titulo);
 
-      return;
-    }
+    const categoria =
+      document.createElement("p");
 
+    categoria.innerHTML =
+      "<strong>Categoria:</strong> " +
+      (produto.category || "Sem categoria");
 
-    lista.innerHTML = "";
+    div.appendChild(categoria);
 
+    const preco =
+      document.createElement("p");
 
-    data.forEach(produto => {
-
-      const div =
-        document.createElement("div");
-
-      div.className = "produto";
-
-
-      if (
-        produto.image_url ||
-        produto.image
-      ) {
-
-        const img =
-          document.createElement("img");
-
-        img.src =
-          produto.image_url ||
-          produto.image;
-
-        img.alt =
-          produto.name ||
-          "Produto";
-
-        div.appendChild(img);
-
-      }
-
-
-      const titulo =
-        document.createElement("h3");
-
-      titulo.innerText =
-        produto.name ||
-        "Sem nome";
-
-      div.appendChild(titulo);
-
-
-      const categoria =
-        document.createElement("p");
-
-      categoria.innerHTML =
-        "<strong>Categoria:</strong> " +
-        (
-          produto.category ||
-          "Sem categoria"
-        );
-
-      div.appendChild(categoria);
-
-
-      const preco =
-        document.createElement("p");
-
-      preco.innerHTML =
-        "<strong>Preço:</strong> R$ " +
-        Number(
-          produto.price || 0
-        )
+    preco.innerHTML =
+      "<strong>Preço:</strong> R$ " +
+      Number(produto.price || 0)
         .toFixed(2)
         .replace(".", ",");
 
-      div.appendChild(preco);
+    div.appendChild(preco);
+
+    if (produto.description) {
+
+      const descricao =
+        document.createElement("p");
+
+      descricao.innerText =
+        produto.description;
+
+      div.appendChild(descricao);
+
+    }
+
+    const acoes =
+      document.createElement("div");
+
+    acoes.className = "acoes";
+
+    const editar =
+      document.createElement("button");
+
+    editar.innerText =
+      "✏️ Editar";
+
+    editar.onclick = function() {
+
+      editarProduto(produto);
+
+    };
+
+    const excluir =
+      document.createElement("button");
+
+    excluir.innerText =
+      "🗑️ Excluir";
+
+    excluir.className =
+      "danger";
+
+    excluir.onclick = function() {
+
+      excluirProduto(produto.id);
+
+    };
+
+    acoes.appendChild(editar);
+    acoes.appendChild(excluir);
+
+    div.appendChild(acoes);
+
+    lista.appendChild(div);
+
+  });
+
+}
 
 
-      const acoes =
-        document.createElement("div");
+async function salvarProduto() {
 
-      acoes.className =
-        "acoes";
+  const id =
+    document.getElementById("produtoId").value;
+
+  const nome =
+    document.getElementById("produtoNome").value.trim();
+
+  const categoria =
+    document.getElementById("produtoCategoria").value.trim();
+
+  const preco =
+    Number(
+      document.getElementById("produtoPreco").value || 0
+    );
+
+  const descricao =
+    document.getElementById("produtoDescricao").value.trim();
+
+  const imagem =
+    document.getElementById("produtoImagem").value.trim();
+
+  const mensagem =
+    document.getElementById("produtoMessage");
+
+  mensagem.innerHTML = "";
+
+  if (!nome) {
+
+    mensagem.innerHTML =
+      '<div class="message">Digite o nome do produto.</div>';
+
+    return;
+  }
+
+  if (preco < 0) {
+
+    mensagem.innerHTML =
+      '<div class="message">Digite um preço válido.</div>';
+
+    return;
+  }
+
+  const produto = {
+
+    name: nome,
+
+    category:
+      categoria || null,
+
+    price:
+      preco,
+
+    description:
+      descricao || null,
+
+    image:
+      imagem || null
+
+  };
+
+  let resultado;
+
+  if (id) {
+
+    resultado =
+      await supabaseClient
+        .from("products")
+        .update(produto)
+        .eq("id", id);
+
+  } else {
+
+    resultado =
+      await supabaseClient
+        .from("products")
+        .insert(produto);
+
+  }
+
+  if (resultado.error) {
+
+    console.error(resultado.error);
+
+    mensagem.innerHTML =
+      '<div class="message">Erro ao salvar produto:<br>' +
+      resultado.error.message +
+      '</div>';
+
+    return;
+  }
+
+  mensagem.innerHTML =
+    '<div class="message">Produto salvo com sucesso! 🍰</div>';
+
+  setTimeout(() => {
+
+    abrirProdutos();
+
+  }, 700);
+
+}
 
 
-      const editar =
-        document.createElement("button");
+function editarProduto(produto) {
 
-      editar.innerText =
-        "✏️ Editar";
+  esconderAreas();
 
-      editar.onclick =
-        function() {
-          editarProduto(produto);
-        };
+  document
+    .getElementById("cadastroArea")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("tituloFormulario")
+    .innerText =
+      "✏️ Editar produto";
+
+  document
+    .getElementById("produtoId")
+    .value =
+      produto.id || "";
+
+  document
+    .getElementById("produtoNome")
+    .value =
+      produto.name || "";
+
+  document
+    .getElementById("produtoCategoria")
+    .value =
+      produto.category || "";
+
+  document
+    .getElementById("produtoPreco")
+    .value =
+      produto.price || "";
+
+  document
+    .getElementById("produtoDescricao")
+    .value =
+      produto.description || "";
+
+  document
+    .getElementById("produtoImagem")
+    .value =
+      produto.image || "";
+
+}
 
 
-      const excluir =
-        document.createElement("button");
+async function excluirProduto(id) {
 
-      excluir.innerText =
-        "🗑️ Excluir";
+  if (
+    !confirm(
+      "Tem certeza que deseja excluir este produto?"
+    )
+  ) {
+    return;
+  }
 
-      excluir.className =
-        "danger";
+  const { error } =
+    await supabaseClient
+      .from("products")
+      .delete()
+      .eq("id", id);
 
-      excluir.onclick =
-        function() {
-          excluirProduto(produto.id);
-        };
+  if (error) {
+
+    alert(
+      "Não foi possível excluir:\n" +
+      error.message
+    );
+
+    return;
+  }
+
+  alert(
+    "Produto excluído com sucesso! 🍰"
+  );
+
+  await carregarProdutos();
+
+}
 
 
-      acoes.appendChild(editar);
-      acoes.appendChild(excluir);
+/* =========================
+   PEDIDOS
+========================= */
 
-      div.appendChild(acoes);
+async function abrirPedidos() {
 
-      lista.appendChild(div);
+  esconderAreas();
+
+  document
+    .getElementById("pedidosArea")
+    .classList.remove("hidden");
+
+  await carregarPedidos();
+
+}
+
+
+async function carregarPedidos() {
+
+  const lista =
+    document.getElementById("listaPedidos");
+
+  lista.innerHTML =
+    "Carregando pedidos...";
+
+  const { data, error } =
+    await supabaseClient
+      .from("orders")
+      .select("*")
+      .order("created_at", {
+        ascending: false
+      });
+
+  if (error) {
+
+    console.error(error);
+
+    lista.innerHTML =
+      '<div class="message">' +
+      '<strong>Erro ao carregar pedidos.</strong><br><br>' +
+      error.message +
+      '</div>';
+
+    return;
+  }
+
+  if (!data || data.length === 0) {
+
+    lista.innerHTML =
+      '<div class="vazio">' +
+      '📦 Nenhum pedido recebido ainda.' +
+      '</div>';
+
+    return;
+  }
+
+  lista.innerHTML = "";
+
+  for (const pedido of data) {
+
+    await criarCardPedido(
+      pedido,
+      lista
+    );
+
+  }
+
+}
+
+
+async function criarCardPedido(
+  pedido,
+  lista
+) {
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "pedido";
+
+  const dataPedido =
+    pedido.created_at
+      ? new Date(
+          pedido.created_at
+        ).toLocaleString("pt-BR")
+      : "-";
+
+  const itens =
+    await buscarItensPedido(
+      pedido.id
+    );
+
+  let itensHTML = "";
+
+  if (!itens.length) {
+
+    itensHTML =
+      "<p>Nenhum item encontrado.</p>";
+
+  } else {
+
+    itens.forEach(item => {
+
+      const quantidade =
+        Number(item.qty || 1);
+
+      const preco =
+        Number(item.price || 0);
+
+      itensHTML += `
+        <div class="pedido-item">
+          <span>
+            ${quantidade}x ${escapeHTML(item.name || "Produto")}
+          </span>
+
+          <strong>
+            R$ ${preco
+              .toFixed(2)
+              .replace(".", ",")}
+          </strong>
+        </div>
+      `;
 
     });
 
   }
 
+  div.innerHTML = `
 
-  async function salvarProduto() {
+    <div class="pedido-topo">
 
-    const id =
-      document
-        .getElementById("produtoId")
-        .value;
+      <div>
 
-    const nome =
-      document
-        .getElementById("produtoNome")
-        .value
-        .trim();
+        <strong>
+          📦 Pedido #${pedido.id}
+        </strong>
 
-    const categoria =
-      document
-        .getElementById("produtoCategoria")
-        .value
-        .trim();
-
-    const preco =
-      Number(
-        document
-          .getElementById("produtoPreco")
-          .value || 0
-      );
-
-    const imagem =
-      document
-        .getElementById("produtoImagem")
-        .value
-        .trim();
-
-    const mensagem =
-      document.getElementById(
-        "produtoMessage"
-      );
-
-
-    mensagem.innerHTML = "";
-
-
-    if (!nome) {
-
-      mensagem.innerHTML =
-        '<div class="message">Digite o nome do produto.</div>';
-
-      return;
-    }
-
-
-    const produto = {
-
-      name: nome,
-
-      category:
-        categoria || null,
-
-      price:
-        preco,
-
-      image:
-        imagem || null
-
-    };
-
-
-    let resultado;
-
-
-    if (id) {
-
-      resultado =
-        await supabaseClient
-          .from("products")
-          .update(produto)
-          .eq("id", id);
-
-    } else {
-
-      resultado =
-        await supabaseClient
-          .from("products")
-          .insert(produto);
-
-    }
-
-
-    if (resultado.error) {
-
-      console.error(
-        resultado.error
-      );
-
-      mensagem.innerHTML =
-        '<div class="message">Erro ao salvar produto: ' +
-        resultado.error.message +
-        '</div>';
-
-      return;
-    }
-
-
-    mensagem.innerHTML =
-      '<div class="message">Produto salvo com sucesso! 🍰</div>';
-
-
-    setTimeout(
-      () => abrirProdutos(),
-      700
-    );
-
-  }
-
-
-  function editarProduto(produto) {
-
-    esconderAreas();
-
-    document
-      .getElementById("cadastroArea")
-      .classList.remove("hidden");
-
-
-    document
-      .getElementById("tituloFormulario")
-      .innerText =
-      "✏️ Editar produto";
-
-
-    document
-      .getElementById("produtoId")
-      .value =
-      produto.id || "";
-
-
-    document
-      .getElementById("produtoNome")
-      .value =
-      produto.name || "";
-
-
-    document
-      .getElementById("produtoCategoria")
-      .value =
-      produto.category || "";
-
-
-    document
-      .getElementById("produtoPreco")
-      .value =
-      produto.price || "";
-
-
-    document
-      .getElementById("produtoImagem")
-      .value =
-      produto.image_url ||
-      produto.image ||
-      "";
-
-  }
-
-
-  async function excluirProduto(id) {
-
-    if (
-      !confirm(
-        "Tem certeza que deseja excluir este produto?"
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    const { error } =
-      await supabaseClient
-        .from("products")
-        .delete()
-        .eq("id", id);
-
-
-    if (error) {
-
-      alert(
-        "Não foi possível excluir: " +
-        error.message
-      );
-
-      return;
-    }
-
-
-    alert(
-      "Produto excluído com sucesso! 🍰"
-    );
-
-
-    await carregarProdutos();
-
-  }
-
-
-  /* =====================================
-     PEDIDOS
-  ===================================== */
-
-  async function abrirPedidos() {
-
-    esconderAreas();
-
-    document
-      .getElementById("pedidosArea")
-      .classList.remove("hidden");
-
-    await carregarPedidos();
-
-  }
-
-
-  async function carregarPedidos() {
-
-    const lista =
-      document.getElementById(
-        "listaPedidos"
-      );
-
-
-    lista.innerHTML =
-      "🔄 Carregando pedidos...";
-
-
-    try {
-
-      const {
-        data: pedidos,
-        error
-      } =
-        await supabaseClient
-          .from("orders")
-          .select("*")
-          .order("created_at", {
-            ascending: false
-          });
-
-
-      if (error) {
-
-        throw error;
-
-      }
-
-
-      if (
-        !pedidos ||
-        pedidos.length === 0
-      ) {
-
-        lista.innerHTML = `
-          <div class="pedido-vazio">
-            📦<br><br>
-            Nenhum pedido recebido ainda.
-          </div>
-        `;
-
-        return;
-
-      }
-
-
-      lista.innerHTML = "";
-
-
-      for (
-        const pedido of pedidos
-      ) {
-
-        await criarCardPedido(
-          pedido,
-          lista
-        );
-
-      }
-
-
-    } catch (erro) {
-
-      console.error(
-        "ERRO AO CARREGAR PEDIDOS:",
-        erro
-      );
-
-
-      lista.innerHTML = `
-        <div class="message">
-
-          ❌ <strong>Erro ao carregar pedidos.</strong>
-
-          <br><br>
-
-          ${erro.message || erro}
-
-        </div>
-      `;
-
-    }
-
-  }
-
-
-  async function criarCardPedido(
-    pedido,
-    lista
-  ) {
-
-    const card =
-      document.createElement(
-        "div"
-      );
-
-
-    card.className =
-      "pedido";
-
-
-    const dataPedido =
-      pedido.created_at
-        ? new Date(
-            pedido.created_at
-          ).toLocaleString(
-            "pt-BR"
-          )
-        : "Data não informada";
-
-
-    const tipo =
-      pedido.delivery_type ||
-      pedido.type ||
-      "retirada";
-
-
-    const status =
-      pedido.status ||
-      "novo";
-
-
-    card.innerHTML = `
-
-      <div class="pedido-topo">
-
-        <div>
-
-          <h3>
-            📦 Pedido #${pedido.id}
-          </h3>
-
-          <div class="pedido-data">
-            ${dataPedido}
-          </div>
-
-        </div>
-
-        <span class="status">
-          ${status}
-        </span>
+        <small>
+          ${dataPedido}
+        </small>
 
       </div>
 
+      <span class="status">
+        ${escapeHTML(
+          pedido.status || "novo"
+        )}
+      </span>
 
-      <div class="pedido-info">
+    </div>
 
-        <p>
-          👤
-          <strong>Cliente:</strong>
-          ${pedido.customer_name || "-"}
-        </p>
 
-        <p>
-          📱
-          <strong>Telefone:</strong>
-          ${pedido.customer_phone || "-"}
-        </p>
+    <div class="pedido-info">
 
-        <p>
-          📧
-          <strong>E-mail:</strong>
-          ${pedido.customer_email || "-"}
-        </p>
+      <p>
+        👤 <strong>Cliente:</strong>
+        ${escapeHTML(
+          pedido.customer_name || "-"
+        )}
+      </p>
 
-        <p>
-          📅
-          <strong>Data agendada:</strong>
-          ${pedido.scheduled_date || "-"}
-        </p>
+      <p>
+        📱 <strong>Telefone:</strong>
+        ${escapeHTML(
+          pedido.customer_phone || "-"
+        )}
+      </p>
 
-        <p>
-          ⏰
-          <strong>Horário:</strong>
-          ${pedido.scheduled_time || "-"}
-        </p>
+      <p>
+        📧 <strong>E-mail:</strong>
+        ${escapeHTML(
+          pedido.customer_email || "-"
+        )}
+      </p>
 
-        <p>
-          📦
-          <strong>Recebimento:</strong>
-          ${tipo}
-        </p>
+      <p>
+        📅 <strong>Data agendada:</strong>
+        ${escapeHTML(
+          pedido.scheduled_date || "-"
+        )}
+      </p>
 
-        ${
-          pedido.delivery_address
-          ?
-          `
+      <p>
+        ⏰ <strong>Horário:</strong>
+        ${escapeHTML(
+          pedido.scheduled_time || "-"
+        )}
+      </p>
+
+      <p>
+        📦 <strong>Tipo:</strong>
+        ${escapeHTML(
+          pedido.delivery_type ||
+          pedido.type ||
+          "retirada"
+        )}
+      </p>
+
+      ${
+        pedido.delivery_address
+        ? `
           <p>
-            📍
-            <strong>Endereço:</strong>
-            ${pedido.delivery_address}
+            📍 <strong>Endereço:</strong>
+            ${escapeHTML(
+              pedido.delivery_address
+            )}
           </p>
-          `
-          :
-          ""
-        }
+        `
+        : ""
+      }
 
-        <p>
-          💳
-          <strong>Pagamento:</strong>
-          ${pedido.payment_method || "-"}
-        </p>
+      <p>
+        💳 <strong>Pagamento:</strong>
+        ${escapeHTML(
+          pedido.payment_method || "-"
+        )}
+      </p>
 
-        <p>
-          💰
-          <strong>Total:</strong>
-          R$ ${Number(
-            pedido.total || 0
-          )
-          .toFixed(2)
-          .replace(".", ",")}
-        </p>
-
-        ${
-          pedido.notes
-          ?
-          `
-          <p>
-            📝
-            <strong>Observações:</strong>
-            ${pedido.notes}
-          </p>
-          `
-          :
-          ""
-        }
-
-      </div>
-
-
-      <div class="pedido-produtos">
-
-        <h4>
-          🍰 Produtos do pedido
-        </h4>
-
-        <div id="itens-${pedido.id}">
-          Carregando produtos...
-        </div>
-
-      </div>
-
-
-      <div class="pedido-total">
-
-        Total:
+      <p>
+        💰 <strong>Total:</strong>
         R$ ${Number(
           pedido.total || 0
         )
-        .toFixed(2)
-        .replace(".", ",")}
+          .toFixed(2)
+          .replace(".", ",")}
+      </p>
 
-      </div>
-
-
-      <div class="pedido-acoes">
-
-        <label>
-          Alterar status
-        </label>
-
-        <select
-          onchange="
-            alterarStatusPedido(
-              ${pedido.id},
-              this.value
-            )
-          "
-        >
-
-          <option
-            value="novo"
-            ${status === "novo" ? "selected" : ""}
-          >
-            Novo
-          </option>
-
-          <option
-            value="confirmado"
-            ${status === "confirmado" ? "selected" : ""}
-          >
-            Confirmado
-          </option>
-
-          <option
-            value="em_preparo"
-            ${status === "em_preparo" ? "selected" : ""}
-          >
-            Em preparo
-          </option>
-
-          <option
-            value="pronto"
-            ${status === "pronto" ? "selected" : ""}
-          >
-            Pronto
-          </option>
-
-          <option
-            value="entregue"
-            ${status === "entregue" ? "selected" : ""}
-          >
-            Entregue
-          </option>
-
-          <option
-            value="cancelado"
-            ${status === "cancelado" ? "selected" : ""}
-          >
-            Cancelado
-          </option>
-
-        </select>
-
-
-        <button
-          class="danger"
-          onclick="
-            cancelarPedido(${pedido.id})
-          "
-        >
-          ❌ Cancelar pedido
-        </button>
-
-      </div>
-
-    `;
-
-
-    lista.appendChild(
-      card
-    );
-
-
-    await carregarItensPedido(
-      pedido.id
-    );
-
-  }
-
-
-  /* =====================================
-     ITENS DO PEDIDO
-  ===================================== */
-
-  async function carregarItensPedido(
-    orderId
-  ) {
-
-    const area =
-      document.getElementById(
-        "itens-" + orderId
-      );
-
-
-    if (!area) {
-
-      return;
-
-    }
-
-
-    try {
-
-      const {
-        data: itens,
-        error
-      } =
-        await supabaseClient
-          .from("order_items")
-          .select("*")
-          .eq(
-            "order_id",
-            orderId
-          )
-          .order(
-            "id",
-            {
-              ascending: true
-            }
-          );
-
-
-      if (error) {
-
-        throw error;
-
+      ${
+        pedido.notes
+        ? `
+          <p>
+            📝 <strong>Observações:</strong>
+            ${escapeHTML(
+              pedido.notes
+            )}
+          </p>
+        `
+        : ""
       }
 
-
-      if (
-        !itens ||
-        itens.length === 0
-      ) {
-
-        area.innerHTML =
-          "<p>Nenhum produto encontrado neste pedido.</p>";
-
-        return;
-
-      }
+    </div>
 
 
-      area.innerHTML = "";
+    <div class="pedido-produtos">
+
+      <h3>🍰 Produtos do pedido</h3>
+
+      ${itensHTML}
+
+    </div>
 
 
-      itens.forEach(
-        item => {
+    <label>
+      Alterar status
+    </label>
 
-          const linha =
-            document.createElement(
-              "div"
-            );
+    <select
+      onchange="alterarStatusPedido(
+        ${pedido.id},
+        this.value
+      )"
+    >
+
+      <option
+        value="novo"
+        ${pedido.status === "novo" ? "selected" : ""}
+      >
+        Novo
+      </option>
+
+      <option
+        value="confirmado"
+        ${pedido.status === "confirmado" ? "selected" : ""}
+      >
+        Confirmado
+      </option>
+
+      <option
+        value="em_preparo"
+        ${pedido.status === "em_preparo" ? "selected" : ""}
+      >
+        Em preparo
+      </option>
+
+      <option
+        value="pronto"
+        ${pedido.status === "pronto" ? "selected" : ""}
+      >
+        Pronto
+      </option>
+
+      <option
+        value="entregue"
+        ${pedido.status === "entregue" ? "selected" : ""}
+      >
+        Entregue
+      </option>
+
+      <option
+        value="cancelado"
+        ${pedido.status === "cancelado" ? "selected" : ""}
+      >
+        Cancelado
+      </option>
+
+    </select>
 
 
-          linha.className =
-            "pedido-item";
+    <div class="pedido-acoes">
+
+      <button
+        onclick="alterarStatusPedido(
+          ${pedido.id},
+          'confirmado'
+        )"
+      >
+        ✅ Confirmar
+      </button>
+
+      <button
+        onclick="alterarStatusPedido(
+          ${pedido.id},
+          'em_preparo'
+        )"
+      >
+        👩‍🍳 Em preparo
+      </button>
+
+      <button
+        onclick="alterarStatusPedido(
+          ${pedido.id},
+          'pronto'
+        )"
+      >
+        🎂 Pronto
+      </button>
+
+      <button
+        onclick="alterarStatusPedido(
+          ${pedido.id},
+          'entregue'
+        )"
+      >
+        📦 Entregue
+      </button>
+
+    </div>
 
 
-          const quantidade =
-            Number(
-              item.qty || 1
-            );
+    <button
+      class="danger"
+      onclick="cancelarPedido(${pedido.id})"
+    >
+      ❌ Cancelar pedido
+    </button>
+
+  `;
+
+  lista.appendChild(div);
+
+}
 
 
-          const preco =
-            Number(
-              item.price || 0
-            );
+async function buscarItensPedido(
+  orderId
+) {
 
-
-          linha.innerHTML = `
-
-            <span>
-              ${quantidade}x
-              ${item.name || "Produto"}
-            </span>
-
-            <strong>
-              R$ ${(
-                preco *
-                quantidade
-              )
-              .toFixed(2)
-              .replace(".", ",")}
-            </strong>
-
-          `;
-
-
-          area.appendChild(
-            linha
-          );
-
+  const { data, error } =
+    await supabaseClient
+      .from("order_items")
+      .select(
+        "id, order_id, product_id, name, qty, price"
+      )
+      .eq(
+        "order_id",
+        orderId
+      )
+      .order(
+        "id",
+        {
+          ascending: true
         }
       );
 
+  if (error) {
 
-    } catch (erro) {
-
-      console.error(
-        "Erro nos itens:",
-        erro
-      );
-
-
-      area.innerHTML = `
-        <p>
-          ❌ Não foi possível carregar
-          os produtos deste pedido.
-        </p>
-      `;
-
-    }
-
-  }
-
-
-  /* =====================================
-     ALTERAR STATUS
-  ===================================== */
-
-  async function alterarStatusPedido(
-    id,
-    status
-  ) {
-
-    try {
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .from("orders")
-          .update({
-            status: status
-          })
-          .eq(
-            "id",
-            id
-          );
-
-
-      if (error) {
-
-        throw error;
-
-      }
-
-
-      await carregarPedidos();
-
-
-    } catch (erro) {
-
-      console.error(
-        erro
-      );
-
-
-      alert(
-        "Erro ao alterar status: " +
-        erro.message
-      );
-
-    }
-
-  }
-
-
-  /* =====================================
-     CANCELAR PEDIDO
-  ===================================== */
-
-  async function cancelarPedido(
-    id
-  ) {
-
-    if (
-      !confirm(
-        "Deseja realmente cancelar este pedido?"
-      )
-    ) {
-
-      return;
-
-    }
-
-
-    await alterarStatusPedido(
-      id,
-      "cancelado"
+    console.error(
+      "Erro nos itens:",
+      error
     );
 
-  }
-
-
-  /* =====================================
-     CONFIGURAÇÕES
-  ===================================== */
-
-  async function abrirConfiguracoes() {
-
-    esconderAreas();
-
-    document
-      .getElementById("configArea")
-      .classList.remove("hidden");
-
-
-    await carregarConfiguracoes();
+    return [];
 
   }
 
+  return data || [];
 
-  async function carregarConfiguracoes() {
-
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("store_settings")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
+}
 
 
-    if (error) {
+async function alterarStatusPedido(
+  id,
+  status
+) {
 
-      document
-        .getElementById(
-          "configMessage"
-        )
-        .innerHTML =
-        '<div class="message">Erro ao carregar configurações: ' +
-        error.message +
-        '</div>';
-
-      return;
-
-    }
-
-
-    if (!data) {
-
-      return;
-
-    }
-
-
-    document
-      .getElementById(
-        "configNome"
-      )
-      .value =
-      data.store_name || "";
-
-
-    document
-      .getElementById(
-        "configDescricao"
-      )
-      .value =
-      data.description || "";
-
-
-    document
-      .getElementById(
-        "configTelefone"
-      )
-      .value =
-      data.phone || "";
-
-
-    document
-      .getElementById(
-        "configWhatsapp"
-      )
-      .value =
-      data.whatsapp || "";
-
-
-    document
-      .getElementById(
-        "configPix"
-      )
-      .value =
-      data.pix_key || "";
-
-
-    document
-      .getElementById(
-        "configTaxa"
-      )
-      .value =
-      data.delivery_fee || 0;
-
-
-    document
-      .getElementById(
-        "configHorario"
-      )
-      .value =
-      data.opening_hours || "";
-
-
-    document
-      .getElementById(
-        "configEndereco"
-      )
-      .value =
-      data.address || "";
-
-
-    document
-      .getElementById(
-        "configInstagram"
-      )
-      .value =
-      data.instagram || "";
-
-  }
-
-
-  async function salvarConfiguracoes() {
-
-    const mensagem =
-      document.getElementById(
-        "configMessage"
+  const { error } =
+    await supabaseClient
+      .from("orders")
+      .update({
+        status: status
+      })
+      .eq(
+        "id",
+        id
       );
 
+  if (error) {
+
+    alert(
+      "Erro ao alterar status:\n" +
+      error.message
+    );
+
+    console.error(error);
+
+    return;
+  }
+
+  await carregarPedidos();
+
+}
+
+
+async function cancelarPedido(id) {
+
+  if (
+    !confirm(
+      "Deseja realmente cancelar este pedido?"
+    )
+  ) {
+    return;
+  }
+
+  await alterarStatusPedido(
+    id,
+    "cancelado"
+  );
+
+}
+
+
+/* =========================
+   CONFIGURAÇÕES
+========================= */
+
+async function abrirConfiguracoes() {
+
+  esconderAreas();
+
+  document
+    .getElementById("configArea")
+    .classList.remove("hidden");
+
+  await carregarConfiguracoes();
+
+}
+
+
+async function carregarConfiguracoes() {
+
+  const mensagem =
+    document.getElementById(
+      "configMessage"
+    );
+
+  const { data, error } =
+    await supabaseClient
+      .from("store_settings")
+      .select("*")
+      .limit(1)
+      .maybeSingle();
+
+  if (error) {
+
+    console.error(error);
 
     mensagem.innerHTML =
-      "Salvando...";
+      '<div class="message">' +
+      "Erro ao carregar configurações:<br>" +
+      error.message +
+      "</div>";
+
+    return;
+  }
+
+  if (!data) {
+
+    mensagem.innerHTML =
+      '<div class="message">' +
+      "Nenhuma configuração cadastrada ainda." +
+      "</div>";
+
+    return;
+  }
+
+  document.getElementById(
+    "configNome"
+  ).value =
+    data.store_name || "";
+
+  document.getElementById(
+    "configDescricao"
+  ).value =
+    data.description || "";
+
+  document.getElementById(
+    "configTelefone"
+  ).value =
+    data.phone || "";
+
+  document.getElementById(
+    "configWhatsapp"
+  ).value =
+    data.whatsapp || "";
+
+  document.getElementById(
+    "configPix"
+  ).value =
+    data.pix_key || "";
+
+  document.getElementById(
+    "configTaxa"
+  ).value =
+    data.delivery_fee || 0;
+
+  document.getElementById(
+    "configHorario"
+  ).value =
+    data.opening_hours || "";
+
+  document.getElementById(
+    "configEndereco"
+  ).value =
+    data.address || "";
+
+  document.getElementById(
+    "configInstagram"
+  ).value =
+    data.instagram || "";
+
+}
 
 
-    const {
-      data: existente
-    } =
+async function salvarConfiguracoes() {
+
+  const mensagem =
+    document.getElementById(
+      "configMessage"
+    );
+
+  mensagem.innerHTML =
+    "Salvando...";
+
+  const { data: existente } =
+    await supabaseClient
+      .from("store_settings")
+      .select("id")
+      .limit(1)
+      .maybeSingle();
+
+  const configuracao = {
+
+    store_name:
+      document
+        .getElementById("configNome")
+        .value
+        .trim(),
+
+    description:
+      document
+        .getElementById("configDescricao")
+        .value
+        .trim(),
+
+    phone:
+      document
+        .getElementById("configTelefone")
+        .value
+        .trim(),
+
+    whatsapp:
+      document
+        .getElementById("configWhatsapp")
+        .value
+        .trim(),
+
+    pix_key:
+      document
+        .getElementById("configPix")
+        .value
+        .trim(),
+
+    delivery_fee:
+      Number(
+        document
+          .getElementById("configTaxa")
+          .value || 0
+      ),
+
+    opening_hours:
+      document
+        .getElementById("configHorario")
+        .value
+        .trim(),
+
+    address:
+      document
+        .getElementById("configEndereco")
+        .value
+        .trim(),
+
+    instagram:
+      document
+        .getElementById("configInstagram")
+        .value
+        .trim(),
+
+    updated_at:
+      new Date().toISOString()
+
+  };
+
+
+  let resultado;
+
+  if (existente) {
+
+    resultado =
       await supabaseClient
         .from("store_settings")
-        .select("id")
-        .limit(1)
-        .maybeSingle();
+        .update(configuracao)
+        .eq(
+          "id",
+          existente.id
+        );
+
+  } else {
+
+    resultado =
+      await supabaseClient
+        .from("store_settings")
+        .insert(
+          configuracao
+        );
+
+  }
 
 
-    const configuracao = {
+  if (resultado.error) {
 
-      store_name:
-        document
-          .getElementById(
-            "configNome"
-          )
-          .value
-          .trim(),
-
-      description:
-        document
-          .getElementById(
-            "configDescricao"
-          )
-          .value
-          .trim(),
-
-      phone:
-        document
-          .getElementById(
-            "configTelefone"
-          )
-          .value
-          .trim(),
-
-      whatsapp:
-        document
-          .getElementById(
-            "configWhatsapp"
-          )
-          .value
-          .trim(),
-
-      pix_key:
-        document
-          .getElementById(
-            "configPix"
-          )
-          .value
-          .trim(),
-
-      delivery_fee:
-        Number(
-          document
-            .getElementById(
-              "configTaxa"
-            )
-            .value || 0
-        ),
-
-      opening_hours:
-        document
-          .getElementById(
-            "configHorario"
-          )
-          .value
-          .trim(),
-
-      address:
-        document
-          .getElementById(
-            "configEndereco"
-          )
-          .value
-          .trim(),
-
-      instagram:
-        document
-          .getElementById(
-            "configInstagram"
-          )
-          .value
-          .trim(),
-
-      updated_at:
-        new Date().toISOString()
-
-    };
-
-
-    let resultado;
-
-
-    if (existente) {
-
-      resultado =
-        await supabaseClient
-          .from("store_settings")
-          .update(
-            configuracao
-          )
-          .eq(
-            "id",
-            existente.id
-          );
-
-    } else {
-
-      resultado =
-        await supabaseClient
-          .from("store_settings")
-          .insert(
-            configuracao
-          );
-
-    }
-
-
-    if (resultado.error) {
-
-      mensagem.innerHTML =
-        '<div class="message">Erro ao salvar: ' +
-        resultado.error.message +
-        '</div>';
-
-      return;
-
-    }
-
+    console.error(
+      resultado.error
+    );
 
     mensagem.innerHTML =
-      '<div class="message">Configurações salvas com sucesso! ⚙️</div>';
+      '<div class="message">' +
+      "Erro ao salvar:<br>" +
+      resultado.error.message +
+      "</div>";
 
+    return;
   }
 
 
-  /* =====================================
-     INICIALIZAÇÃO
-  ===================================== */
+  mensagem.innerHTML =
+    '<div class="message">' +
+    "Configurações salvas com sucesso! ⚙️" +
+    "</div>";
 
-  atualizarTelaInicial();
-
-
-  async function atualizarTelaInicial() {
-
-    const {
-      data
-    } =
-      await supabaseClient.auth.getSession();
+}
 
 
-    if (
-      data &&
-      data.session
-    ) {
+/* =========================
+   SEGURANÇA HTML
+========================= */
 
-      const user =
-        data.session.user;
+function escapeHTML(valor) {
 
+  return String(valor)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
 
-      const {
-        data: admin
-      } =
-        await supabaseClient
-          .from("admin_users")
-          .select("user_id")
-          .eq(
-            "user_id",
-            user.id
-          )
-          .maybeSingle();
-
-
-      if (admin) {
-
-        document
-          .getElementById(
-            "loginArea"
-          )
-          .classList.add(
-            "hidden"
-          );
-
-
-        document
-          .getElementById(
-            "painel"
-          )
-          .classList.remove(
-            "hidden"
-          );
-
-      }
-
-    }
-
-  }
+}
 
 </script>
 

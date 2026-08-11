@@ -454,6 +454,7 @@ header{
   display:flex;
   justify-content:space-between;
   margin:8px 0;
+  gap:10px;
 }
 
 .summary-total{
@@ -610,6 +611,99 @@ textarea{
   font-size:13px;
 }
 
+/* MINHA CONTA */
+
+.account-order{
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:15px;
+  padding:15px;
+  margin-bottom:12px;
+  box-shadow:var(--sombra);
+}
+
+.account-order-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:10px;
+}
+
+.account-order-number{
+  font-weight:800;
+  color:var(--marrom);
+}
+
+.account-order-status{
+  padding:6px 9px;
+  border-radius:10px;
+  background:var(--dourado-claro);
+  color:var(--marrom);
+  font-size:11px;
+  font-weight:800;
+}
+
+.account-order-status.open{
+  background:#e6f4e9;
+  color:var(--verde);
+}
+
+.account-order-status.closed{
+  background:#eee7e3;
+  color:#6c5a52;
+}
+
+.account-order-info{
+  color:var(--marrom-claro);
+  font-size:13px;
+  line-height:1.7;
+}
+
+.account-order-items{
+  border-top:1px solid var(--borda);
+  margin-top:10px;
+  padding-top:10px;
+}
+
+.account-order-item{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 0;
+  font-size:14px;
+}
+
+.account-order-total{
+  border-top:1px solid var(--borda);
+  margin-top:8px;
+  padding-top:10px;
+  display:flex;
+  justify-content:space-between;
+  font-size:17px;
+  font-weight:800;
+}
+
+.account-order-button{
+  width:100%;
+  border:0;
+  background:var(--marrom);
+  color:white;
+  border-radius:10px;
+  padding:11px;
+  margin-top:10px;
+  font-weight:800;
+}
+
+.account-empty{
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:14px;
+  padding:30px 15px;
+  text-align:center;
+  color:var(--marrom-claro);
+}
+
 /* HORÁRIOS */
 
 .hours-list{
@@ -669,6 +763,7 @@ footer{
 }
 
 @media(max-width:700px){
+
   .hero{
     padding:15px 12px 8px;
   }
@@ -715,20 +810,30 @@ footer{
   .highlight-grid{
     grid-template-columns:1fr;
   }
+
+  .header-actions{
+    gap:5px;
+  }
+
+  .icon-btn{
+    padding:9px 8px;
+    font-size:12px;
+  }
+
+  .cart-btn{
+    padding:9px 10px;
+    font-size:12px;
+  }
 }
 
 @media(max-width:450px){
+
   .header{
     padding:12px;
   }
 
   .logo{
-    font-size:20px;
-  }
-
-  .cart-btn{
-    padding:9px 12px;
-    font-size:13px;
+    font-size:19px;
   }
 
   .products{
@@ -742,6 +847,11 @@ footer{
   .option-group{
     grid-template-columns:1fr;
   }
+
+  .account-order-header{
+    align-items:flex-start;
+    flex-direction:column;
+  }
 }
 </style>
 </head>
@@ -749,6 +859,7 @@ footer{
 <body>
 
 <header>
+
   <div class="header">
 
     <div class="logo" id="logo">
@@ -756,6 +867,10 @@ footer{
     </div>
 
     <div class="header-actions">
+
+      <button class="icon-btn" onclick="abrirMinhaConta()">
+        👤 Minha conta
+      </button>
 
       <button class="icon-btn" onclick="abrirHorarios()">
         🕐
@@ -769,6 +884,7 @@ footer{
     </div>
 
   </div>
+
 </header>
 
 <main>
@@ -815,9 +931,11 @@ footer{
 <section class="section">
 
   <div class="section-title">
+
     <div>
       <h2>Categorias</h2>
     </div>
+
   </div>
 
   <div class="categories">
@@ -886,30 +1004,42 @@ footer{
   <div class="highlight-grid">
 
     <div class="highlight">
+
       <div class="highlight-icon">🎂</div>
+
       <h3>Feito com carinho</h3>
+
       <p>
         Produtos preparados artesanalmente
         para deixar sua comemoração ainda mais especial.
       </p>
+
     </div>
 
     <div class="highlight">
+
       <div class="highlight-icon">💛</div>
+
       <h3>Qualidade</h3>
+
       <p>
         Ingredientes selecionados e cuidado
         em cada detalhe dos nossos produtos.
       </p>
+
     </div>
 
     <div class="highlight">
+
       <div class="highlight-icon">📦</div>
+
       <h3>Pedido fácil</h3>
+
       <p>
         Escolha seus produtos, monte seu carrinho
         e acompanhe seu pedido em tempo real.
       </p>
+
     </div>
 
   </div>
@@ -929,6 +1059,7 @@ footer{
     <div id="footerAddress"></div>
     <div id="footerPhone"></div>
     <div id="footerInstagram"></div>
+
     <div id="footerHours">
       Terça a sábado: 14h às 21h<br>
       Domingo: 15h30 às 20h<br>
@@ -938,6 +1069,124 @@ footer{
   </div>
 
 </footer>
+
+
+<!-- MINHA CONTA -->
+
+<div id="accountModal" class="modal">
+
+  <div class="modal-content">
+
+    <div class="modal-title">
+
+      <h2>👤 Minha conta</h2>
+
+      <button
+        class="close"
+        onclick="fecharMinhaConta()">
+        ×
+      </button>
+
+    </div>
+
+    <!-- LOGIN -->
+
+    <div id="accountLogin">
+
+      <p style="color:var(--marrom-claro);line-height:1.5">
+
+        Consulte seus pedidos usando o mesmo nome
+        e celular informados ao realizar a compra.
+
+      </p>
+
+      <label>Nome completo</label>
+
+      <input
+        id="contaNome"
+        type="text"
+        placeholder="Digite seu nome">
+
+      <label>Número de celular</label>
+
+      <input
+        id="contaTelefone"
+        type="tel"
+        placeholder="(92) 99999-9999">
+
+      <div id="contaErro" class="error"></div>
+
+      <button
+        class="main-button"
+        onclick="entrarMinhaConta()">
+
+        🔐 Entrar
+
+      </button>
+
+    </div>
+
+    <!-- ÁREA DO CLIENTE -->
+
+    <div id="accountArea" class="hidden">
+
+      <div
+        style="
+          background:white;
+          border:1px solid var(--borda);
+          border-radius:14px;
+          padding:15px;
+          margin-bottom:15px;
+        ">
+
+        <strong id="contaNomeExibicao"></strong>
+
+        <div
+          id="contaTelefoneExibicao"
+          style="
+            color:var(--marrom-claro);
+            font-size:13px;
+            margin-top:5px;
+          ">
+        </div>
+
+      </div>
+
+      <div class="section-title">
+
+        <div>
+
+          <h2>📦 Meus pedidos</h2>
+
+          <span>
+            Histórico dos seus pedidos
+          </span>
+
+        </div>
+
+      </div>
+
+      <div id="meusPedidos">
+
+        <div class="loading">
+          Carregando seus pedidos...
+        </div>
+
+      </div>
+
+      <button
+        class="gold-button"
+        onclick="sairMinhaConta()">
+
+        Sair da minha conta
+
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
 
 
 <!-- MODAL HORÁRIOS -->
@@ -950,7 +1199,11 @@ footer{
 
       <h2>🕐 Nossos horários</h2>
 
-      <button class="close" onclick="fecharHorarios()">×</button>
+      <button
+        class="close"
+        onclick="fecharHorarios()">
+        ×
+      </button>
 
     </div>
 
@@ -988,7 +1241,11 @@ footer{
 
       <h2>🛒 Seu carrinho</h2>
 
-      <button class="close" onclick="fecharCarrinho()">×</button>
+      <button
+        class="close"
+        onclick="fecharCarrinho()">
+        ×
+      </button>
 
     </div>
 
@@ -997,13 +1254,23 @@ footer{
     <div class="cart-summary">
 
       <div class="summary-line">
+
         <span>Subtotal</span>
-        <span id="cartSubtotal">R$ 0,00</span>
+
+        <span id="cartSubtotal">
+          R$ 0,00
+        </span>
+
       </div>
 
       <div class="summary-line">
+
         <span>Entrega</span>
-        <span id="cartDelivery">A calcular</span>
+
+        <span id="cartDelivery">
+          A calcular
+        </span>
+
       </div>
 
       <div class="coupon">
@@ -1017,14 +1284,15 @@ footer{
           class="gold-button"
           style="width:auto;margin:0"
           onclick="aplicarCupom()">
+
           Aplicar
+
         </button>
 
       </div>
 
       <div
         id="cupomMensagem"
-        class="small"
         style="margin-top:8px">
       </div>
 
@@ -1043,7 +1311,9 @@ footer{
     <button
       class="main-button"
       onclick="abrirCheckout()">
+
       Continuar pedido
+
     </button>
 
   </div>
@@ -1061,7 +1331,11 @@ footer{
 
       <h2>📝 Finalizar pedido</h2>
 
-      <button class="close" onclick="fecharCheckout()">×</button>
+      <button
+        class="close"
+        onclick="fecharCheckout()">
+        ×
+      </button>
 
     </div>
 
@@ -1160,9 +1434,11 @@ footer{
 
     <button
       id="confirmarPedido"
-      class="confirm-button main-button"
+      class="main-button"
       onclick="finalizarPedido()">
+
       ✅ Confirmar pedido
+
     </button>
 
   </div>
@@ -1192,7 +1468,15 @@ footer{
 
     <div id="pedidoResumo"></div>
 
-    <div id="timeline" class="timeline"></div>
+    <div
+      id="pedidoItensAcompanhamento"
+      class="cart-summary">
+    </div>
+
+    <div
+      id="timeline"
+      class="timeline">
+    </div>
 
   </div>
 
@@ -1224,7 +1508,9 @@ footer{
       <button
         class="main-button"
         onclick="fecharSucesso()">
+
         Acompanhar pedido
+
       </button>
 
     </div>
@@ -1262,6 +1548,7 @@ let todosProdutos = [];
 let configuracoes = {};
 let pedidoAtualId = null;
 let descontoCupom = 0;
+let clienteLogado = null;
 
 
 /* =========================================================
@@ -1314,8 +1601,7 @@ async function carregarConfiguracoes(){
       data.store_name || "LÁ DOCIÊ";
 
     document.getElementById("logo")
-      .innerHTML =
-      escapeHTML(nome);
+      .textContent = nome;
 
     document.getElementById("footerName")
       .textContent = nome;
@@ -1521,6 +1807,7 @@ function renderizarProdutos(produtos){
         </div>
 
       </div>
+
     `;
 
     area.appendChild(card);
@@ -1873,12 +2160,6 @@ function aplicarCupom(){
 
   }
 
-  /*
-    Cupons atuais.
-    Podemos alterar esses valores depois
-    para buscar diretamente do banco.
-  */
-
   if(cupom === "DOCES5"){
 
     descontoCupom =
@@ -1956,6 +2237,573 @@ function fecharHorarios(){
 
 
 /* =========================================================
+   MINHA CONTA
+========================================================= */
+
+function abrirMinhaConta(){
+
+  document
+    .getElementById("accountModal")
+    .classList.add("show");
+
+  verificarClienteSalvo();
+
+}
+
+
+function fecharMinhaConta(){
+
+  document
+    .getElementById("accountModal")
+    .classList.remove("show");
+
+}
+
+
+function verificarClienteSalvo(){
+
+  const salvo =
+    localStorage.getItem(
+      "la_docie_cliente"
+    );
+
+  if(!salvo){
+
+    document
+      .getElementById("accountLogin")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("accountArea")
+      .classList.add("hidden");
+
+    return;
+
+  }
+
+  try{
+
+    clienteLogado =
+      JSON.parse(salvo);
+
+    document
+      .getElementById("accountLogin")
+      .classList.add("hidden");
+
+    document
+      .getElementById("accountArea")
+      .classList.remove("hidden");
+
+    document
+      .getElementById("contaNomeExibicao")
+      .textContent =
+      clienteLogado.nome;
+
+    document
+      .getElementById("contaTelefoneExibicao")
+      .textContent =
+      "📱 " + clienteLogado.telefone;
+
+    carregarMeusPedidos();
+
+  }catch(error){
+
+    localStorage.removeItem(
+      "la_docie_cliente"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   LOGIN CLIENTE
+========================================================= */
+
+async function entrarMinhaConta(){
+
+  const nome =
+    document
+      .getElementById("contaNome")
+      .value
+      .trim();
+
+  const telefone =
+    document
+      .getElementById("contaTelefone")
+      .value
+      .trim();
+
+  const erro =
+    document
+      .getElementById("contaErro");
+
+  erro.classList.remove("show");
+
+  if(!nome){
+
+    erro.textContent =
+      "Digite seu nome.";
+
+    erro.classList.add("show");
+
+    return;
+
+  }
+
+  if(!telefone){
+
+    erro.textContent =
+      "Digite seu número de celular.";
+
+    erro.classList.add("show");
+
+    return;
+
+  }
+
+  clienteLogado = {
+    nome:nome,
+    telefone:telefone
+  };
+
+  localStorage.setItem(
+    "la_docie_cliente",
+    JSON.stringify(clienteLogado)
+  );
+
+  document
+    .getElementById("accountLogin")
+    .classList.add("hidden");
+
+  document
+    .getElementById("accountArea")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("contaNomeExibicao")
+    .textContent =
+    nome;
+
+  document
+    .getElementById("contaTelefoneExibicao")
+    .textContent =
+    "📱 " + telefone;
+
+  await carregarMeusPedidos();
+
+}
+
+
+/* =========================================================
+   CARREGAR MEUS PEDIDOS
+========================================================= */
+
+async function carregarMeusPedidos(){
+
+  if(!clienteLogado) return;
+
+  const area =
+    document.getElementById(
+      "meusPedidos"
+    );
+
+  area.innerHTML =
+    '<div class="loading">Carregando seus pedidos... 🍰</div>';
+
+  try{
+
+    const telefoneDigitado =
+      String(
+        clienteLogado.telefone || ""
+      ).replace(/\D/g,"");
+
+    const nomeDigitado =
+      String(
+        clienteLogado.nome || ""
+      )
+      .trim()
+      .toLowerCase();
+
+    const {data,error} =
+      await supabaseClient
+        .from("orders")
+        .select("*")
+        .order(
+          "created_at",
+          {ascending:false}
+        )
+        .limit(500);
+
+    if(error) throw error;
+
+    const todosPedidos =
+      data || [];
+
+    const pedidos =
+      todosPedidos.filter(pedido => {
+
+        const telefoneBanco =
+          String(
+            pedido.customer_phone || ""
+          ).replace(/\D/g,"");
+
+        const nomeBanco =
+          String(
+            pedido.customer_name || ""
+          )
+          .trim()
+          .toLowerCase();
+
+        return (
+          telefoneBanco === telefoneDigitado &&
+          nomeBanco === nomeDigitado
+        );
+
+      });
+
+    if(!pedidos.length){
+
+      area.innerHTML = `
+
+        <div class="account-empty">
+
+          <div style="font-size:42px">
+            📦
+          </div>
+
+          <h3>
+            Você ainda não possui pedidos
+          </h3>
+
+          <p>
+            Quando você fizer uma compra,
+            seus pedidos aparecerão aqui.
+          </p>
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+    area.innerHTML = "";
+
+    for(const pedido of pedidos){
+
+      await renderizarPedidoCliente(
+        pedido,
+        area
+      );
+
+    }
+
+  }catch(error){
+
+    console.error(
+      "Meus pedidos:",
+      error
+    );
+
+    area.innerHTML = `
+
+      <div class="account-empty">
+
+        <div style="font-size:38px">
+          ⚠️
+        </div>
+
+        <strong>
+          Não conseguimos carregar seus pedidos.
+        </strong>
+
+        <p>
+          Tente novamente em alguns instantes.
+        </p>
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   RENDER PEDIDO DO CLIENTE
+========================================================= */
+
+async function renderizarPedidoCliente(
+  pedido,
+  area
+){
+
+  const status =
+    String(
+      pedido.status || "pendente"
+    ).toLowerCase();
+
+  const statusFechados = [
+    "entregue",
+    "concluido",
+    "concluído",
+    "cancelado",
+    "finalizado"
+  ];
+
+  const fechado =
+    statusFechados.includes(
+      status
+    );
+
+  const div =
+    document.createElement("div");
+
+  div.className =
+    "account-order";
+
+  div.innerHTML = `
+
+    <div class="account-order-header">
+
+      <div class="account-order-number">
+        Pedido #${escapeHTML(pedido.id)}
+      </div>
+
+      <div class="
+        account-order-status
+        ${fechado ? "closed" : "open"}
+      ">
+
+        ${escapeHTML(
+          pedido.status || "Pendente"
+        )}
+
+      </div>
+
+    </div>
+
+    <div class="account-order-info">
+
+      📅 ${escapeHTML(
+        pedido.scheduled_date || ""
+      )}
+
+      ${
+        pedido.scheduled_time
+        ? " • ⏰ " +
+          escapeHTML(
+            pedido.scheduled_time
+          )
+        : ""
+      }
+
+    </div>
+
+    <div
+      class="account-order-items"
+      id="itens-pedido-${pedido.id}">
+
+      <div style="
+        color:var(--marrom-claro);
+        font-size:13px;
+      ">
+        Carregando produtos...
+      </div>
+
+    </div>
+
+    <div class="account-order-total">
+
+      <span>Total</span>
+
+      <span>
+        R$ ${dinheiro(pedido.total)}
+      </span>
+
+    </div>
+
+    <button
+      class="account-order-button"
+      onclick="abrirAcompanhamento('${String(pedido.id)}')">
+
+      ${
+        fechado
+        ? "👁️ Ver pedido"
+        : "📦 Acompanhar pedido"
+      }
+
+    </button>
+
+  `;
+
+  area.appendChild(div);
+
+  await carregarItensPedidoCliente(
+    pedido.id
+  );
+
+}
+
+
+/* =========================================================
+   ITENS DO PEDIDO
+========================================================= */
+
+async function carregarItensPedidoCliente(
+  pedidoId
+){
+
+  const area =
+    document.getElementById(
+      "itens-pedido-" + pedidoId
+    );
+
+  if(!area) return;
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+        .from("order_items")
+        .select(
+          "id,order_id,product_id,name,qty,price"
+        )
+        .eq(
+          "order_id",
+          Number(pedidoId)
+        )
+        .order(
+          "id",
+          {ascending:true}
+        );
+
+    if(error) throw error;
+
+    const itens =
+      data || [];
+
+    if(!itens.length){
+
+      area.innerHTML = `
+
+        <div style="
+          color:var(--marrom-claro);
+          font-size:13px;
+        ">
+
+          Nenhum item encontrado neste pedido.
+
+        </div>
+
+      `;
+
+      return;
+
+    }
+
+    area.innerHTML = "";
+
+    itens.forEach(item => {
+
+      const linha =
+        document.createElement("div");
+
+      linha.className =
+        "account-order-item";
+
+      linha.innerHTML = `
+
+        <span>
+
+          ${escapeHTML(
+            item.qty
+          )}x
+
+          ${escapeHTML(
+            item.name ||
+            "Produto"
+          )}
+
+        </span>
+
+        <strong>
+
+          R$ ${dinheiro(
+            Number(item.price || 0) *
+            Number(item.qty || 1)
+          )}
+
+        </strong>
+
+      `;
+
+      area.appendChild(linha);
+
+    });
+
+  }catch(error){
+
+    console.error(
+      "Itens do pedido:",
+      error
+    );
+
+    area.innerHTML = `
+
+      <div style="
+        color:var(--vermelho);
+        font-size:13px;
+      ">
+
+        Não foi possível carregar os produtos
+        deste pedido.
+
+      </div>
+
+    `;
+
+  }
+
+}
+
+
+/* =========================================================
+   SAIR DA CONTA
+========================================================= */
+
+function sairMinhaConta(){
+
+  clienteLogado = null;
+
+  localStorage.removeItem(
+    "la_docie_cliente"
+  );
+
+  document
+    .getElementById("accountArea")
+    .classList.add("hidden");
+
+  document
+    .getElementById("accountLogin")
+    .classList.remove("hidden");
+
+  document
+    .getElementById("contaNome")
+    .value = "";
+
+  document
+    .getElementById("contaTelefone")
+    .value = "";
+
+}
+
+
+/* =========================================================
    CHECKOUT
 ========================================================= */
 
@@ -1972,6 +2820,25 @@ function abrirCheckout(){
   }
 
   fecharCarrinho();
+
+  /*
+    Se o cliente já estiver logado,
+    preencher automaticamente os dados.
+  */
+
+  if(clienteLogado){
+
+    document.getElementById(
+      "clienteNome"
+    ).value =
+      clienteLogado.nome || "";
+
+    document.getElementById(
+      "clienteTelefone"
+    ).value =
+      clienteLogado.telefone || "";
+
+  }
 
   document
     .getElementById("checkoutModal")
@@ -2008,7 +2875,7 @@ function alterarEntrega(){
 
 
 /* =========================================================
-   PEDIDO
+   FINALIZAR PEDIDO
 ========================================================= */
 
 async function finalizarPedido(){
@@ -2149,6 +3016,7 @@ async function finalizarPedido(){
     );
 
   botao.disabled = true;
+
   botao.textContent =
     "Enviando pedido...";
 
@@ -2159,8 +3027,12 @@ async function finalizarPedido(){
 
         product_id:item.id,
         name:item.nome,
-        qty:Number(item.quantidade || 1),
-        price:Number(item.preco || 0)
+        qty:Number(
+          item.quantidade || 1
+        ),
+        price:Number(
+          item.preco || 0
+        )
 
       }));
 
@@ -2170,34 +3042,58 @@ async function finalizarPedido(){
         "/rest/v1/rpc/criar_pedido",
         {
           method:"POST",
+
           headers:{
             "Content-Type":
               "application/json",
+
             "apikey":
               SUPABASE_KEY,
+
             "Authorization":
               "Bearer " +
               SUPABASE_KEY
           },
+
           body:JSON.stringify({
 
-            p_customer_name:nome,
-            p_customer_phone:telefone,
+            p_customer_name:
+              nome,
+
+            p_customer_phone:
+              telefone,
+
             p_customer_email:
               email || null,
-            p_type:tipoEntrega,
-            p_scheduled_date:data,
-            p_scheduled_time:horario,
-            p_total:calcularTotal(),
-            p_payment_method:pagamento,
-            p_delivery_type:tipoEntrega,
+
+            p_type:
+              tipoEntrega,
+
+            p_scheduled_date:
+              data,
+
+            p_scheduled_time:
+              horario,
+
+            p_total:
+              calcularTotal(),
+
+            p_payment_method:
+              pagamento,
+
+            p_delivery_type:
+              tipoEntrega,
+
             p_delivery_address:
               tipoEntrega === "entrega"
                 ? endereco
                 : null,
+
             p_notes:
               observacoes || null,
-            p_items:itens
+
+            p_items:
+              itens
 
           })
         }
@@ -2216,8 +3112,35 @@ async function finalizarPedido(){
 
     try{
 
-      pedidoId =
+      const resultado =
         JSON.parse(texto);
+
+      /*
+        RPC pode retornar diretamente o ID
+        ou um array com o ID.
+      */
+
+      if(Array.isArray(resultado)){
+
+        pedidoId =
+          resultado[0]?.id ??
+          resultado[0];
+
+      }else if(
+        resultado &&
+        typeof resultado === "object"
+      ){
+
+        pedidoId =
+          resultado.id ??
+          resultado.order_id;
+
+      }else{
+
+        pedidoId =
+          resultado;
+
+      }
 
     }catch{
 
@@ -2225,6 +3148,21 @@ async function finalizarPedido(){
         texto;
 
     }
+
+    /*
+      Salva automaticamente o cliente
+      para a área Minha Conta.
+    */
+
+    clienteLogado = {
+      nome:nome,
+      telefone:telefone
+    };
+
+    localStorage.setItem(
+      "la_docie_cliente",
+      JSON.stringify(clienteLogado)
+    );
 
     carrinho = [];
 
@@ -2322,6 +3260,32 @@ const etapasPedido = [
 ];
 
 
+function normalizarStatus(status){
+
+  const s =
+    String(
+      status || "pendente"
+    )
+    .toLowerCase()
+    .trim();
+
+  if(s === "concluido"){
+    return "entregue";
+  }
+
+  if(s === "concluído"){
+    return "entregue";
+  }
+
+  if(s === "finalizado"){
+    return "entregue";
+  }
+
+  return s;
+
+}
+
+
 function renderizarAcompanhamento(status){
 
   const area =
@@ -2329,10 +3293,14 @@ function renderizarAcompanhamento(status){
       "timeline"
     );
 
+  const statusNormalizado =
+    normalizarStatus(status);
+
   const indiceAtual =
     etapasPedido.findIndex(
       item =>
-        item.status === status
+        item.status ===
+        statusNormalizado
     );
 
   const indice =
@@ -2401,6 +3369,10 @@ function renderizarAcompanhamento(status){
 }
 
 
+/* =========================================================
+   ABRIR ACOMPANHAMENTO
+========================================================= */
+
 async function abrirAcompanhamento(id){
 
   if(!id) return;
@@ -2415,6 +3387,10 @@ async function abrirAcompanhamento(id){
 
 }
 
+
+/* =========================================================
+   PEDIDO ATUAL
+========================================================= */
 
 async function carregarPedidoAtual(){
 
@@ -2450,42 +3426,70 @@ async function carregarPedidoAtual(){
       <div class="cart-summary">
 
         <div class="summary-line">
+
           <span>Status</span>
+
           <strong>
             ${escapeHTML(
               data.status || "pendente"
             )}
           </strong>
+
         </div>
 
         <div class="summary-line">
+
           <span>Data</span>
+
           <span>
             ${escapeHTML(
               data.scheduled_date || ""
             )}
           </span>
+
         </div>
 
         <div class="summary-line">
+
           <span>Horário</span>
+
           <span>
             ${escapeHTML(
               data.scheduled_time || ""
             )}
           </span>
+
+        </div>
+
+        <div class="summary-line">
+
+          <span>Forma de pagamento</span>
+
+          <span>
+            ${escapeHTML(
+              data.payment_method || ""
+            )}
+          </span>
+
         </div>
 
         <div class="summary-line summary-total">
+
           <span>Total</span>
+
           <span>
             R$ ${dinheiro(data.total)}
           </span>
+
         </div>
 
       </div>
 
     `;
+
+    await carregarItensAcompanhamento(
+      data.id
+    );
 
     renderizarAcompanhamento(
       data.status || "pendente"
@@ -2503,6 +3507,111 @@ async function carregarPedidoAtual(){
 }
 
 
+/* =========================================================
+   ITENS NO ACOMPANHAMENTO
+========================================================= */
+
+async function carregarItensAcompanhamento(
+  pedidoId
+){
+
+  const area =
+    document.getElementById(
+      "pedidoItensAcompanhamento"
+    );
+
+  area.innerHTML =
+    "<strong>Produtos do pedido</strong>";
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+        .from("order_items")
+        .select(
+          "id,name,qty,price"
+        )
+        .eq(
+          "order_id",
+          Number(pedidoId)
+        )
+        .order(
+          "id",
+          {ascending:true}
+        );
+
+    if(error) throw error;
+
+    const itens =
+      data || [];
+
+    if(!itens.length){
+
+      area.innerHTML += `
+
+        <p style="
+          color:var(--marrom-claro);
+          font-size:13px;
+        ">
+
+          Nenhum produto encontrado.
+
+        </p>
+
+      `;
+
+      return;
+
+    }
+
+    itens.forEach(item => {
+
+      const linha =
+        document.createElement("div");
+
+      linha.className =
+        "summary-line";
+
+      linha.innerHTML = `
+
+        <span>
+
+          ${escapeHTML(item.qty)}x
+          ${escapeHTML(item.name || "Produto")}
+
+        </span>
+
+        <strong>
+
+          R$ ${dinheiro(
+            Number(item.price || 0) *
+            Number(item.qty || 1)
+          )}
+
+        </strong>
+
+      `;
+
+      area.appendChild(linha);
+
+    });
+
+  }catch(error){
+
+    console.error(
+      "Itens acompanhamento:",
+      error
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   FECHAR PEDIDO
+========================================================= */
+
 function fecharPedido(){
 
   document
@@ -2511,6 +3620,10 @@ function fecharPedido(){
 
 }
 
+
+/* =========================================================
+   SUCESSO
+========================================================= */
 
 function fecharSucesso(){
 
@@ -2530,7 +3643,7 @@ function fecharSucesso(){
 
 
 /* =========================================================
-   REALTIME DO PEDIDO
+   REALTIME PEDIDOS
 ========================================================= */
 
 function iniciarRealtime(){
@@ -2549,6 +3662,55 @@ function iniciarRealtime(){
         if(
           pedidoAtualId &&
           String(payload.new.id) ===
+          String(pedidoAtualId)
+        ){
+
+          carregarPedidoAtual();
+
+        }
+
+        if(clienteLogado){
+
+          carregarMeusPedidos();
+
+        }
+
+      }
+    )
+    .subscribe();
+
+}
+
+
+/* =========================================================
+   REALTIME ITENS
+========================================================= */
+
+function iniciarRealtimeCliente(){
+
+  supabaseClient
+    .channel("cliente-meus-pedidos")
+    .on(
+      "postgres_changes",
+      {
+        event:"*",
+        schema:"public",
+        table:"order_items"
+      },
+      payload => {
+
+        if(clienteLogado){
+
+          carregarMeusPedidos();
+
+        }
+
+        if(
+          pedidoAtualId &&
+          payload.new &&
+          String(
+            payload.new.order_id
+          ) ===
           String(pedidoAtualId)
         ){
 
@@ -2611,7 +3773,7 @@ function rolarParaProdutos(){
 
 
 /* =========================================================
-   LIMPAR
+   LIMPAR FORMULÁRIO
 ========================================================= */
 
 function limparFormulario(){
@@ -2655,6 +3817,10 @@ async function iniciar(){
 
   iniciarRealtime();
 
+  iniciarRealtimeCliente();
+
+  verificarClienteSalvo();
+
   await Promise.all([
 
     carregarConfiguracoes(),
@@ -2672,4 +3838,3 @@ iniciar();
 
 </body>
 </html>
-```

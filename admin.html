@@ -1,5573 +1,3859 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
-
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Painel Administrativo | Lá Dociê</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    :root {
-      --marrom: #5a382b;
-      --marrom-claro: #8a6250;
-      --creme: #f8f2eb;
-      --creme-2: #fffaf5;
-      --dourado: #d5a64c;
-      --dourado-claro: #f1d99c;
-      --branco: #ffffff;
-      --texto: #4b3329;
-      --texto-claro: #806b61;
-      --borda: #eadfd7;
-      --verde: #2f7d4a;
-      --vermelho: #a33e3e;
-      --azul: #4169a1;
-      --sombra: 0 8px 28px rgba(75, 45, 30, .08);
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, Helvetica, sans-serif;
-      background: var(--creme);
-      color: var(--texto);
-    }
-
-    button,
-    input,
-    textarea,
-    select {
-      font-family: inherit;
-    }
-
-    button {
-      cursor: pointer;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    /* ================= LOGIN ================= */
-
-    .login {
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      padding: 20px;
-      background: linear-gradient(135deg, #f8f2eb, #eadfd5);
-    }
-
-    .login-box {
-      width: 100%;
-      max-width: 420px;
-      background: var(--branco);
-      border-radius: 24px;
-      padding: 35px;
-      box-shadow: var(--sombra);
-    }
-
-    .login-logo {
-      text-align: center;
-      font-size: 30px;
-      font-weight: 800;
-      color: var(--marrom);
-    }
-
-    .login-logo span {
-      color: var(--dourado);
-    }
-
-    .login-subtitle {
-      text-align: center;
-      color: var(--texto-claro);
-      margin-bottom: 28px;
-    }
-
-    .field {
-      margin-bottom: 15px;
-    }
-
-    .field label {
-      display: block;
-      font-weight: 700;
-      margin-bottom: 7px;
-    }
-
-    .field input,
-    .field textarea,
-    .field select {
-      width: 100%;
-      padding: 12px 13px;
-      border: 1px solid var(--borda);
-      border-radius: 10px;
-      outline: none;
-      color: var(--texto);
-      background: white;
-      font-size: 15px;
-    }
-
-    .field input:focus,
-    .field textarea:focus,
-    .field select:focus {
-      border-color: var(--dourado);
-      box-shadow: 0 0 0 3px rgba(213,166,76,.12);
-    }
-
-    .field textarea {
-      min-height: 85px;
-      resize: vertical;
-    }
-
-    .login-btn {
-      width: 100%;
-      border: 0;
-      border-radius: 11px;
-      padding: 14px;
-      background: var(--marrom);
-      color: white;
-      font-weight: 800;
-      font-size: 15px;
-    }
-
-    /* ================= HEADER ================= */
-
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background: var(--branco);
-      border-bottom: 1px solid var(--borda);
-      box-shadow: 0 3px 15px rgba(50,30,20,.04);
-    }
-
-    .header {
-      max-width: 1450px;
-      margin: auto;
-      padding: 15px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-symbol {
-      width: 43px;
-      height: 43px;
-      border-radius: 13px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--marrom);
-      color: var(--dourado);
-      font-size: 20px;
-    }
-
-    .brand-name {
-      font-size: 20px;
-      font-weight: 800;
-      color: var(--marrom);
-    }
-
-    .brand-name span {
-      color: var(--dourado);
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .header-user {
-      font-size: 13px;
-      color: var(--texto-claro);
-    }
-
-    .logout {
-      border: 0;
-      border-radius: 9px;
-      background: var(--marrom);
-      color: white;
-      padding: 10px 14px;
-      font-weight: 700;
-    }
-
-    /* ================= LAYOUT ================= */
-
-    .layout {
-      max-width: 1450px;
-      margin: auto;
-      display: flex;
-      min-height: calc(100vh - 74px);
-    }
-
-    .sidebar {
-      width: 245px;
-      padding: 22px 14px;
-      border-right: 1px solid var(--borda);
-      background: #fffdfb;
-    }
-
-    .sidebar-title {
-      padding: 0 12px 10px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: .8px;
-      color: #9a877c;
-      font-weight: 800;
-    }
-
-    .side-btn {
-      width: 100%;
-      border: 0;
-      background: transparent;
-      color: var(--texto);
-      padding: 13px 14px;
-      border-radius: 11px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-weight: 700;
-      text-align: left;
-      margin-bottom: 5px;
-    }
-
-    .side-btn:hover,
-    .side-btn.active {
-      background: var(--marrom);
-      color: white;
-    }
-
-    .side-icon {
-      width: 24px;
-      text-align: center;
-    }
-
-    .main {
-      flex: 1;
-      padding: 28px;
-      min-width: 0;
-    }
-
-    .page-title {
-      margin: 0;
-      font-size: 27px;
-    }
-
-    .page-subtitle {
-      color: var(--texto-claro);
-      margin: 7px 0 25px;
-    }
-
-    .panel {
-      display: none;
-    }
-
-    .panel.active {
-      display: block;
-    }
-
-    /* ================= BOX ================= */
-
-    .box {
-      background: var(--branco);
-      border: 1px solid var(--borda);
-      border-radius: 18px;
-      padding: 20px;
-      margin-bottom: 20px;
-      box-shadow: var(--sombra);
-    }
-
-    .box-title {
-      margin: 0;
-      font-size: 19px;
-    }
-
-    .box-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 15px;
-      margin-bottom: 18px;
-      flex-wrap: wrap;
-    }
-
-    /* ================= DASHBOARD ================= */
-
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 15px;
-      margin-bottom: 20px;
-    }
-
-    .stat {
-      background: white;
-      border: 1px solid var(--borda);
-      border-radius: 17px;
-      padding: 19px;
-      box-shadow: var(--sombra);
-    }
-
-    .stat-label {
-      color: var(--texto-claro);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .stat-value {
-      font-size: 27px;
-      font-weight: 800;
-      margin-top: 7px;
-      color: var(--marrom);
-    }
-
-    /* ================= BUTTONS ================= */
-
-    .btn {
-      border: 0;
-      border-radius: 10px;
-      padding: 10px 14px;
-      font-weight: 800;
-      font-size: 13px;
-    }
-
-    .btn-primary {
-      background: var(--marrom);
-      color: white;
-    }
-
-    .btn-gold {
-      background: var(--dourado);
-      color: var(--marrom);
-    }
-
-    .btn-light {
-      background: #f2e9e3;
-      color: var(--marrom);
-    }
-
-    .btn-green {
-      background: #e2f2e6;
-      color: var(--verde);
-    }
-
-    .btn-red {
-      background: #f8dfdf;
-      color: var(--vermelho);
-    }
-
-    .btn-whatsapp {
-      background: #dff3e5;
-      color: #21753d;
-    }
-
-    .btn-print {
-      background: #eee9f6;
-      color: #59437e;
-    }
-
-    /* ================= ORDER TABS ================= */
-
-    .order-tabs {
-      display: flex;
-      gap: 8px;
-      overflow-x: auto;
-      padding-bottom: 5px;
-      margin-bottom: 20px;
-    }
-
-    .order-tab {
-      flex: 0 0 auto;
-      border: 1px solid var(--borda);
-      background: white;
-      color: var(--texto);
-      padding: 10px 15px;
-      border-radius: 10px;
-      font-weight: 800;
-      font-size: 13px;
-    }
-
-    .order-tab.active {
-      background: var(--marrom);
-      color: white;
-      border-color: var(--marrom);
-    }
-
-    .order-tab .count {
-      margin-left: 5px;
-      opacity: .75;
-    }
-
-    /* ================= ORDERS ================= */
-
-    .orders-grid {
-      display: grid;
-      gap: 14px;
-    }
-
-    .order-card {
-      background: white;
-      border: 1px solid var(--borda);
-      border-radius: 17px;
-      overflow: hidden;
-      box-shadow: 0 5px 18px rgba(70,35,20,.05);
-    }
-
-    .order-top {
-      padding: 16px 18px;
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      align-items: center;
-      border-bottom: 1px solid var(--borda);
-      flex-wrap: wrap;
-    }
-
-    .order-number {
-      font-size: 17px;
-      font-weight: 900;
-      color: var(--marrom);
-    }
-
-    .order-date {
-      font-size: 12px;
-      color: var(--texto-claro);
-      margin-top: 4px;
-    }
-
-    .status {
-      display: inline-flex;
-      align-items: center;
-      padding: 6px 10px;
-      border-radius: 20px;
-      font-size: 11px;
-      font-weight: 900;
-    }
-
-    .status-pendente {
-      background: #fff1ce;
-      color: #936600;
-    }
-
-    .status-confirmado {
-      background: #e6efff;
-      color: #355d99;
-    }
-
-    .status-preparando {
-      background: #f0e5ff;
-      color: #7047a0;
-    }
-
-    .status-pronto {
-      background: #def4e3;
-      color: #28723d;
-    }
-
-    .status-entregue {
-      background: #dff4f1;
-      color: #26766d;
-    }
-
-    .status-cancelado {
-      background: #f8dddd;
-      color: #942f2f;
-    }
-
-    .order-body {
-      padding: 17px 18px;
-    }
-
-    .order-summary {
-      display: grid;
-      grid-template-columns: 1.2fr 1fr 1fr;
-      gap: 15px;
-    }
-
-    .summary-block {
-      padding: 12px;
-      border-radius: 12px;
-      background: #fcf8f5;
-    }
-
-    .summary-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      color: #927c70;
-      font-weight: 900;
-      margin-bottom: 7px;
-    }
-
-    .summary-main {
-      font-weight: 800;
-    }
-
-    .summary-small {
-      color: var(--texto-claro);
-      font-size: 13px;
-      margin-top: 3px;
-    }
-
-    .order-actions {
-      padding: 14px 18px;
-      background: #fffdfb;
-      border-top: 1px solid var(--borda);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
-
-    .status-select {
-      padding: 10px 12px;
-      border: 1px solid var(--borda);
-      border-radius: 9px;
-      color: var(--marrom);
-      background: white;
-      font-weight: 700;
-    }
-
-    /* ================= ORDER DETAIL ================= */
-
-    .order-detail {
-      position: fixed;
-      inset: 0;
-      z-index: 300;
-      background: rgba(40, 25, 18, .45);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-
-    .order-detail.show {
-      display: flex;
-    }
-
-    .detail-window {
-      width: 100%;
-      max-width: 900px;
-      max-height: 92vh;
-      overflow-y: auto;
-      background: white;
-      border-radius: 22px;
-      box-shadow: 0 25px 70px rgba(30,20,15,.25);
-    }
-
-    .detail-header {
-      position: sticky;
-      top: 0;
-      z-index: 2;
-      background: white;
-      border-bottom: 1px solid var(--borda);
-      padding: 18px 22px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 15px;
-    }
-
-    .close-detail {
-      border: 0;
-      background: #f2e9e3;
-      color: var(--marrom);
-      width: 37px;
-      height: 37px;
-      border-radius: 10px;
-      font-size: 20px;
-      font-weight: 800;
-    }
-
-    .detail-content {
-      padding: 22px;
-    }
-
-    .detail-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .detail-section {
-      border: 1px solid var(--borda);
-      border-radius: 15px;
-      padding: 16px;
-      margin-bottom: 15px;
-    }
-
-    .detail-section.full {
-      grid-column: 1 / -1;
-    }
-
-    .detail-section h3 {
-      margin: 0 0 14px;
-      color: var(--marrom);
-      font-size: 16px;
-    }
-
-    .info-line {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 8px 0;
-      border-bottom: 1px dashed #eee3dc;
-      font-size: 14px;
-    }
-
-    .info-line:last-child {
-      border-bottom: 0;
-    }
-
-    .info-label {
-      color: var(--texto-claro);
-    }
-
-    .info-value {
-      text-align: right;
-      font-weight: 700;
-    }
-
-    /* ================= ITEMS ================= */
-
-    .items-list {
-      display: grid;
-      gap: 10px;
-    }
-
-    .item {
-      display: flex;
-      justify-content: space-between;
-      gap: 15px;
-      padding: 12px;
-      border-radius: 11px;
-      background: #fcf8f5;
-    }
-
-    .item-name {
-      font-weight: 800;
-    }
-
-    .item-details {
-      color: var(--texto-claro);
-      font-size: 12px;
-      margin-top: 4px;
-    }
-
-    .item-price {
-      font-weight: 800;
-      white-space: nowrap;
-    }
-
-    /* ================= PAYMENT ================= */
-
-    .payment-highlight {
-      background: #fff8e7;
-      border: 1px solid #ead29a;
-      border-radius: 14px;
-      padding: 15px;
-    }
-
-    .change-value {
-      font-size: 25px;
-      font-weight: 900;
-      color: var(--verde);
-      margin-top: 5px;
-    }
-
-    /* ================= TIMELINE ================= */
-
-    .timeline {
-      display: grid;
-      gap: 10px;
-    }
-
-    .timeline-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .timeline-dot {
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      background: #d6cbc4;
-      flex-shrink: 0;
-    }
-
-    .timeline-row.active .timeline-dot {
-      background: var(--dourado);
-      box-shadow: 0 0 0 4px rgba(213,166,76,.15);
-    }
-
-    .timeline-row.active strong {
-      color: var(--marrom);
-    }
-
-    /* ================= PRODUCTS ================= */
-
-    .products {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-      gap: 17px;
-    }
-
-    .product-card {
-      border: 1px solid var(--borda);
-      border-radius: 16px;
-      overflow: hidden;
-      background: white;
-    }
-
-    .product-img {
-      width: 100%;
-      height: 180px;
-      background: #f0e4dc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 50px;
-      overflow: hidden;
-    }
-
-    .product-img img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .product-content {
-      padding: 15px;
-    }
-
-    .product-content h3 {
-      margin: 0 0 6px;
-    }
-
-    .product-price {
-      color: #a8731e;
-      font-size: 20px;
-      font-weight: 900;
-      margin: 10px 0;
-    }
-
-    .product-actions {
-      display: flex;
-      gap: 7px;
-    }
-
-    .product-actions button {
-      flex: 1;
-    }
-
-    /* ================= ESTOQUE ================= */
-
-    .stock-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 15px;
-    }
-
-    .stock-card {
-      background: white;
-      border: 1px solid var(--borda);
-      border-radius: 15px;
-      padding: 16px;
-    }
-
-    .stock-number {
-      font-size: 28px;
-      font-weight: 900;
-      color: var(--marrom);
-    }
-
-    .stock-low {
-      color: var(--vermelho);
-    }
-
-    .stock-ok {
-      color: var(--verde);
-    }
-
-    /* ================= NOTICES ================= */
-
-    .notice {
-      display: none;
-      padding: 12px 15px;
-      border-radius: 11px;
-      margin-bottom: 17px;
-      font-weight: 700;
-    }
-
-    .notice.show {
-      display: block;
-    }
-
-    .notice.success {
-      background: #def3df;
-      color: #236329;
-    }
-
-    .notice.error {
-      background: #ffe1e1;
-      color: #8b2525;
-    }
-
-    .loading,
-    .empty {
-      text-align: center;
-      padding: 35px;
-      color: var(--texto-claro);
-    }
-
-    /* ================= RESPONSIVE ================= */
-
-    @media(max-width: 1000px) {
-      .stats {
-        grid-template-columns: repeat(2, 1fr);
-      }
-
-      .order-summary {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media(max-width: 750px) {
-
-      .sidebar {
-        width: 72px;
-        padding: 15px 8px;
-      }
-
-      .sidebar-title,
-      .side-text {
-        display: none;
-      }
-
-      .side-btn {
-        justify-content: center;
-        padding: 13px 8px;
-      }
-
-      .main {
-        padding: 18px 12px;
-      }
-
-      .header {
-        padding: 12px 14px;
-      }
-
-      .header-user {
-        display: none;
-      }
-
-      .stats {
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .order-summary {
-        grid-template-columns: 1fr;
-      }
-
-      .detail-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .detail-section.full {
-        grid-column: auto;
-      }
-    }
-
-    @media(max-width: 500px) {
-
-      .brand-name {
-        font-size: 17px;
-      }
-
-      .brand-symbol {
-        width: 38px;
-        height: 38px;
-      }
-
-      .stats {
-        grid-template-columns: 1fr;
-      }
-
-      .order-actions {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-      }
-
-      .order-actions .status-select {
-        grid-column: 1 / -1;
-      }
-
-      .detail-content {
-        padding: 14px;
-      }
-
-      .login-box {
-        padding: 25px 20px;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Painel Administrativo | Lá Dociê</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{
+  --marrom:#4b281d;
+  --marrom-claro:#765043;
+  --dourado:#d9ad58;
+  --dourado-claro:#f2dfb5;
+  --creme:#f8f3ef;
+  --creme-2:#eee3dc;
+  --branco:#ffffff;
+  --verde:#2e7d32;
+  --verde-bg:#e4f4e5;
+  --vermelho:#a33e3e;
+  --vermelho-bg:#f9dddd;
+  --laranja:#b66a16;
+  --laranja-bg:#fff0d8;
+  --azul:#315d91;
+  --azul-bg:#e3edf9;
+  --sombra:0 8px 28px rgba(75,40,29,.08);
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--creme);
+  color:var(--marrom);
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+.login{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:
+    radial-gradient(circle at top right,#f4dfb4 0,transparent 30%),
+    var(--creme);
+}
+
+.login-box{
+  width:100%;
+  max-width:430px;
+  background:var(--branco);
+  border-radius:24px;
+  padding:34px;
+  box-shadow:0 15px 45px rgba(75,40,29,.14);
+}
+
+.login-logo{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.login-logo h1{
+  margin:0;
+  font-size:30px;
+  letter-spacing:1px;
+}
+
+.login-logo span{
+  color:var(--dourado);
+}
+
+.login-logo p{
+  margin:8px 0 0;
+  color:var(--marrom-claro);
+}
+
+/* =========================
+   ESTRUTURA
+========================= */
+
+.hidden{
+  display:none!important;
+}
+
+.admin-layout{
+  min-height:100vh;
+  display:flex;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  width:260px;
+  background:var(--marrom);
+  color:white;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  z-index:100;
+  padding:22px 15px;
+  overflow-y:auto;
+  transition:.25s;
+}
+
+.brand{
+  padding:5px 12px 25px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  margin-bottom:18px;
+}
+
+.brand-title{
+  font-size:23px;
+  font-weight:bold;
+}
+
+.brand-title span{
+  color:var(--dourado);
+}
+
+.brand small{
+  display:block;
+  margin-top:5px;
+  color:#dbcfc9;
+}
+
+.menu-title{
+  font-size:11px;
+  text-transform:uppercase;
+  color:#cbb8af;
+  padding:12px;
+  letter-spacing:1px;
+}
+
+.menu-btn{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#f8eee9;
+  text-align:left;
+  padding:13px 14px;
+  border-radius:12px;
+  margin-bottom:5px;
+  cursor:pointer;
+  font-size:14px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  transition:.2s;
+}
+
+.menu-btn:hover{
+  background:rgba(255,255,255,.08);
+}
+
+.menu-btn.active{
+  background:var(--dourado);
+  color:var(--marrom);
+  font-weight:bold;
+}
+
+.menu-icon{
+  width:23px;
+  text-align:center;
+  font-size:18px;
+}
+
+.menu-badge{
+  margin-left:auto;
+  background:#fff;
+  color:var(--marrom);
+  min-width:22px;
+  height:22px;
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:11px;
+  font-weight:bold;
+}
+
+.sidebar-bottom{
+  margin-top:25px;
+  border-top:1px solid rgba(255,255,255,.12);
+  padding-top:15px;
+}
+
+.logout-menu{
+  color:#ffd5d5;
+}
+
+/* MAIN */
+
+.main{
+  margin-left:260px;
+  width:calc(100% - 260px);
+  min-width:0;
+}
+
+.topbar{
+  height:72px;
+  background:white;
+  border-bottom:1px solid #eadfd9;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 25px;
+  position:sticky;
+  top:0;
+  z-index:70;
+}
+
+.topbar-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.mobile-menu{
+  display:none;
+  border:0;
+  background:var(--marrom);
+  color:white;
+  width:42px;
+  height:42px;
+  border-radius:11px;
+  font-size:21px;
+}
+
+.page-title{
+  font-size:20px;
+  font-weight:bold;
+}
+
+.store-status{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  font-size:13px;
+  color:var(--verde);
+}
+
+.store-dot{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  background:#48a84d;
+}
+
+.content{
+  padding:25px;
+  max-width:1500px;
+  margin:auto;
+}
+
+/* =========================
+   COMPONENTES
+========================= */
+
+.notice{
+  display:none;
+  padding:13px 16px;
+  border-radius:12px;
+  margin-bottom:18px;
+  font-weight:bold;
+}
+
+.notice.show{
+  display:block;
+}
+
+.notice.success{
+  background:var(--verde-bg);
+  color:#236329;
+}
+
+.notice.error{
+  background:var(--vermelho-bg);
+  color:#8b2525;
+}
+
+.panel{
+  display:none;
+}
+
+.panel.active{
+  display:block;
+}
+
+.card{
+  background:white;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:var(--sombra);
+  margin-bottom:20px;
+}
+
+.card-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:18px;
+}
+
+.card-header h2{
+  margin:0;
+  font-size:18px;
+}
+
+.small{
+  font-size:13px;
+  color:#80675c;
+}
+
+.btn{
+  border:0;
+  border-radius:10px;
+  padding:11px 15px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn-primary{
+  background:var(--marrom);
+  color:white;
+}
+
+.btn-gold{
+  background:var(--dourado);
+  color:var(--marrom);
+}
+
+.btn-light{
+  background:var(--creme-2);
+  color:var(--marrom);
+}
+
+.btn-danger{
+  background:var(--vermelho);
+  color:white;
+}
+
+.btn-success{
+  background:var(--verde);
+  color:white;
+}
+
+.btn-whatsapp{
+  background:#25D366;
+  color:white;
+}
+
+.btn-print{
+  background:#333;
+  color:white;
+}
+
+.field{
+  margin-bottom:14px;
+}
+
+.field label{
+  display:block;
+  margin-bottom:6px;
+  font-size:13px;
+  font-weight:bold;
+}
+
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+  padding:11px 12px;
+  border:1px solid #d9cbc4;
+  border-radius:10px;
+  background:white;
+  color:var(--marrom);
+  outline:none;
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  border-color:var(--dourado);
+  box-shadow:0 0 0 3px rgba(217,173,88,.15);
+}
+
+.field textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.grid-2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
+}
+
+.grid-3{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:15px;
+}
+
+.grid-4{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:15px;
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.welcome{
+  margin-bottom:22px;
+}
+
+.welcome h1{
+  margin:0 0 5px;
+  font-size:27px;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:22px;
+}
+
+.stat{
+  background:white;
+  border-radius:17px;
+  padding:20px;
+  box-shadow:var(--sombra);
+}
+
+.stat-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.stat-icon{
+  width:43px;
+  height:43px;
+  border-radius:13px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--dourado-claro);
+  font-size:21px;
+}
+
+.stat-label{
+  font-size:13px;
+  color:#80675c;
+}
+
+.stat-value{
+  font-size:28px;
+  font-weight:bold;
+  margin-top:12px;
+}
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:1.35fr .65fr;
+  gap:20px;
+}
+
+/* =========================
+   PEDIDOS
+========================= */
+
+.order-tabs{
+  display:flex;
+  gap:7px;
+  overflow-x:auto;
+  padding-bottom:5px;
+  margin-bottom:18px;
+}
+
+.order-tab{
+  border:1px solid #dfd1ca;
+  background:white;
+  color:var(--marrom);
+  border-radius:20px;
+  padding:9px 14px;
+  white-space:nowrap;
+  cursor:pointer;
+}
+
+.order-tab.active{
+  background:var(--marrom);
+  color:white;
+}
+
+.orders-list{
+  display:grid;
+  gap:12px;
+}
+
+.order-row{
+  background:white;
+  border:1px solid #e8ddd7;
+  border-radius:16px;
+  padding:17px;
+  display:grid;
+  grid-template-columns:1fr auto;
+  gap:15px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.order-row:hover{
+  border-color:var(--dourado);
+  box-shadow:0 5px 20px rgba(75,40,29,.08);
+}
+
+.order-number{
+  font-weight:bold;
+  font-size:16px;
+}
+
+.order-client{
+  margin-top:6px;
+}
+
+.order-meta{
+  display:flex;
+  flex-wrap:wrap;
+  gap:7px;
+  margin-top:10px;
+}
+
+.tag{
+  display:inline-flex;
+  align-items:center;
+  border-radius:20px;
+  padding:5px 9px;
+  font-size:11px;
+  font-weight:bold;
+}
+
+.tag-pendente{
+  background:#fff0d8;
+  color:#9b5b0d;
+}
+
+.tag-confirmado{
+  background:#e5eef9;
+  color:#315d91;
+}
+
+.tag-preparando{
+  background:#eee6fa;
+  color:#67419a;
+}
+
+.tag-pronto{
+  background:#e4f4e5;
+  color:#2d7131;
+}
+
+.tag-entregue{
+  background:#dff3df;
+  color:#236329;
+}
+
+.tag-cancelado{
+  background:#f9dddd;
+  color:#8b2525;
+}
+
+.order-total{
+  font-size:19px;
+  font-weight:bold;
+  color:#a67420;
+  text-align:right;
+}
+
+.order-time{
+  font-size:12px;
+  color:#80675c;
+  margin-top:6px;
+  text-align:right;
+}
+
+/* DETALHE PEDIDO */
+
+.order-detail{
+  display:none;
+}
+
+.order-detail.show{
+  display:block;
+}
+
+.back-btn{
+  border:0;
+  background:transparent;
+  color:var(--marrom);
+  font-weight:bold;
+  cursor:pointer;
+  padding:0;
+  margin-bottom:18px;
+}
+
+.order-detail-head{
+  display:flex;
+  justify-content:space-between;
+  gap:20px;
+  flex-wrap:wrap;
+  align-items:flex-start;
+}
+
+.order-detail-title{
+  font-size:25px;
+  font-weight:bold;
+}
+
+.order-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.info-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.info-item{
+  background:var(--creme);
+  border-radius:12px;
+  padding:13px;
+}
+
+.info-label{
+  color:#80675c;
+  font-size:11px;
+  text-transform:uppercase;
+  margin-bottom:5px;
+}
+
+.info-value{
+  font-weight:bold;
+  word-break:break-word;
+}
+
+.items-table{
+  width:100%;
+  border-collapse:collapse;
+}
+
+.items-table th,
+.items-table td{
+  padding:12px 8px;
+  border-bottom:1px solid #eee5e0;
+  text-align:left;
+}
+
+.items-table th{
+  font-size:12px;
+  color:#80675c;
+  text-transform:uppercase;
+}
+
+.items-table td:last-child,
+.items-table th:last-child{
+  text-align:right;
+}
+
+.order-summary{
+  margin-top:18px;
+  margin-left:auto;
+  max-width:350px;
+}
+
+.summary-line{
+  display:flex;
+  justify-content:space-between;
+  padding:7px 0;
+}
+
+.summary-total{
+  border-top:1px solid #dfd1ca;
+  margin-top:8px;
+  padding-top:12px;
+  font-size:21px;
+  font-weight:bold;
+}
+
+.cash-box{
+  background:#fff8ea;
+  border:1px solid #eed7a9;
+  border-radius:14px;
+  padding:15px;
+  margin-top:15px;
+}
+
+.cash-title{
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.change-positive{
+  color:var(--verde);
+  font-size:19px;
+  font-weight:bold;
+}
+
+.change-warning{
+  color:var(--vermelho);
+  font-weight:bold;
+}
+
+/* =========================
+   PRODUTOS
+========================= */
+
+.products{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:17px;
+}
+
+.product-card{
+  background:white;
+  border:1px solid #e7dcd6;
+  border-radius:17px;
+  padding:14px;
+  overflow:hidden;
+}
+
+.product-image{
+  width:100%;
+  height:180px;
+  border-radius:12px;
+  background:var(--creme-2);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  font-size:50px;
+  margin-bottom:12px;
+}
+
+.product-image img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.product-name{
+  font-weight:bold;
+  font-size:17px;
+}
+
+.product-price{
+  color:#a67420;
+  font-weight:bold;
+  font-size:19px;
+  margin:8px 0;
+}
+
+.product-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px;
+}
+
+/* =========================
+   ESTOQUE
+========================= */
+
+.stock-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:16px;
+  margin-bottom:20px;
+}
+
+.stock-stat{
+  background:white;
+  padding:18px;
+  border-radius:16px;
+  box-shadow:var(--sombra);
+}
+
+.stock-table-wrap{
+  overflow-x:auto;
+}
+
+.stock-table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:700px;
+}
+
+.stock-table th,
+.stock-table td{
+  padding:13px;
+  border-bottom:1px solid #eee5e0;
+  text-align:left;
+}
+
+.stock-table th{
+  font-size:12px;
+  color:#80675c;
+}
+
+.stock-number{
+  font-size:18px;
+  font-weight:bold;
+}
+
+.stock-low{
+  color:#b66a16;
+}
+
+.stock-out{
+  color:var(--vermelho);
+}
+
+.stock-ok{
+  color:var(--verde);
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal-bg{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(40,20,14,.55);
+  z-index:300;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+}
+
+.modal-bg.show{
+  display:flex;
+}
+
+.modal{
+  width:100%;
+  max-width:650px;
+  max-height:90vh;
+  overflow-y:auto;
+  background:white;
+  border-radius:20px;
+  padding:24px;
+}
+
+.modal-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.close-modal{
+  border:0;
+  background:var(--creme-2);
+  width:35px;
+  height:35px;
+  border-radius:50%;
+  cursor:pointer;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+.overlay{
+  display:none;
+}
+
+@media(max-width:900px){
+
+  .sidebar{
+    transform:translateX(-100%);
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main{
+    margin-left:0;
+    width:100%;
+  }
+
+  .mobile-menu{
+    display:block;
+  }
+
+  .overlay.show{
+    display:block;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.35);
+    z-index:90;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .dashboard-grid{
+    grid-template-columns:1fr;
+  }
+
+  .grid-4{
+    grid-template-columns:1fr 1fr;
+  }
+
+  .stock-grid{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+@media(max-width:600px){
+
+  .topbar{
+    padding:0 13px;
+  }
+
+  .content{
+    padding:15px 12px 40px;
+  }
+
+  .stats{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .stat{
+    padding:14px;
+  }
+
+  .stat-value{
+    font-size:22px;
+  }
+
+  .grid-2,
+  .grid-3,
+  .grid-4,
+  .info-grid{
+    grid-template-columns:1fr;
+  }
+
+  .order-row{
+    grid-template-columns:1fr;
+  }
+
+  .order-total,
+  .order-time{
+    text-align:left;
+  }
+
+  .order-detail-title{
+    font-size:21px;
+  }
+
+  .order-actions{
+    width:100%;
+  }
+
+  .order-actions .btn{
+    flex:1;
+  }
+
+  .items-table{
+    min-width:600px;
+  }
+
+  .card{
+    padding:15px;
+  }
+}
+
+/* =========================
+   IMPRESSÃO
+========================= */
+
+@media print{
+
+  body{
+    background:white;
+  }
+
+  .sidebar,
+  .topbar,
+  .order-actions,
+  .back-btn,
+  .notice,
+  .no-print{
+    display:none!important;
+  }
+
+  .main{
+    margin:0;
+    width:100%;
+  }
+
+  .content{
+    padding:0;
+  }
+
+  .card{
+    box-shadow:none;
+    border:0;
+  }
+}
+</style>
+
 </head>
 
 <body>
 
-  <!-- ================= LOGIN ================= -->
+<!-- =========================
+     LOGIN
+========================= -->
 
-  <div id="loginScreen" class="login">
+<div id="loginScreen" class="login">
 
-    <div class="login-box">
+  <div class="login-box">
 
-      <div class="login-logo">
-        LÁ <span>DOCIÊ</span>
-      </div>
+```
+<div class="login-logo">
+  <h1>LÁ <span>DOCIÊ</span></h1>
+  <p>Painel Administrativo</p>
+</div>
 
-      <p class="login-subtitle">
-        Painel Administrativo
-      </p>
+<div class="field">
+  <label>E-mail</label>
+  <input id="loginEmail" type="email" placeholder="Seu e-mail">
+</div>
 
-      <div class="field">
-        <label>E-mail</label>
-        <input
-          id="loginEmail"
-          type="email"
-          placeholder="Seu e-mail">
-      </div>
+<div class="field">
+  <label>Senha</label>
+  <input id="loginPassword" type="password" placeholder="Sua senha">
+</div>
 
-      <div class="field">
-        <label>Senha</label>
-        <input
-          id="loginPassword"
-          type="password"
-          placeholder="Sua senha">
-      </div>
+<div id="loginError" class="notice error"></div>
 
-      <div id="loginError" class="notice error"></div>
+<button class="btn btn-primary" style="width:100%;padding:14px" onclick="entrar()">
+  Entrar
+</button>
+```
 
-      <button
-        class="login-btn"
-        onclick="entrar()">
-        Entrar
-      </button>
+  </div>
 
+</div>
+
+<!-- =========================
+     ADMIN
+========================= -->
+
+<div id="adminScreen" class="admin-layout hidden">
+
+  <div id="overlay" class="overlay" onclick="fecharMenu()"></div>
+
+  <!-- SIDEBAR -->
+
+  <aside id="sidebar" class="sidebar">
+
+```
+<div class="brand">
+  <div class="brand-title">
+    LÁ <span>DOCIÊ</span>
+  </div>
+  <small>Gestão da confeitaria</small>
+</div>
+
+<div class="menu-title">Principal</div>
+
+<button class="menu-btn active" onclick="abrirPagina('dashboard',this)">
+  <span class="menu-icon">📊</span>
+  Dashboard
+</button>
+
+<button class="menu-btn" onclick="abrirPagina('pedidos',this)">
+  <span class="menu-icon">📦</span>
+  Pedidos
+  <span id="badgePedidos" class="menu-badge">0</span>
+</button>
+
+<button class="menu-btn" onclick="abrirPagina('produtos',this)">
+  <span class="menu-icon">🍰</span>
+  Produtos
+</button>
+
+<button class="menu-btn" onclick="abrirPagina('estoque',this)">
+  <span class="menu-icon">📋</span>
+  Estoque
+</button>
+
+<div class="menu-title">Configurações</div>
+
+<button class="menu-btn" onclick="abrirPagina('loja',this)">
+  <span class="menu-icon">⚙️</span>
+  Minha loja
+</button>
+
+<button class="menu-btn" onclick="abrirPagina('cupons',this)">
+  <span class="menu-icon">🎟️</span>
+  Cupons
+</button>
+
+<button class="menu-btn" onclick="abrirPagina('config',this)">
+  <span class="menu-icon">🔧</span>
+  Configurações
+</button>
+
+<div class="sidebar-bottom">
+
+  <button class="menu-btn logout-menu" onclick="sair()">
+    <span class="menu-icon">↪️</span>
+    Sair
+  </button>
+
+</div>
+```
+
+  </aside>
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+```
+<header class="topbar">
+
+  <div class="topbar-left">
+
+    <button class="mobile-menu" onclick="abrirMenu()">
+      ☰
+    </button>
+
+    <div id="pageTitle" class="page-title">
+      Dashboard
     </div>
 
   </div>
 
+  <div class="store-status">
+    <span class="store-dot"></span>
+    Sistema online
+  </div>
 
-  <!-- ================= ADMIN ================= -->
+</header>
 
-  <div id="adminScreen" class="hidden">
+<div class="content">
 
-    <header>
+  <div id="globalNotice" class="notice"></div>
 
-      <div class="header">
+  <!-- =========================
+       DASHBOARD
+  ========================= -->
 
-        <div class="brand">
+  <section id="dashboard" class="panel active">
 
-          <div class="brand-symbol">
-            🍰
+    <div class="welcome">
+      <h1>Olá! 👋</h1>
+      <div class="small">
+        Aqui está o resumo da Lá Dociê.
+      </div>
+    </div>
+
+    <div class="stats">
+
+      <div class="stat">
+        <div class="stat-top">
+          <div class="stat-label">Pedidos hoje</div>
+          <div class="stat-icon">📦</div>
+        </div>
+        <div id="statPedidos" class="stat-value">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-top">
+          <div class="stat-label">Faturamento hoje</div>
+          <div class="stat-icon">💰</div>
+        </div>
+        <div id="statFaturamento" class="stat-value">R$ 0,00</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-top">
+          <div class="stat-label">Pendentes</div>
+          <div class="stat-icon">⏳</div>
+        </div>
+        <div id="statPendentes" class="stat-value">0</div>
+      </div>
+
+      <div class="stat">
+        <div class="stat-top">
+          <div class="stat-label">Estoque baixo</div>
+          <div class="stat-icon">⚠️</div>
+        </div>
+        <div id="statEstoque" class="stat-value">0</div>
+      </div>
+
+    </div>
+
+    <div class="dashboard-grid">
+
+      <div class="card">
+
+        <div class="card-header">
+          <div>
+            <h2>Pedidos recentes</h2>
+            <div class="small">
+              Acompanhe os últimos pedidos.
+            </div>
           </div>
 
-          <div class="brand-name">
-            LÁ <span>DOCIÊ</span>
+          <button class="btn btn-light" onclick="abrirPaginaPorNome('pedidos')">
+            Ver todos
+          </button>
+        </div>
+
+        <div id="dashboardPedidos" class="orders-list">
+          <div class="small">Carregando...</div>
+        </div>
+
+      </div>
+
+      <div class="card">
+
+        <div class="card-header">
+          <div>
+            <h2>Estoque</h2>
+            <div class="small">
+              Produtos que precisam de atenção.
+            </div>
           </div>
+        </div>
+
+        <div id="dashboardEstoque">
+          <div class="small">Carregando...</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       PEDIDOS
+  ========================= -->
+
+  <section id="pedidos" class="panel">
+
+    <div id="pedidosListaView">
+
+      <div class="card">
+
+        <div class="card-header">
+
+          <div>
+            <h2>Pedidos</h2>
+            <div class="small">
+              Gerencie seus pedidos em tempo real.
+            </div>
+          </div>
+
+          <button class="btn btn-gold" onclick="carregarPedidos()">
+            🔄 Atualizar
+          </button>
 
         </div>
 
-        <div class="header-right">
+        <div class="order-tabs">
 
-          <span
-            id="usuarioEmail"
-            class="header-user">
-          </span>
-
-          <button
-            class="logout"
-            onclick="sair()">
-            Sair
+          <button class="order-tab active" onclick="filtrarPedidos('todos',this)">
+            Todos
           </button>
+
+          <button class="order-tab" onclick="filtrarPedidos('pendente',this)">
+            Pendentes
+          </button>
+
+          <button class="order-tab" onclick="filtrarPedidos('confirmado',this)">
+            Confirmados
+          </button>
+
+          <button class="order-tab" onclick="filtrarPedidos('preparando',this)">
+            Preparando
+          </button>
+
+          <button class="order-tab" onclick="filtrarPedidos('pronto',this)">
+            Prontos
+          </button>
+
+          <button class="order-tab" onclick="filtrarPedidos('entregue',this)">
+            Entregues
+          </button>
+
+          <button class="order-tab" onclick="filtrarPedidos('cancelado',this)">
+            Cancelados
+          </button>
+
+        </div>
+
+        <div id="ordersList" class="orders-list">
+          <div class="small">Carregando pedidos...</div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- DETALHE -->
+
+    <div id="pedidoDetalhe" class="order-detail">
+
+      <button class="back-btn" onclick="fecharPedido()">
+        ← Voltar para pedidos
+      </button>
+
+      <div class="card">
+
+        <div class="order-detail-head">
+
+          <div>
+            <div id="detalheNumero" class="order-detail-title">
+              Pedido
+            </div>
+
+            <div id="detalheData" class="small"></div>
+
+            <div style="margin-top:10px">
+              <span id="detalheStatus" class="tag"></span>
+            </div>
+          </div>
+
+          <div class="order-actions">
+
+            <button class="btn btn-whatsapp" onclick="chamarWhatsApp()">
+              💬 WhatsApp
+            </button>
+
+            <button class="btn btn-print" onclick="imprimirPedido()">
+              🖨️ Imprimir
+            </button>
+
+          </div>
 
         </div>
 
       </div>
 
-    </header>
+      <div class="grid-2">
 
+        <div class="card">
 
-    <div class="layout">
+          <div class="card-header">
+            <h2>Cliente</h2>
+          </div>
 
-      <!-- ================= SIDEBAR ================= -->
+          <div class="info-grid">
 
-      <aside class="sidebar">
+            <div class="info-item">
+              <div class="info-label">Nome</div>
+              <div id="clienteNome" class="info-value">-</div>
+            </div>
 
-        <div class="sidebar-title">
-          Administração
+            <div class="info-item">
+              <div class="info-label">WhatsApp</div>
+              <div id="clienteTelefone" class="info-value">-</div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-label">Endereço</div>
+              <div id="clienteEndereco" class="info-value">-</div>
+            </div>
+
+            <div class="info-item">
+              <div class="info-label">Tipo</div>
+              <div id="clienteTipo" class="info-value">-</div>
+            </div>
+
+          </div>
+
         </div>
 
-        <button
-          class="side-btn active"
-          onclick="abrirPainel('dashboard', this)">
+        <div class="card">
 
-          <span class="side-icon">📊</span>
-          <span class="side-text">Dashboard</span>
+          <div class="card-header">
+            <h2>Status do pedido</h2>
+          </div>
 
-        </button>
+          <div class="field">
 
-        <button
-          class="side-btn"
-          onclick="abrirPainel('pedidos', this)">
+            <label>Atualizar status</label>
 
-          <span class="side-icon">📦</span>
-          <span class="side-text">Pedidos</span>
+            <select id="statusPedido" onchange="alterarStatusPedidoAtual(this.value)">
 
-        </button>
+              <option value="pendente">Pendente</option>
+              <option value="confirmado">Confirmado</option>
+              <option value="preparando">Preparando</option>
+              <option value="pronto">Pronto</option>
+              <option value="entregue">Entregue</option>
+              <option value="cancelado">Cancelado</option>
 
-        <button
-          class="side-btn"
-          onclick="abrirPainel('produtos', this)">
+            </select>
 
-          <span class="side-icon">🍰</span>
-          <span class="side-text">Produtos</span>
+          </div>
 
-        </button>
+          <div class="small">
+            A alteração será sincronizada em tempo real.
+          </div>
 
-        <button
-          class="side-btn"
-          onclick="abrirPainel('estoque', this)">
-
-          <span class="side-icon">📋</span>
-          <span class="side-text">Estoque</span>
-
-        </button>
-
-        <button
-          class="side-btn"
-          onclick="abrirPainel('loja', this)">
-
-          <span class="side-icon">⚙️</span>
-          <span class="side-text">Loja</span>
-
-        </button>
-
-      </aside>
-
-
-      <!-- ================= MAIN ================= -->
-
-      <main class="main">
-
-        <div
-          id="globalNotice"
-          class="notice">
         </div>
 
+      </div>
 
-        <!-- ================= DASHBOARD ================= -->
+      <div class="card">
 
-        <section
-          id="dashboard"
-          class="panel active">
+        <div class="card-header">
+          <div>
+            <h2>Produtos do pedido</h2>
+            <div class="small">
+              Itens, quantidades e valores.
+            </div>
+          </div>
+        </div>
 
-          <h1 class="page-title">
-            Visão geral
-          </h1>
+        <div style="overflow-x:auto">
 
-          <p class="page-subtitle">
-            Acompanhe sua Lá Dociê em um só lugar.
-          </p>
+          <table class="items-table">
 
-          <div class="stats">
+            <thead>
+              <tr>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Preço</th>
+                <th>Total</th>
+              </tr>
+            </thead>
 
-            <div class="stat">
-              <div class="stat-label">
-                Pedidos
-              </div>
-              <div
-                id="statPedidos"
-                class="stat-value">
-                0
-              </div>
+            <tbody id="pedidoItens">
+            </tbody>
+
+          </table>
+
+        </div>
+
+        <div id="pedidoItensAviso" class="notice error" style="margin-top:15px"></div>
+
+        <div class="order-summary">
+
+          <div class="summary-line">
+            <span>Subtotal</span>
+            <strong id="pedidoSubtotal">R$ 0,00</strong>
+          </div>
+
+          <div class="summary-line">
+            <span>Entrega</span>
+            <strong id="pedidoEntrega">R$ 0,00</strong>
+          </div>
+
+          <div class="summary-line">
+            <span>Desconto</span>
+            <strong id="pedidoDesconto">R$ 0,00</strong>
+          </div>
+
+          <div class="summary-line summary-total">
+            <span>Total</span>
+            <span id="pedidoTotal">R$ 0,00</span>
+          </div>
+
+        </div>
+
+      </div>
+
+      <div class="grid-2">
+
+        <div class="card">
+
+          <div class="card-header">
+            <h2>Pagamento</h2>
+          </div>
+
+          <div class="info-grid">
+
+            <div class="info-item">
+              <div class="info-label">Forma</div>
+              <div id="pagamentoForma" class="info-value">-</div>
             </div>
 
-            <div class="stat">
-              <div class="stat-label">
-                Pendentes
-              </div>
-              <div
-                id="statPendentes"
-                class="stat-value">
-                0
-              </div>
+            <div class="info-item">
+              <div class="info-label">Status</div>
+              <div id="pagamentoStatus" class="info-value">-</div>
             </div>
 
-            <div class="stat">
-              <div class="stat-label">
-                Produtos ativos
-              </div>
-              <div
-                id="statProdutos"
-                class="stat-value">
-                0
-              </div>
+          </div>
+
+          <div id="cashBox" class="cash-box hidden">
+
+            <div class="cash-title">
+              💵 Pagamento em dinheiro
             </div>
 
-            <div class="stat">
-              <div class="stat-label">
-                Faturamento
+            <div class="info-grid">
+
+              <div class="info-item">
+                <div class="info-label">Cliente possui</div>
+                <div id="dinheiroCliente" class="info-value">
+                  R$ 0,00
+                </div>
               </div>
-              <div
-                id="statFaturamento"
-                class="stat-value">
+
+              <div class="info-item">
+                <div class="info-label">Precisa de troco?</div>
+                <div id="precisaTroco" class="info-value">
+                  -
+                </div>
+              </div>
+
+            </div>
+
+            <div style="margin-top:12px">
+              <div class="info-label">Troco</div>
+              <div id="valorTroco" class="change-positive">
                 R$ 0,00
               </div>
             </div>
 
           </div>
 
+        </div>
 
-          <div class="box">
+        <div class="card">
 
-            <div class="box-header">
-
-              <div>
-                <h2 class="box-title">
-                  Pedidos recentes
-                </h2>
-
-                <div class="page-subtitle"
-                     style="margin-bottom:0">
-                  Os pedidos mais recentes aparecem aqui.
-                </div>
-              </div>
-
-              <button
-                class="btn btn-gold"
-                onclick="abrirPainelPorNome('pedidos')">
-                Ver pedidos
-              </button>
-
-            </div>
-
-            <div
-              id="dashboardPedidos"
-              class="orders-grid">
-
-              <div class="loading">
-                Carregando...
-              </div>
-
-            </div>
-
+          <div class="card-header">
+            <h2>Observações</h2>
           </div>
 
-        </section>
-
-
-        <!-- ================= PEDIDOS ================= -->
-
-        <section
-          id="pedidos"
-          class="panel">
-
-          <h1 class="page-title">
-            Pedidos
-          </h1>
-
-          <p class="page-subtitle">
-            Gerencie pedidos, clientes, pagamentos e status em tempo real.
-          </p>
-
-
-          <div class="box">
-
-            <div class="order-tabs">
-
-              <button
-                class="order-tab active"
-                onclick="filtrarPedidos('todos',this)">
-                Todos
-                <span
-                  id="countTodos"
-                  class="count">
-                  0
-                </span>
-              </button>
-
-              <button
-                class="order-tab"
-                onclick="filtrarPedidos('pendente',this)">
-                Novos
-                <span
-                  id="countPendente"
-                  class="count">
-                  0
-                </span>
-              </button>
-
-              <button
-                class="order-tab"
-                onclick="filtrarPedidos('confirmado',this)">
-                Confirmados
-              </button>
-
-              <button
-                class="order-tab"
-                onclick="filtrarPedidos('preparando',this)">
-                Preparando
-              </button>
-
-              <button
-                class="order-tab"
-                onclick="filtrarPedidos('pronto',this)">
-                Prontos
-              </button>
-
-              <button
-                class="order-tab"
-                onclick="filtrarPedidos('entregue',this)">
-                Entregues
-              </button>
-
-              <button
-                class="order-tab"
-                onclick="filtrarPedidos('cancelado',this)">
-                Cancelados
-              </button>
-
-            </div>
-
-
-            <div
-              id="listaPedidos"
-              class="orders-grid">
-
-              <div class="loading">
-                Carregando pedidos...
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- ================= PRODUTOS ================= -->
-
-        <section
-          id="produtos"
-          class="panel">
-
-          <h1 class="page-title">
-            Produtos
-          </h1>
-
-          <p class="page-subtitle">
-            Gerencie produtos, preços, imagens e disponibilidade.
-          </p>
-
-
-          <div class="box">
-
-            <div class="box-header">
-
-              <h2 class="box-title">
-                Catálogo
-              </h2>
-
-              <button
-                class="btn btn-gold"
-                onclick="novoProduto()">
-                + Novo produto
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <!-- EDITOR PRODUTO -->
-
-          <div
-            id="editorProduto"
-            class="box hidden">
-
-            <div class="box-header">
-
-              <h2
-                id="editorTitulo"
-                class="box-title">
-                Novo produto
-              </h2>
-
-            </div>
-
-            <input
-              id="produtoId"
-              type="hidden">
-
-            <div class="field">
-
-              <label>
-                Nome
-              </label>
-
-              <input
-                id="produtoNome"
-                placeholder="Ex.: Bolo de Chocolate">
-
-            </div>
-
-
-            <div
-              style="
-                display:grid;
-                grid-template-columns:1fr 1fr;
-                gap:12px;
-              ">
-
-              <div class="field">
-
-                <label>
-                  Categoria
-                </label>
-
-                <select id="produtoCategoria">
-
-                  <option value="bolos">
-                    Bolos
-                  </option>
-
-                  <option value="doces">
-                    Doces
-                  </option>
-
-                  <option value="kits">
-                    Kits
-                  </option>
-
-                  <option value="outros">
-                    Outros
-                  </option>
-
-                </select>
-
-              </div>
-
-
-              <div class="field">
-
-                <label>
-                  Preço
-                </label>
-
-                <input
-                  id="produtoPreco"
-                  type="number"
-                  min="0"
-                  step="0.01">
-
-              </div>
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-                Descrição
-              </label>
-
-              <textarea
-                id="produtoDescricao">
-              </textarea>
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-                URL da imagem
-              </label>
-
-              <input
-                id="produtoImagem"
-                type="url"
-                placeholder="https://...">
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-
-                <input
-                  id="produtoAtivo"
-                  type="checkbox"
-                  checked
-                  style="width:auto">
-
-                Produto disponível
-
-              </label>
-
-            </div>
-
-
-            <div style="display:flex;gap:8px">
-
-              <button
-                class="btn btn-primary"
-                onclick="salvarProduto()">
-                💾 Salvar
-              </button>
-
-              <button
-                class="btn btn-light"
-                onclick="fecharEditor()">
-                Cancelar
-              </button>
-
-            </div>
-
-          </div>
-
-
-          <div
-            id="listaProdutos"
-            class="products">
-
-            <div class="loading">
-              Carregando produtos...
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- ================= ESTOQUE ================= -->
-
-        <section
-          id="estoque"
-          class="panel">
-
-          <h1 class="page-title">
-            Estoque
-          </h1>
-
-          <p class="page-subtitle">
-            Controle a quantidade disponível dos produtos.
-          </p>
-
-
-          <div class="box">
-
-            <div class="box-header">
-
-              <div>
-
-                <h2 class="box-title">
-                  Controle de estoque
-                </h2>
-
-                <div class="page-subtitle"
-                     style="margin-bottom:0">
-                  O estoque baixo fica destacado.
-                </div>
-
-              </div>
-
-              <button
-                class="btn btn-gold"
-                onclick="carregarEstoque()">
-                🔄 Atualizar
-              </button>
-
-            </div>
-
-            <div
-              id="listaEstoque"
-              class="stock-grid">
-
-              <div class="loading">
-                Carregando estoque...
-              </div>
-
-            </div>
-
-          </div>
-
-        </section>
-
-
-        <!-- ================= LOJA ================= -->
-
-        <section
-          id="loja"
-          class="panel">
-
-          <h1 class="page-title">
-            Configurações da loja
-          </h1>
-
-          <p class="page-subtitle">
-            Informações exibidas no site da Lá Dociê.
-          </p>
-
-
-          <div class="box">
-
-            <div class="field">
-
-              <label>
-                Nome da loja
-              </label>
-
-              <input id="lojaNome">
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-                Descrição
-              </label>
-
-              <textarea id="lojaDescricao"></textarea>
-
-            </div>
-
-
-            <div
-              style="
-                display:grid;
-                grid-template-columns:1fr 1fr;
-                gap:12px;
-              ">
-
-              <div class="field">
-
-                <label>
-                  Telefone
-                </label>
-
-                <input id="lojaTelefone">
-
-              </div>
-
-
-              <div class="field">
-
-                <label>
-                  WhatsApp
-                </label>
-
-                <input id="lojaWhatsapp">
-
-              </div>
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-                Endereço
-              </label>
-
-              <input id="lojaEndereco">
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-                Instagram
-              </label>
-
-              <input id="lojaInstagram">
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-                Horário de funcionamento
-              </label>
-
-              <textarea id="lojaHorario"></textarea>
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-                Chave Pix
-              </label>
-
-              <input id="lojaPix">
-
-            </div>
-
-
-            <div class="field">
-
-              <label>
-                Taxa de entrega
-              </label>
-
-              <input
-                id="lojaTaxa"
-                type="number"
-                min="0"
-                step="0.01">
-
-            </div>
-
-
-            <button
-              class="btn btn-primary"
-              onclick="salvarLoja()">
-              💾 Salvar informações
-            </button>
-
-          </div>
-
-        </section>
-
-      </main>
-
-    </div>
-
-  </div>
-
-
-  <!-- ================= DETALHES DO PEDIDO ================= -->
-
-  <div
-    id="orderDetail"
-    class="order-detail">
-
-    <div class="detail-window">
-
-      <div class="detail-header">
-
-        <div>
-
-          <div
-            id="detailOrderNumber"
-            class="order-number">
-            Pedido
-          </div>
-
-          <div
-            id="detailOrderDate"
-            class="order-date">
+          <div id="pedidoObservacoes" class="small">
+            Nenhuma observação.
           </div>
 
         </div>
 
-        <button
-          class="close-detail"
-          onclick="fecharDetalhes()">
-          ×
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       PRODUTOS
+  ========================= -->
+
+  <section id="produtos" class="panel">
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <div>
+          <h2>Produtos</h2>
+          <div class="small">
+            Cadastre e gerencie os produtos da Lá Dociê.
+          </div>
+        </div>
+
+        <button class="btn btn-gold" onclick="abrirEditorProduto()">
+          + Novo produto
         </button>
 
       </div>
 
-
-      <div
-        id="detailContent"
-        class="detail-content">
+      <div id="productsList" class="products">
+        <div class="small">Carregando...</div>
       </div>
 
     </div>
 
+  </section>
+
+  <!-- =========================
+       ESTOQUE
+  ========================= -->
+
+  <section id="estoque" class="panel">
+
+    <div class="stock-grid">
+
+      <div class="stock-stat">
+        <div class="small">Produtos cadastrados</div>
+        <div id="stockTotalProdutos" class="stat-value">0</div>
+      </div>
+
+      <div class="stock-stat">
+        <div class="small">Estoque baixo</div>
+        <div id="stockBaixo" class="stat-value">0</div>
+      </div>
+
+      <div class="stock-stat">
+        <div class="small">Esgotados</div>
+        <div id="stockEsgotado" class="stat-value">0</div>
+      </div>
+
+    </div>
+
+    <div class="card">
+
+      <div class="card-header">
+
+        <div>
+          <h2>Controle de estoque</h2>
+          <div class="small">
+            Controle a quantidade disponível de cada produto.
+          </div>
+        </div>
+
+        <button class="btn btn-gold" onclick="carregarProdutos()">
+          🔄 Atualizar
+        </button>
+
+      </div>
+
+      <div class="stock-table-wrap">
+
+        <table class="stock-table">
+
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Estoque</th>
+              <th>Estoque mínimo</th>
+              <th>Status</th>
+              <th>Ação</th>
+            </tr>
+          </thead>
+
+          <tbody id="stockTable">
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       LOJA
+  ========================= -->
+
+  <section id="loja" class="panel">
+
+    <div class="card">
+
+      <div class="card-header">
+        <div>
+          <h2>Minha loja</h2>
+          <div class="small">
+            Informações exibidas para seus clientes.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+
+        <div class="field">
+          <label>Nome da loja</label>
+          <input id="lojaNome">
+        </div>
+
+        <div class="field">
+          <label>Telefone</label>
+          <input id="lojaTelefone">
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Descrição</label>
+        <textarea id="lojaDescricao"></textarea>
+      </div>
+
+      <div class="grid-2">
+
+        <div class="field">
+          <label>WhatsApp</label>
+          <input id="lojaWhatsapp">
+        </div>
+
+        <div class="field">
+          <label>Instagram</label>
+          <input id="lojaInstagram">
+        </div>
+
+      </div>
+
+      <div class="field">
+        <label>Endereço</label>
+        <input id="lojaEndereco">
+      </div>
+
+      <div class="field">
+        <label>Horário de funcionamento</label>
+        <textarea id="lojaHorario">Terça a sábado: 14h às 21h
+```
+
+Domingo: 15h30 às 20h</textarea> </div>
+
+```
+      <div class="grid-2">
+
+        <div class="field">
+          <label>Chave Pix</label>
+          <input id="lojaPix">
+        </div>
+
+        <div class="field">
+          <label>Taxa de entrega</label>
+          <input id="lojaTaxa" type="number" step="0.01" min="0">
+        </div>
+
+      </div>
+
+      <button class="btn btn-primary" onclick="salvarLoja()">
+        💾 Salvar informações
+      </button>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       CUPONS
+  ========================= -->
+
+  <section id="cupons" class="panel">
+
+    <div class="card">
+
+      <div class="card-header">
+        <div>
+          <h2>Cupons</h2>
+          <div class="small">
+            Área preparada para o sistema de descontos.
+          </div>
+        </div>
+
+        <button class="btn btn-gold" onclick="mostrarMensagem('O sistema de cupons será conectado ao banco na próxima etapa.')">
+          + Novo cupom
+        </button>
+      </div>
+
+      <div class="small">
+        Aqui vamos controlar códigos, porcentagem de desconto,
+        validade, limite de utilização e ativação/desativação.
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       CONFIGURAÇÕES
+  ========================= -->
+
+  <section id="config" class="panel">
+
+    <div class="card">
+
+      <div class="card-header">
+        <div>
+          <h2>Configurações</h2>
+          <div class="small">
+            Ferramentas administrativas da Lá Dociê.
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2">
+
+        <div class="info-item">
+          <div class="info-label">Banco de dados</div>
+          <div class="info-value">Supabase</div>
+        </div>
+
+        <div class="info-item">
+          <div class="info-label">Pedidos em tempo real</div>
+          <div class="info-value">Ativo</div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+</div>
+```
+
+  </main>
+
+</div>
+
+<!-- =========================
+     MODAL PRODUTO
+========================= -->
+
+<div id="productModal" class="modal-bg">
+
+  <div class="modal">
+
+```
+<div class="modal-header">
+
+  <h2 id="productModalTitle">Novo produto</h2>
+
+  <button class="close-modal" onclick="fecharEditorProduto()">
+    ×
+  </button>
+
+</div>
+
+<input id="produtoId" type="hidden">
+
+<div class="field">
+  <label>Nome</label>
+  <input id="produtoNome" placeholder="Ex.: Bolo de Chocolate">
+</div>
+
+<div class="grid-2">
+
+  <div class="field">
+    <label>Categoria</label>
+
+    <select id="produtoCategoria">
+      <option value="bolos">Bolos</option>
+      <option value="doces">Doces</option>
+      <option value="kits">Kits</option>
+      <option value="outros">Outros</option>
+    </select>
+
   </div>
 
+  <div class="field">
+    <label>Preço</label>
+    <input id="produtoPreco" type="number" min="0" step="0.01">
+  </div>
 
-  <script>
+</div>
 
-    /* =========================================================
-       SUPABASE
-    ========================================================= */
+<div class="field">
+  <label>Descrição</label>
+  <textarea id="produtoDescricao"></textarea>
+</div>
 
-    const SUPABASE_URL =
-      "https://lzihqkpscesurkfmcasb.supabase.co";
+<div class="field">
+  <label>URL da imagem</label>
+  <input id="produtoImagem" type="url" placeholder="https://...">
+</div>
 
-    const SUPABASE_KEY =
-      "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
+<div class="grid-2">
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+  <div class="field">
+    <label>Estoque atual</label>
+    <input id="produtoEstoque" type="number" min="0" step="1" value="0">
+  </div>
 
+  <div class="field">
+    <label>Estoque mínimo</label>
+    <input id="produtoEstoqueMinimo" type="number" min="0" step="1" value="5">
+  </div>
 
-    /* =========================================================
-       VARIÁVEIS
-    ========================================================= */
+</div>
 
-    let produtos = [];
-    let pedidos = [];
-    let loja = null;
+<div class="field">
 
-    let filtroPedidosAtual = "todos";
-    let realtimeChannel = null;
+  <label>
+    <input id="produtoAtivo" type="checkbox" checked style="width:auto">
+    Produto disponível no site
+  </label>
 
+</div>
 
-    /* =========================================================
-       UTILIDADES
-    ========================================================= */
+<div style="display:flex;gap:8px">
 
-    function escapeHTML(valor) {
+  <button class="btn btn-primary" style="flex:1" onclick="salvarProduto()">
+    💾 Salvar
+  </button>
 
-      return String(valor ?? "")
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+  <button class="btn btn-light" onclick="fecharEditorProduto()">
+    Cancelar
+  </button>
 
-    }
+</div>
+```
 
+  </div>
 
-    function dinheiro(valor) {
+</div>
 
-      const numero =
-        Number(valor || 0);
+<script>
 
-      return numero
-        .toFixed(2)
-        .replace(".", ",");
+/* =========================================================
+   SUPABASE
+========================================================= */
 
-    }
+const SUPABASE_URL =
+  "https://lzihqkpscesurkfmcasb.supabase.co";
 
+const SUPABASE_KEY =
+  "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
 
-    function numeroSeguro(valor) {
-
-      const numero =
-        Number(valor);
-
-      return Number.isFinite(numero)
-        ? numero
-        : 0;
-
-    }
-
-
-    function mostrarMensagem(
-      mensagem,
-      tipo = "success"
-    ) {
-
-      const box =
-        document.getElementById(
-          "globalNotice"
-        );
-
-      box.textContent =
-        mensagem;
-
-      box.className =
-        "notice show " + tipo;
-
-      setTimeout(() => {
-
-        box.classList.remove("show");
-
-      }, 4500);
-
-    }
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
 
 
-    function mostrarLoginErro(mensagem) {
+/* =========================================================
+   ESTADO
+========================================================= */
 
-      const box =
-        document.getElementById(
-          "loginError"
-        );
-
-      box.textContent =
-        mensagem;
-
-      box.classList.add("show");
-
-    }
+let produtos = [];
+let pedidos = [];
+let loja = null;
+let pedidoAtual = null;
+let filtroAtual = "todos";
+let realtimeChannel = null;
 
 
-    function abrirPainel(nome, botao) {
+/* =========================================================
+   UTILIDADES
+========================================================= */
 
-      document
-        .querySelectorAll(".panel")
-        .forEach(panel => {
+function escapeHTML(valor){
 
-          panel.classList.remove("active");
+  return String(valor ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
 
+}
+
+function dinheiro(valor){
+
+  return Number(valor || 0)
+    .toFixed(2)
+    .replace(".",",");
+
+}
+
+function mostrarMensagem(mensagem,tipo="success"){
+
+  const box =
+    document.getElementById("globalNotice");
+
+  box.textContent = mensagem;
+
+  box.className =
+    "notice show " + tipo;
+
+  setTimeout(()=>{
+    box.classList.remove("show");
+  },5000);
+
+}
+
+function mostrarLoginErro(mensagem){
+
+  const box =
+    document.getElementById("loginError");
+
+  box.textContent = mensagem;
+
+  box.className =
+    "notice show error";
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function entrar(){
+
+  const email =
+    document.getElementById("loginEmail")
+      .value.trim();
+
+  const senha =
+    document.getElementById("loginPassword")
+      .value;
+
+  if(!email || !senha){
+
+    mostrarLoginErro(
+      "Digite seu e-mail e sua senha."
+    );
+
+    return;
+  }
+
+  try{
+
+    const {data,error} =
+      await supabaseClient.auth
+        .signInWithPassword({
+          email,
+          password:senha
         });
 
+    if(error){
 
-      document
-        .querySelectorAll(".side-btn")
-        .forEach(item => {
-
-          item.classList.remove("active");
-
-        });
-
-
-      const painel =
-        document.getElementById(nome);
-
-      if (painel) {
-
-        painel.classList.add("active");
-
-      }
-
-
-      if (botao) {
-
-        botao.classList.add("active");
-
-      }
-
-
-      if (nome === "pedidos") {
-
-        carregarPedidos();
-
-      }
-
-      if (nome === "produtos") {
-
-        carregarProdutos();
-
-      }
-
-      if (nome === "estoque") {
-
-        carregarEstoque();
-
-      }
-
-      if (nome === "loja") {
-
-        carregarLoja();
-
-      }
-
+      throw error;
     }
 
+    if(!data.session){
 
-    function abrirPainelPorNome(nome) {
+      throw new Error(
+        "Não foi possível iniciar a sessão."
+      );
+    }
 
-      const botoes =
-        document.querySelectorAll(".side-btn");
+    abrirAdmin();
 
-      let botaoEncontrado = null;
+  }catch(error){
 
-      botoes.forEach(botao => {
+    console.error(error);
 
-        const texto =
-          botao.innerText
-            .toLowerCase();
+    mostrarLoginErro(
+      error.message ||
+      "E-mail ou senha incorretos."
+    );
 
-        if (
-          (nome === "pedidos" &&
-            texto.includes("pedidos")) ||
+  }
 
-          (nome === "produtos" &&
-            texto.includes("produtos")) ||
+}
 
-          (nome === "estoque" &&
-            texto.includes("estoque")) ||
+async function abrirAdmin(){
 
-          (nome === "loja" &&
-            texto.includes("loja"))
-        ) {
+  document
+    .getElementById("loginScreen")
+    .classList.add("hidden");
 
-          botaoEncontrado =
-            botao;
+  document
+    .getElementById("adminScreen")
+    .classList.remove("hidden");
 
-        }
+  await carregarTudo();
 
-      });
+  iniciarRealtime();
 
-      abrirPainel(
-        nome,
-        botaoEncontrado
+}
+
+async function sair(){
+
+  try{
+    await supabaseClient.auth.signOut();
+  }catch(error){
+    console.error(error);
+  }
+
+  if(realtimeChannel){
+
+    await supabaseClient
+      .removeChannel(realtimeChannel);
+
+    realtimeChannel = null;
+  }
+
+  document
+    .getElementById("adminScreen")
+    .classList.add("hidden");
+
+  document
+    .getElementById("loginScreen")
+    .classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   MENU
+========================================================= */
+
+function abrirMenu(){
+
+  document
+    .getElementById("sidebar")
+    .classList.add("open");
+
+  document
+    .getElementById("overlay")
+    .classList.add("show");
+
+}
+
+function fecharMenu(){
+
+  document
+    .getElementById("sidebar")
+    .classList.remove("open");
+
+  document
+    .getElementById("overlay")
+    .classList.remove("show");
+
+}
+
+function abrirPagina(nome,botao){
+
+  document
+    .querySelectorAll(".panel")
+    .forEach(p=>{
+      p.classList.remove("active");
+    });
+
+  document
+    .getElementById(nome)
+    .classList.add("active");
+
+  document
+    .querySelectorAll(".menu-btn")
+    .forEach(b=>{
+      b.classList.remove("active");
+    });
+
+  if(botao){
+    botao.classList.add("active");
+  }
+
+  const titulos = {
+    dashboard:"Dashboard",
+    pedidos:"Pedidos",
+    produtos:"Produtos",
+    estoque:"Estoque",
+    loja:"Minha loja",
+    cupons:"Cupons",
+    config:"Configurações"
+  };
+
+  document
+    .getElementById("pageTitle")
+    .textContent =
+      titulos[nome] || "Painel";
+
+  fecharMenu();
+
+}
+
+function abrirPaginaPorNome(nome){
+
+  const botao =
+    [...document.querySelectorAll(".menu-btn")]
+      .find(btn =>
+        btn.textContent
+          .toLowerCase()
+          .includes(
+            nome === "pedidos"
+              ? "pedidos"
+              : nome
+          )
       );
 
+  abrirPagina(nome,botao);
+
+}
+
+
+/* =========================================================
+   PRODUTOS
+========================================================= */
+
+async function carregarProdutos(){
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+        .from("products")
+        .select("*")
+        .order("created_at",{ascending:false});
+
+    if(error){
+      throw error;
     }
 
+    produtos =
+      Array.isArray(data)
+        ? data
+        : [];
 
-    /* =========================================================
-       LOGIN
-    ========================================================= */
+    renderizarProdutos();
+    renderizarEstoque();
 
-    async function entrar() {
+  }catch(error){
 
-      const email =
-        document.getElementById(
-          "loginEmail"
-        ).value.trim();
+    console.error("Produtos:",error);
 
-      const senha =
-        document.getElementById(
-          "loginPassword"
-        ).value;
+    document.getElementById("productsList").innerHTML =
+      `<div class="small">
+        Não foi possível carregar os produtos.<br><br>
+        ${escapeHTML(error.message)}
+      </div>`;
 
-      if (!email || !senha) {
+  }
 
-        mostrarLoginErro(
-          "Digite seu e-mail e sua senha."
-        );
+}
 
-        return;
+function abrirEditorProduto(id=null){
 
-      }
+  document
+    .getElementById("productModal")
+    .classList.add("show");
 
+  if(id){
 
-      const botao =
-        document.querySelector(
-          ".login-btn"
-        );
+    const produto =
+      produtos.find(
+        p => Number(p.id) === Number(id)
+      );
 
-      botao.disabled = true;
-
-      botao.textContent =
-        "Entrando...";
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient.auth
-            .signInWithPassword({
-              email,
-              password: senha
-            });
-
-
-        if (error) {
-
-          throw error;
-
-        }
-
-
-        if (!data.session) {
-
-          throw new Error(
-            "Não foi possível iniciar a sessão."
-          );
-
-        }
-
-
-        document
-          .getElementById("loginScreen")
-          .classList.add("hidden");
-
-        document
-          .getElementById("adminScreen")
-          .classList.remove("hidden");
-
-
-        document
-          .getElementById("usuarioEmail")
-          .textContent =
-          email;
-
-
-        await carregarTudo();
-
-        iniciarRealtime();
-
-      } catch (error) {
-
-        console.error(
-          "Login:",
-          error
-        );
-
-        mostrarLoginErro(
-          error.message ||
-          "E-mail ou senha incorretos."
-        );
-
-      } finally {
-
-        botao.disabled = false;
-
-        botao.textContent =
-          "Entrar";
-
-      }
-
+    if(!produto){
+      return;
     }
 
+    document.getElementById("productModalTitle")
+      .textContent = "Editar produto";
 
-    async function sair() {
+    document.getElementById("produtoId")
+      .value = produto.id;
 
-      try {
+    document.getElementById("produtoNome")
+      .value = produto.name || "";
 
-        await supabaseClient.auth.signOut();
+    document.getElementById("produtoCategoria")
+      .value = produto.category || "bolos";
 
-      } catch (error) {
+    document.getElementById("produtoPreco")
+      .value = produto.price ?? "";
 
-        console.error(error);
+    document.getElementById("produtoDescricao")
+      .value = produto.description || "";
 
-      }
+    document.getElementById("produtoImagem")
+      .value = produto.image || "";
 
+    document.getElementById("produtoEstoque")
+      .value = produto.stock ?? 0;
 
-      if (realtimeChannel) {
+    document.getElementById("produtoEstoqueMinimo")
+      .value = produto.min_stock ?? 5;
 
+    document.getElementById("produtoAtivo")
+      .checked = produto.active !== false;
+
+  }else{
+
+    document.getElementById("productModalTitle")
+      .textContent = "Novo produto";
+
+    document.getElementById("produtoId").value="";
+    document.getElementById("produtoNome").value="";
+    document.getElementById("produtoCategoria").value="bolos";
+    document.getElementById("produtoPreco").value="";
+    document.getElementById("produtoDescricao").value="";
+    document.getElementById("produtoImagem").value="";
+    document.getElementById("produtoEstoque").value=0;
+    document.getElementById("produtoEstoqueMinimo").value=5;
+    document.getElementById("produtoAtivo").checked=true;
+
+  }
+
+}
+
+function fecharEditorProduto(){
+
+  document
+    .getElementById("productModal")
+    .classList.remove("show");
+
+}
+
+async function salvarProduto(){
+
+  const id =
+    document.getElementById("produtoId").value;
+
+  const dados = {
+
+    name:
+      document.getElementById("produtoNome")
+        .value.trim(),
+
+    category:
+      document.getElementById("produtoCategoria")
+        .value,
+
+    price:
+      Number(
+        document.getElementById("produtoPreco").value || 0
+      ),
+
+    description:
+      document.getElementById("produtoDescricao")
+        .value.trim() || null,
+
+    image:
+      document.getElementById("produtoImagem")
+        .value.trim() || null,
+
+    active:
+      document.getElementById("produtoAtivo")
+        .checked,
+
+    stock:
+      Number(
+        document.getElementById("produtoEstoque")
+          .value || 0
+      ),
+
+    min_stock:
+      Number(
+        document.getElementById("produtoEstoqueMinimo")
+          .value || 0
+      )
+
+  };
+
+  if(!dados.name){
+
+    mostrarMensagem(
+      "Digite o nome do produto.",
+      "error"
+    );
+
+    return;
+  }
+
+  try{
+
+    if(id){
+
+      const {data,error} =
         await supabaseClient
-          .removeChannel(
-            realtimeChannel
-          );
+          .from("products")
+          .update(dados)
+          .eq("id",Number(id))
+          .select()
+          .single();
 
-        realtimeChannel = null;
-
+      if(error){
+        throw error;
       }
 
+      const indice =
+        produtos.findIndex(
+          p => Number(p.id) === Number(id)
+        );
 
-      document
-        .getElementById("adminScreen")
-        .classList.add("hidden");
+      if(indice !== -1){
+        produtos[indice] = data;
+      }
 
-      document
-        .getElementById("loginScreen")
-        .classList.remove("hidden");
+      mostrarMensagem(
+        "Produto atualizado com sucesso!"
+      );
+
+    }else{
+
+      const {data,error} =
+        await supabaseClient
+          .from("products")
+          .insert([dados])
+          .select()
+          .single();
+
+      if(error){
+        throw error;
+      }
+
+      produtos.unshift(data);
+
+      mostrarMensagem(
+        "Produto criado com sucesso!"
+      );
 
     }
 
+    renderizarProdutos();
+    renderizarEstoque();
 
-    /* =========================================================
-       PEDIDOS
-    ========================================================= */
+    fecharEditorProduto();
 
-    async function carregarPedidos() {
+  }catch(error){
 
-      const area =
-        document.getElementById(
-          "listaPedidos"
-        );
+    console.error(error);
 
-      area.innerHTML = `
-        <div class="loading">
-          Carregando pedidos...
+    mostrarMensagem(
+      "Não foi possível salvar o produto: " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+function renderizarProdutos(){
+
+  const area =
+    document.getElementById("productsList");
+
+  if(!produtos.length){
+
+    area.innerHTML =
+      `<div class="small">
+        Nenhum produto cadastrado.
+      </div>`;
+
+    return;
+  }
+
+  area.innerHTML = "";
+
+  produtos.forEach(produto=>{
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "product-card";
+
+    const imagem =
+      produto.image
+        ? `<img src="${escapeHTML(produto.image)}"
+                alt="${escapeHTML(produto.name)}">`
+        : "🍰";
+
+    const estoque =
+      Number(produto.stock ?? 0);
+
+    card.innerHTML = `
+
+      <div class="product-image">
+        ${imagem}
+      </div>
+
+      <div class="product-name">
+        ${escapeHTML(produto.name)}
+      </div>
+
+      <div class="small">
+        ${escapeHTML(produto.category || "Produto")}
+      </div>
+
+      <div class="product-price">
+        R$ ${dinheiro(produto.price)}
+      </div>
+
+      <div class="small">
+        Estoque: <strong>${estoque}</strong>
+      </div>
+
+      <div class="product-actions">
+
+        <button
+          class="btn btn-primary"
+          onclick="abrirEditorProduto(${produto.id})">
+          ✏️ Editar
+        </button>
+
+        <button
+          class="btn ${produto.active ? "btn-danger":"btn-success"}"
+          onclick="alternarProduto(${produto.id})">
+          ${produto.active ? "Desativar":"Ativar"}
+        </button>
+
+      </div>
+    `;
+
+    area.appendChild(card);
+
+  });
+
+}
+
+async function alternarProduto(id){
+
+  const produto =
+    produtos.find(
+      p => Number(p.id) === Number(id)
+    );
+
+  if(!produto){
+    return;
+  }
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+        .from("products")
+        .update({
+          active:!produto.active
+        })
+        .eq("id",Number(id))
+        .select()
+        .single();
+
+    if(error){
+      throw error;
+    }
+
+    const indice =
+      produtos.findIndex(
+        p => Number(p.id) === Number(id)
+      );
+
+    produtos[indice] = data;
+
+    renderizarProdutos();
+
+    mostrarMensagem(
+      data.active
+        ? "Produto ativado."
+        : "Produto retirado do site."
+    );
+
+  }catch(error){
+
+    mostrarMensagem(
+      error.message,
+      "error"
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   ESTOQUE
+========================================================= */
+
+function renderizarEstoque(){
+
+  const tbody =
+    document.getElementById("stockTable");
+
+  if(!produtos.length){
+
+    tbody.innerHTML =
+      `<tr><td colspan="5">
+        Nenhum produto cadastrado.
+      </td></tr>`;
+
+    return;
+  }
+
+  let baixos=0;
+  let esgotados=0;
+
+  tbody.innerHTML="";
+
+  produtos.forEach(produto=>{
+
+    const estoque =
+      Number(produto.stock ?? 0);
+
+    const minimo =
+      Number(produto.min_stock ?? 5);
+
+    let status;
+    let classe;
+
+    if(estoque <= 0){
+
+      status="ESGOTADO";
+      classe="stock-out";
+      esgotados++;
+
+    }else if(estoque <= minimo){
+
+      status="ESTOQUE BAIXO";
+      classe="stock-low";
+      baixos++;
+
+    }else{
+
+      status="NORMAL";
+      classe="stock-ok";
+
+    }
+
+    const tr =
+      document.createElement("tr");
+
+    tr.innerHTML = `
+
+      <td>
+        <strong>${escapeHTML(produto.name)}</strong>
+      </td>
+
+      <td>
+        <span class="stock-number ${classe}">
+          ${estoque}
+        </span>
+      </td>
+
+      <td>${minimo}</td>
+
+      <td>
+        <strong class="${classe}">
+          ${status}
+        </strong>
+      </td>
+
+      <td>
+
+        <button
+          class="btn btn-light"
+          onclick="abrirEditorProduto(${produto.id})">
+          Ajustar
+        </button>
+
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+
+  document.getElementById("stockTotalProdutos")
+    .textContent = produtos.length;
+
+  document.getElementById("stockBaixo")
+    .textContent = baixos;
+
+  document.getElementById("stockEsgotado")
+    .textContent = esgotados;
+
+  document.getElementById("statEstoque")
+    .textContent = baixos + esgotados;
+
+  renderizarDashboardEstoque();
+
+}
+
+function renderizarDashboardEstoque(){
+
+  const area =
+    document.getElementById("dashboardEstoque");
+
+  const problemas =
+    produtos.filter(p=>{
+
+      const estoque =
+        Number(p.stock ?? 0);
+
+      const minimo =
+        Number(p.min_stock ?? 5);
+
+      return estoque <= minimo;
+
+    }).slice(0,5);
+
+  if(!problemas.length){
+
+    area.innerHTML =
+      `<div class="small">
+        ✅ Nenhum produto precisa de reposição.
+      </div>`;
+
+    return;
+  }
+
+  area.innerHTML =
+    problemas.map(p=>{
+
+      const estoque =
+        Number(p.stock ?? 0);
+
+      return `
+        <div style="
+          display:flex;
+          justify-content:space-between;
+          padding:10px 0;
+          border-bottom:1px solid #eee5e0;
+        ">
+          <strong>${escapeHTML(p.name)}</strong>
+          <span class="${estoque<=0?'stock-out':'stock-low'}">
+            ${estoque<=0?'Esgotado':estoque+' un.'}
+          </span>
         </div>
       `;
 
+    }).join("");
 
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("orders")
-            .select("*")
-            .order(
-              "created_at",
-              {
-                ascending: false
-              }
-            );
+}
 
 
-        if (error) {
+/* =========================================================
+   PEDIDOS
+========================================================= */
 
-          throw error;
+async function carregarPedidos(){
 
-        }
+  const area =
+    document.getElementById("ordersList");
 
+  area.innerHTML =
+    `<div class="small">
+      Carregando pedidos...
+    </div>`;
 
-        pedidos =
-          Array.isArray(data)
-            ? data
-            : [];
+  try{
 
+    const {data,error} =
+      await supabaseClient
+        .from("orders")
+        .select("*")
+        .order("created_at",{ascending:false});
 
-        atualizarContadoresPedidos();
-
-        renderizarPedidos();
-
-        renderizarDashboard();
-
-      } catch (error) {
-
-        console.error(
-          "Pedidos:",
-          error
-        );
-
-        area.innerHTML = `
-          <div class="empty">
-            Não foi possível carregar os pedidos.
-            <br><br>
-            ${escapeHTML(
-              error.message
-            )}
-          </div>
-        `;
-
-      }
-
+    if(error){
+      throw error;
     }
 
+    pedidos =
+      Array.isArray(data)
+        ? data
+        : [];
 
-    function obterStatus(pedido) {
+    renderizarPedidos();
+    atualizarDashboard();
 
-      return String(
-        pedido.status ||
-        "pendente"
-      ).toLowerCase();
+  }catch(error){
 
-    }
+    console.error(error);
 
+    area.innerHTML =
+      `<div class="small">
+        Não foi possível carregar os pedidos.<br><br>
+        ${escapeHTML(error.message)}
+      </div>`;
 
-    function nomeStatus(status) {
+  }
 
-      const nomes = {
+}
 
-        pendente: "Pendente",
-        confirmado: "Confirmado",
-        preparando: "Preparando",
-        pronto: "Pronto",
-        entregue: "Entregue",
-        cancelado: "Cancelado"
+function filtrarPedidos(status,botao){
 
-      };
+  filtroAtual = status;
 
-      return nomes[status] ||
-        status;
+  document
+    .querySelectorAll(".order-tab")
+    .forEach(b=>b.classList.remove("active"));
 
-    }
+  if(botao){
+    botao.classList.add("active");
+  }
 
+  renderizarPedidos();
 
-    function classeStatus(status) {
+}
 
-      return (
-        "status status-" +
-        status
+function renderizarPedidos(){
+
+  const area =
+    document.getElementById("ordersList");
+
+  let lista =
+    [...pedidos];
+
+  if(filtroAtual !== "todos"){
+
+    lista =
+      lista.filter(
+        p => (p.status || "pendente") === filtroAtual
       );
 
+  }
+
+  if(!lista.length){
+
+    area.innerHTML =
+      `<div class="small">
+        Nenhum pedido encontrado.
+      </div>`;
+
+    return;
+  }
+
+  area.innerHTML="";
+
+  lista.forEach(pedido=>{
+
+    const div =
+      document.createElement("div");
+
+    div.className="order-row";
+
+    const status =
+      pedido.status || "pendente";
+
+    const total =
+      Number(pedido.total || 0);
+
+    div.innerHTML = `
+
+      <div>
+
+        <div class="order-number">
+          Pedido #${escapeHTML(pedido.id)}
+        </div>
+
+        <div class="order-client">
+          👤 ${escapeHTML(
+            pedido.customer_name ||
+            pedido.name ||
+            "Cliente"
+          )}
+        </div>
+
+        <div class="small">
+          📅 ${escapeHTML(
+            pedido.scheduled_date || "-"
+          )}
+          ${escapeHTML(
+            pedido.scheduled_time || ""
+          )}
+        </div>
+
+        <div class="order-meta">
+          <span class="tag tag-${escapeHTML(status)}">
+            ${escapeHTML(status.toUpperCase())}
+          </span>
+
+          <span class="tag" style="background:#f1e9e4">
+            ${escapeHTML(
+              pedido.payment_method ||
+              pedido.payment_type ||
+              "Pagamento"
+            )}
+          </span>
+        </div>
+
+      </div>
+
+      <div>
+
+        <div class="order-total">
+          R$ ${dinheiro(total)}
+        </div>
+
+        <div class="order-time">
+          Ver detalhes →
+        </div>
+
+      </div>
+
+    `;
+
+    div.onclick=()=>{
+      abrirDetalhePedido(pedido);
+    };
+
+    area.appendChild(div);
+
+  });
+
+}
+
+function abrirDetalhePedido(pedido){
+
+  pedidoAtual = pedido;
+
+  document
+    .getElementById("pedidosListaView")
+    .style.display="none";
+
+  document
+    .getElementById("pedidoDetalhe")
+    .classList.add("show");
+
+  preencherDetalhePedido(pedido);
+
+}
+
+function fecharPedido(){
+
+  pedidoAtual=null;
+
+  document
+    .getElementById("pedidoDetalhe")
+    .classList.remove("show");
+
+  document
+    .getElementById("pedidosListaView")
+    .style.display="block";
+
+}
+
+function preencherDetalhePedido(pedido){
+
+  const status =
+    pedido.status || "pendente";
+
+  document.getElementById("detalheNumero")
+    .textContent =
+      "Pedido #" + pedido.id;
+
+  document.getElementById("detalheData")
+    .textContent =
+      [
+        pedido.scheduled_date,
+        pedido.scheduled_time
+      ].filter(Boolean).join(" • ");
+
+  const statusEl =
+    document.getElementById("detalheStatus");
+
+  statusEl.className =
+    "tag tag-" + status;
+
+  statusEl.textContent =
+    status.toUpperCase();
+
+  document.getElementById("statusPedido")
+    .value=status;
+
+  document.getElementById("clienteNome")
+    .textContent =
+      pedido.customer_name ||
+      pedido.name ||
+      "-";
+
+  document.getElementById("clienteTelefone")
+    .textContent =
+      pedido.customer_phone ||
+      pedido.phone ||
+      pedido.whatsapp ||
+      "-";
+
+  document.getElementById("clienteEndereco")
+    .textContent =
+      pedido.address ||
+      pedido.delivery_address ||
+      "Retirada na loja";
+
+  document.getElementById("clienteTipo")
+    .textContent =
+      pedido.delivery_type ||
+      pedido.order_type ||
+      "Pedido";
+
+  document.getElementById("pagamentoForma")
+    .textContent =
+      pedido.payment_method ||
+      pedido.payment_type ||
+      "-";
+
+  document.getElementById("pagamentoStatus")
+    .textContent =
+      pedido.payment_status ||
+      "Pendente";
+
+  document.getElementById("pedidoObservacoes")
+    .textContent =
+      pedido.notes ||
+      pedido.observations ||
+      "Nenhuma observação.";
+
+  const entrega =
+    Number(
+      pedido.delivery_fee ||
+      pedido.shipping ||
+      0
+    );
+
+  const desconto =
+    Number(
+      pedido.discount ||
+      0
+    );
+
+  const total =
+    Number(
+      pedido.total ||
+      0
+    );
+
+  const subtotal =
+    Number(
+      pedido.subtotal ??
+      (total - entrega + desconto)
+    );
+
+  document.getElementById("pedidoSubtotal")
+    .textContent =
+      "R$ " + dinheiro(subtotal);
+
+  document.getElementById("pedidoEntrega")
+    .textContent =
+      "R$ " + dinheiro(entrega);
+
+  document.getElementById("pedidoDesconto")
+    .textContent =
+      "R$ " + dinheiro(desconto);
+
+  document.getElementById("pedidoTotal")
+    .textContent =
+      "R$ " + dinheiro(total);
+
+  preencherPagamentoDinheiro(pedido);
+
+  renderizarItensPedido(pedido);
+
+}
+
+function preencherPagamentoDinheiro(pedido){
+
+  const forma =
+    String(
+      pedido.payment_method ||
+      pedido.payment_type ||
+      ""
+    ).toLowerCase();
+
+  const dinheiro =
+    forma.includes("dinheiro") ||
+    forma.includes("cash");
+
+  const box =
+    document.getElementById("cashBox");
+
+  if(!dinheiro){
+
+    box.classList.add("hidden");
+
+    return;
+  }
+
+  box.classList.remove("hidden");
+
+  const valorCliente =
+    Number(
+      pedido.cash_amount ||
+      pedido.money_amount ||
+      pedido.amount_received ||
+      pedido.valor_pago ||
+      0
+    );
+
+  const precisa =
+    pedido.needs_change ??
+    pedido.need_change ??
+    pedido.precisa_troco;
+
+  const total =
+    Number(pedido.total || 0);
+
+  const troco =
+    valorCliente > total
+      ? valorCliente - total
+      : 0;
+
+  document.getElementById("dinheiroCliente")
+    .textContent =
+      "R$ " + dinheiro(valorCliente);
+
+  document.getElementById("precisaTroco")
+    .textContent =
+      precisa === true ||
+      precisa === "true" ||
+      precisa === "sim"
+        ? "Sim"
+        : "Não";
+
+  document.getElementById("valorTroco")
+    .textContent =
+      "R$ " + dinheiro(
+        Number(
+          pedido.change_amount ??
+          pedido.troco ??
+          troco
+        )
+      );
+
+}
+
+function extrairItensPedido(pedido){
+
+  const candidatos = [
+    pedido.items,
+    pedido.order_items,
+    pedido.cart_items,
+    pedido.products,
+    pedido.items_json,
+    pedido.order_items_json,
+    pedido.cart
+  ];
+
+  for(const item of candidatos){
+
+    if(Array.isArray(item) && item.length){
+      return item;
     }
 
+    if(typeof item === "string"){
 
-    function atualizarContadoresPedidos() {
+      try{
 
-      const total =
-        pedidos.length;
+        const convertido =
+          JSON.parse(item);
 
-      const pendentes =
-        pedidos.filter(
-          p =>
-            obterStatus(p) ===
-            "pendente"
-        ).length;
+        if(Array.isArray(convertido)){
+          return convertido;
+        }
 
-
-      document.getElementById(
-        "countTodos"
-      ).textContent =
-        total;
-
-
-      document.getElementById(
-        "countPendente"
-      ).textContent =
-        pendentes;
-
-
-      document.getElementById(
-        "statPedidos"
-      ).textContent =
-        total;
-
-
-      document.getElementById(
-        "statPendentes"
-      ).textContent =
-        pendentes;
-
-
-      document.getElementById(
-        "statProdutos"
-      ).textContent =
-        produtos.filter(
-          p => p.active !== false
-        ).length;
-
-
-      const faturamento =
-        pedidos
-          .filter(
-            p =>
-              obterStatus(p) !==
-              "cancelado"
-          )
-          .reduce(
-            (total, pedido) =>
-              total +
-              numeroSeguro(
-                pedido.total
-              ),
-            0
-          );
-
-
-      document.getElementById(
-        "statFaturamento"
-      ).textContent =
-        "R$ " +
-        dinheiro(faturamento);
+      }catch(e){}
 
     }
 
+    if(item && typeof item === "object"){
 
-    function filtrarPedidos(
-      filtro,
-      botao
-    ) {
-
-      filtroPedidosAtual =
-        filtro;
-
-
-      document
-        .querySelectorAll(".order-tab")
-        .forEach(item => {
-
-          item.classList.remove(
-            "active"
-          );
-
-        });
-
-
-      if (botao) {
-
-        botao.classList.add(
-          "active"
-        );
-
+      if(Array.isArray(item.items)){
+        return item.items;
       }
 
-
-      renderizarPedidos();
+      if(Array.isArray(item.products)){
+        return item.products;
+      }
 
     }
 
+  }
 
-    function renderizarPedidos() {
+  return [];
 
-      const area =
-        document.getElementById(
-          "listaPedidos"
-        );
+}
+
+function renderizarItensPedido(pedido){
+
+  const tbody =
+    document.getElementById("pedidoItens");
+
+  const aviso =
+    document.getElementById("pedidoItensAviso");
+
+  const itens =
+    extrairItensPedido(pedido);
+
+  tbody.innerHTML="";
+  aviso.className="notice error";
+  aviso.style.display="none";
+
+  if(!itens.length){
+
+    aviso.textContent =
+      "Os itens deste pedido não estão armazenados em uma lista no registro.";
+
+    aviso.style.display="block";
+
+    tbody.innerHTML =
+      `<tr>
+        <td colspan="4" style="text-align:center">
+          Nenhum item disponível para exibição.
+        </td>
+      </tr>`;
+
+    return;
+  }
+
+  itens.forEach(item=>{
+
+    const nome =
+      item.name ||
+      item.product_name ||
+      item.title ||
+      item.nome ||
+      "Produto";
+
+    const quantidade =
+      Number(
+        item.quantity ??
+        item.qty ??
+        item.quantidade ??
+        1
+      );
+
+    const preco =
+      Number(
+        item.price ??
+        item.unit_price ??
+        item.preco ??
+        0
+      );
+
+    const total =
+      Number(
+        item.total ??
+        item.subtotal ??
+        (preco * quantidade)
+      );
+
+    const tr =
+      document.createElement("tr");
+
+    tr.innerHTML = `
+
+      <td>
+        <strong>${escapeHTML(nome)}</strong>
+      </td>
+
+      <td>
+        ${quantidade}
+      </td>
+
+      <td>
+        R$ ${dinheiro(preco)}
+      </td>
+
+      <td>
+        <strong>
+          R$ ${dinheiro(total)}
+        </strong>
+      </td>
+
+    `;
+
+    tbody.appendChild(tr);
+
+  });
+
+}
 
 
-      let lista =
-        [...pedidos];
+/* =========================================================
+   ALTERAR STATUS
+========================================================= */
+
+async function alterarStatusPedidoAtual(status){
+
+  if(!pedidoAtual){
+    return;
+  }
+
+  try{
+
+    const {error} =
+      await supabaseClient
+        .from("orders")
+        .update({
+          status
+        })
+        .eq("id",Number(pedidoAtual.id));
+
+    if(error){
+      throw error;
+    }
+
+    pedidoAtual.status=status;
+
+    const local =
+      pedidos.find(
+        p => Number(p.id) === Number(pedidoAtual.id)
+      );
+
+    if(local){
+      local.status=status;
+    }
+
+    preencherDetalhePedido(pedidoAtual);
+
+    mostrarMensagem(
+      "Status atualizado em tempo real."
+    );
+
+    renderizarPedidos();
+    atualizarDashboard();
+
+  }catch(error){
+
+    console.error(error);
+
+    mostrarMensagem(
+      "Não foi possível atualizar o status: " +
+      error.message,
+      "error"
+    );
+
+  }
+
+}
 
 
-      if (
-        filtroPedidosAtual !==
-        "todos"
-      ) {
+/* =========================================================
+   WHATSAPP
+========================================================= */
 
-        lista =
-          lista.filter(
-            pedido =>
-              obterStatus(pedido) ===
-              filtroPedidosAtual
-          );
+function chamarWhatsApp(){
 
+  if(!pedidoAtual){
+    return;
+  }
+
+  let telefone =
+    pedidoAtual.customer_phone ||
+    pedidoAtual.phone ||
+    pedidoAtual.whatsapp ||
+    "";
+
+  telefone =
+    String(telefone)
+      .replace(/\D/g,"");
+
+  if(!telefone){
+
+    mostrarMensagem(
+      "Este pedido não possui telefone.",
+      "error"
+    );
+
+    return;
+  }
+
+  if(telefone.length === 11){
+    telefone = "55" + telefone;
+  }
+
+  const nome =
+    pedidoAtual.customer_name ||
+    pedidoAtual.name ||
+    "cliente";
+
+  const mensagem =
+    `Olá, ${nome}! Aqui é da Lá Dociê. Estou entrando em contato sobre o seu pedido #${pedidoAtual.id}.`;
+
+  window.open(
+    "https://wa.me/" +
+    telefone +
+    "?text=" +
+    encodeURIComponent(mensagem),
+    "_blank"
+  );
+
+}
+
+
+/* =========================================================
+   IMPRESSÃO
+========================================================= */
+
+function imprimirPedido(){
+
+  if(!pedidoAtual){
+    return;
+  }
+
+  window.print();
+
+}
+
+
+/* =========================================================
+   LOJA
+========================================================= */
+
+async function carregarLoja(){
+
+  try{
+
+    const {data,error} =
+      await supabaseClient
+        .from("store_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+
+    if(error){
+      throw error;
+    }
+
+    loja=data || null;
+
+    if(!loja){
+      return;
+    }
+
+    document.getElementById("lojaNome")
+      .value=loja.store_name || "";
+
+    document.getElementById("lojaDescricao")
+      .value=loja.description || "";
+
+    document.getElementById("lojaTelefone")
+      .value=loja.phone || "";
+
+    document.getElementById("lojaWhatsapp")
+      .value=loja.whatsapp || "";
+
+    document.getElementById("lojaEndereco")
+      .value=loja.address || "";
+
+    document.getElementById("lojaInstagram")
+      .value=loja.instagram || "";
+
+    document.getElementById("lojaHorario")
+      .value =
+        loja.opening_hours ||
+        "Terça a sábado: 14h às 21h\nDomingo: 15h30 às 20h";
+
+    document.getElementById("lojaPix")
+      .value=loja.pix_key || "";
+
+    document.getElementById("lojaTaxa")
+      .value=loja.delivery_fee ?? 0;
+
+  }catch(error){
+
+    console.error(error);
+
+  }
+
+}
+
+async function salvarLoja(){
+
+  const dados={
+
+    store_name:
+      document.getElementById("lojaNome").value.trim(),
+
+    description:
+      document.getElementById("lojaDescricao").value.trim(),
+
+    phone:
+      document.getElementById("lojaTelefone").value.trim(),
+
+    whatsapp:
+      document.getElementById("lojaWhatsapp").value.trim(),
+
+    address:
+      document.getElementById("lojaEndereco").value.trim(),
+
+    instagram:
+      document.getElementById("lojaInstagram").value.trim(),
+
+    opening_hours:
+      document.getElementById("lojaHorario").value.trim(),
+
+    pix_key:
+      document.getElementById("lojaPix").value.trim(),
+
+    delivery_fee:
+      Number(
+        document.getElementById("lojaTaxa").value || 0
+      ),
+
+    updated_at:
+      new Date().toISOString()
+
+  };
+
+  try{
+
+    if(loja && loja.id){
+
+      const {data,error} =
+        await supabaseClient
+          .from("store_settings")
+          .update(dados)
+          .eq("id",loja.id)
+          .select()
+          .single();
+
+      if(error){
+        throw error;
       }
 
+      loja=data;
 
-      if (!lista.length) {
+    }else{
 
-        area.innerHTML = `
-          <div class="empty">
-            Nenhum pedido encontrado nesta categoria.
-          </div>
-        `;
+      const {data,error} =
+        await supabaseClient
+          .from("store_settings")
+          .insert([dados])
+          .select()
+          .single();
 
-        return;
-
+      if(error){
+        throw error;
       }
 
-
-      area.innerHTML = "";
-
-
-      lista.forEach(pedido => {
-
-        area.appendChild(
-          criarCardPedido(
-            pedido
-          )
-        );
-
-      });
+      loja=data;
 
     }
 
+    mostrarMensagem(
+      "Informações da loja salvas!"
+    );
 
-    function criarCardPedido(pedido) {
+  }catch(error){
 
-      const card =
-        document.createElement(
-          "div"
-        );
+    console.error(error);
 
-      card.className =
-        "order-card";
+    mostrarMensagem(
+      "Erro ao salvar: " + error.message,
+      "error"
+    );
 
+  }
 
-      const status =
-        obterStatus(pedido);
-
-
-      const cliente =
-        pedido.customer_name ||
-        pedido.customerName ||
-        pedido.name ||
-        "Cliente";
+}
 
 
-      const telefone =
-        pedido.customer_phone ||
-        pedido.customerPhone ||
-        pedido.phone ||
-        "";
+/* =========================================================
+   DASHBOARD
+========================================================= */
 
+function atualizarDashboard(){
+
+  const hoje =
+    new Date().toISOString().slice(0,10);
+
+  const pedidosHoje =
+    pedidos.filter(p=>{
 
       const data =
-        pedido.scheduled_date ||
-        pedido.delivery_date ||
-        pedido.date ||
-        "";
+        p.scheduled_date ||
+        p.created_at?.slice(0,10);
 
+      return data === hoje;
 
-      const horario =
-        pedido.scheduled_time ||
-        pedido.delivery_time ||
-        pedido.time ||
-        "";
+    });
 
+  const faturamento =
+    pedidosHoje
+      .filter(p=>
+        (p.status || "pendente") !== "cancelado"
+      )
+      .reduce(
+        (total,p)=>
+          total + Number(p.total || 0),
+        0
+      );
 
-      const total =
-        numeroSeguro(
-          pedido.total
-        );
+  const pendentes =
+    pedidos.filter(
+      p => (p.status || "pendente") === "pendente"
+    ).length;
 
+  document.getElementById("statPedidos")
+    .textContent=pedidosHoje.length;
 
-      card.innerHTML = `
+  document.getElementById("statFaturamento")
+    .textContent=
+      "R$ " + dinheiro(faturamento);
 
-        <div class="order-top">
+  document.getElementById("statPendentes")
+    .textContent=pendentes;
+
+  document.getElementById("badgePedidos")
+    .textContent=pendentes;
+
+  const area =
+    document.getElementById("dashboardPedidos");
+
+  const recentes =
+    pedidos.slice(0,5);
+
+  if(!recentes.length){
+
+    area.innerHTML =
+      `<div class="small">
+        Nenhum pedido ainda.
+      </div>`;
+
+    return;
+  }
+
+  area.innerHTML =
+    recentes.map(p=>{
+
+      const status =
+        p.status || "pendente";
+
+      return `
+        <div
+          class="order-row"
+          onclick="abrirPaginaPorNome('pedidos');abrirDetalhePedidoPorId(${p.id})">
 
           <div>
 
             <div class="order-number">
-              Pedido #${escapeHTML(
-                pedido.id
-              )}
+              Pedido #${escapeHTML(p.id)}
             </div>
 
-            <div class="order-date">
+            <div class="small">
               ${escapeHTML(
-                formatarData(
-                  pedido.created_at
-                )
+                p.customer_name ||
+                p.name ||
+                "Cliente"
               )}
             </div>
 
-          </div>
-
-
-          <span
-            class="${classeStatus(status)}">
-
-            ${escapeHTML(
-              nomeStatus(status)
-            )}
-
-          </span>
-
-        </div>
-
-
-        <div class="order-body">
-
-          <div class="order-summary">
-
-            <div class="summary-block">
-
-              <div class="summary-title">
-                Cliente
-              </div>
-
-              <div class="summary-main">
-                ${escapeHTML(
-                  cliente
-                )}
-              </div>
-
-              <div class="summary-small">
-                ${escapeHTML(
-                  telefone
-                )}
-              </div>
-
-            </div>
-
-
-            <div class="summary-block">
-
-              <div class="summary-title">
-                Retirada / entrega
-              </div>
-
-              <div class="summary-main">
-                ${escapeHTML(
-                  data || "Não informado"
-                )}
-              </div>
-
-              <div class="summary-small">
-                ${escapeHTML(
-                  horario || "Horário não informado"
-                )}
-              </div>
-
-            </div>
-
-
-            <div class="summary-block">
-
-              <div class="summary-title">
-                Total
-              </div>
-
-              <div
-                class="summary-main"
-                style="
-                  color:#a8731e;
-                  font-size:20px;
-                ">
-
-                R$ ${dinheiro(total)}
-
-              </div>
-
+            <div class="order-meta">
+              <span class="tag tag-${escapeHTML(status)}">
+                ${escapeHTML(status)}
+              </span>
             </div>
 
           </div>
 
-        </div>
-
-
-        <div class="order-actions">
-
-          <select
-            class="status-select"
-            onchange="
-              alterarStatusPedido(
-                '${String(pedido.id).replaceAll("'", "\\'")}',
-                this.value
-              )
-            ">
-
-            ${opcoesStatus(
-              status
-            )}
-
-          </select>
-
-
-          <button
-            class="btn btn-primary"
-            onclick="
-              abrirDetalhes(
-                '${String(pedido.id).replaceAll("'", "\\'")}'
-              )
-            ">
-
-            👁️ Ver pedido
-
-          </button>
-
-
-          ${
-            telefone
-              ? `
-                <button
-                  class="btn btn-whatsapp"
-                  onclick="
-                    chamarWhatsApp(
-                      '${escapeJS(telefone)}',
-                      '${escapeJS(
-                        pedido.id
-                      )}'
-                    )
-                  ">
-
-                  💬 WhatsApp
-
-                </button>
-              `
-              : ""
-          }
-
-
-          <button
-            class="btn btn-print"
-            onclick="
-              imprimirPedido(
-                '${String(pedido.id).replaceAll("'", "\\'")}'
-              )
-            ">
-
-            🖨️ Imprimir
-
-          </button>
+          <div class="order-total">
+            R$ ${dinheiro(p.total)}
+          </div>
 
         </div>
-
       `;
 
+    }).join("");
 
-      return card;
+}
 
-    }
+function abrirDetalhePedidoPorId(id){
 
+  const pedido =
+    pedidos.find(
+      p => Number(p.id) === Number(id)
+    );
 
-    function opcoesStatus(statusAtual) {
+  if(pedido){
+    abrirDetalhePedido(pedido);
+  }
 
-      const status =
-        [
-          "pendente",
-          "confirmado",
-          "preparando",
-          "pronto",
-          "entregue",
-          "cancelado"
-        ];
-
-
-      return status.map(
-        status => `
-
-          <option
-            value="${status}"
-            ${status === statusAtual
-              ? "selected"
-              : ""}>
-
-            ${nomeStatus(status)}
-
-          </option>
-
-        `
-      ).join("");
-
-    }
+}
 
 
-    /* =========================================================
-       DETALHES COMPLETOS
-    ========================================================= */
+/* =========================================================
+   REALTIME
+========================================================= */
 
-    function abrirDetalhes(id) {
+function iniciarRealtime(){
 
-      const pedido =
-        pedidos.find(
-          p =>
-            String(p.id) ===
-            String(id)
-        );
+  if(realtimeChannel){
+    return;
+  }
 
+  realtimeChannel =
+    supabaseClient
+      .channel("admin-orders-realtime")
 
-      if (!pedido) {
+      .on(
+        "postgres_changes",
+        {
+          event:"*",
+          schema:"public",
+          table:"orders"
+        },
+        payload=>{
 
-        mostrarMensagem(
-          "Pedido não encontrado.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const cliente =
-        pedido.customer_name ||
-        pedido.customerName ||
-        pedido.name ||
-        "Não informado";
-
-
-      document.getElementById(
-        "detailOrderNumber"
-      ).textContent =
-        "Pedido #" +
-        pedido.id;
-
-
-      document.getElementById(
-        "detailOrderDate"
-      ).textContent =
-        formatarData(
-          pedido.created_at
-        );
-
-
-      const status =
-        obterStatus(pedido);
-
-
-      const telefone =
-        pedido.customer_phone ||
-        pedido.customerPhone ||
-        pedido.phone ||
-        "";
-
-
-      const whatsapp =
-        pedido.customer_whatsapp ||
-        pedido.whatsapp ||
-        telefone;
-
-
-      const endereco =
-        pedido.address ||
-        pedido.customer_address ||
-        pedido.delivery_address ||
-        "Não informado";
-
-
-      const observacoes =
-        pedido.notes ||
-        pedido.observations ||
-        pedido.customer_notes ||
-        "Nenhuma";
-
-
-      const data =
-        pedido.scheduled_date ||
-        pedido.delivery_date ||
-        pedido.date ||
-        "Não informado";
-
-
-      const horario =
-        pedido.scheduled_time ||
-        pedido.delivery_time ||
-        pedido.time ||
-        "Não informado";
-
-
-      const subtotal =
-        numeroSeguro(
-          pedido.subtotal
-        );
-
-
-      const entrega =
-        numeroSeguro(
-          pedido.delivery_fee ||
-          pedido.deliveryFee
-        );
-
-
-      const desconto =
-        numeroSeguro(
-          pedido.discount
-        );
-
-
-      const total =
-        numeroSeguro(
-          pedido.total
-        );
-
-
-      const pagamento =
-        pedido.payment_method ||
-        pedido.paymentMethod ||
-        pedido.payment ||
-        "Não informado";
-
-
-      const precisaTroco =
-        pedido.needs_change === true ||
-        pedido.needsChange === true ||
-        pedido.change_required === true;
-
-
-      const valorPago =
-        numeroSeguro(
-          pedido.cash_amount ||
-          pedido.amount_paid ||
-          pedido.paid_amount
-        );
-
-
-      let troco =
-        numeroSeguro(
-          pedido.change_amount
-        );
-
-
-      if (
-        precisaTroco &&
-        valorPago > 0
-      ) {
-
-        troco =
-          Math.max(
-            valorPago - total,
-            0
+          console.log(
+            "Realtime pedido:",
+            payload
           );
 
-      }
-
-
-      const itens =
-        extrairItensPedido(
-          pedido
-        );
-
-
-      document.getElementById(
-        "detailContent"
-      ).innerHTML = `
-
-        <div class="detail-grid">
-
-
-          <!-- CLIENTE -->
-
-          <div class="detail-section">
-
-            <h3>
-              👤 Informações do cliente
-            </h3>
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Nome
-              </span>
-
-              <span class="info-value">
-                ${escapeHTML(cliente)}
-              </span>
-
-            </div>
-
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Telefone
-              </span>
-
-              <span class="info-value">
-                ${escapeHTML(
-                  telefone ||
-                  "Não informado"
-                )}
-              </span>
-
-            </div>
-
-
-            <div class="info-line">
-
-              <span class="info-label">
-                WhatsApp
-              </span>
-
-              <span class="info-value">
-                ${escapeHTML(
-                  whatsapp ||
-                  "Não informado"
-                )}
-              </span>
-
-            </div>
-
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Endereço
-              </span>
-
-              <span class="info-value">
-                ${escapeHTML(endereco)}
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <!-- AGENDAMENTO -->
-
-          <div class="detail-section">
-
-            <h3>
-              📅 Agendamento
-            </h3>
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Data
-              </span>
-
-              <span class="info-value">
-                ${escapeHTML(data)}
-              </span>
-
-            </div>
-
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Horário
-              </span>
-
-              <span class="info-value">
-                ${escapeHTML(horario)}
-              </span>
-
-            </div>
-
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Status
-              </span>
-
-              <span class="info-value">
-
-                <span class="${classeStatus(status)}">
-
-                  ${escapeHTML(
-                    nomeStatus(status)
-                  )}
-
-                </span>
-
-              </span>
-
-            </div>
-
-          </div>
-
-
-          <!-- PRODUTOS -->
-
-          <div class="detail-section full">
-
-            <h3>
-              🛒 Produtos do pedido
-            </h3>
-
-            <div class="items-list">
-
-              ${renderizarItens(
-                itens
-              )}
-
-            </div>
-
-          </div>
-
-
-          <!-- PAGAMENTO -->
-
-          <div class="detail-section">
-
-            <h3>
-              💳 Pagamento
-            </h3>
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Forma de pagamento
-              </span>
-
-              <span class="info-value">
-                ${escapeHTML(
-                  formatarPagamento(
-                    pagamento
-                  )
-                )}
-              </span>
-
-            </div>
-
-
-            ${
-              pagamentoEhDinheiro(
-                pagamento
-              )
-              ? `
-
-                <div class="payment-highlight">
-
-                  <strong>
-                    Pagamento em dinheiro
-                  </strong>
-
-                  <div class="info-line">
-
-                    <span class="info-label">
-                      Precisa de troco?
-                    </span>
-
-                    <span class="info-value">
-                      ${
-                        precisaTroco
-                          ? "Sim"
-                          : "Não"
-                      }
-                    </span>
-
-                  </div>
-
-
-                  ${
-                    precisaTroco
-                    ? `
-
-                      <div class="info-line">
-
-                        <span class="info-label">
-                          Vai pagar com
-                        </span>
-
-                        <span class="info-value">
-                          R$ ${dinheiro(
-                            valorPago
-                          )}
-                        </span>
-
-                      </div>
-
-
-                      <div style="margin-top:10px">
-
-                        <div
-                          class="info-label">
-                          Troco
-                        </div>
-
-                        <div
-                          class="change-value">
-
-                          R$ ${dinheiro(
-                            troco
-                          )}
-
-                        </div>
-
-                      </div>
-
-                    `
-                    : `
-                      <div
-                        style="
-                          margin-top:10px;
-                          color:#28723d;
-                          font-weight:800;
-                        ">
-
-                        ✓ Cliente informou que possui o valor exato.
-
-                      </div>
-                    `
-                  }
-
-                </div>
-
-              `
-              : ""
-            }
-
-          </div>
-
-
-          <!-- RESUMO -->
-
-          <div class="detail-section">
-
-            <h3>
-              💰 Resumo financeiro
-            </h3>
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Subtotal
-              </span>
-
-              <span class="info-value">
-                R$ ${dinheiro(subtotal)}
-              </span>
-
-            </div>
-
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Entrega
-              </span>
-
-              <span class="info-value">
-                R$ ${dinheiro(entrega)}
-              </span>
-
-            </div>
-
-
-            <div class="info-line">
-
-              <span class="info-label">
-                Desconto
-              </span>
-
-              <span class="info-value">
-                - R$ ${dinheiro(desconto)}
-              </span>
-
-            </div>
-
-
-            <div
-              class="info-line"
-              style="
-                font-size:17px;
-                border-top:2px solid #eadfd7;
-                margin-top:7px;
-              ">
-
-              <strong>
-                Total
-              </strong>
-
-              <strong
-                style="color:#a8731e">
-
-                R$ ${dinheiro(total)}
-
-              </strong>
-
-            </div>
-
-          </div>
-
-
-          <!-- OBSERVAÇÕES -->
-
-          <div class="detail-section full">
-
-            <h3>
-              📝 Observações
-            </h3>
-
-            <div
-              style="
-                background:#fcf8f5;
-                padding:13px;
-                border-radius:11px;
-                white-space:pre-wrap;
-              ">
-
-              ${escapeHTML(
-                observacoes
-              )}
-
-            </div>
-
-          </div>
-
-
-          <!-- AÇÕES -->
-
-          <div class="detail-section full">
-
-            <h3>
-              ⚡ Ações do pedido
-            </h3>
-
-            <div
-              style="
-                display:flex;
-                flex-wrap:wrap;
-                gap:8px;
-              ">
-
-              ${
-                whatsapp
-                  ? `
-
-                    <button
-                      class="btn btn-whatsapp"
-                      onclick="
-                        chamarWhatsApp(
-                          '${escapeJS(whatsapp)}',
-                          '${escapeJS(
-                            pedido.id
-                          )}'
-                        )
-                      ">
-
-                      💬 Chamar cliente no WhatsApp
-
-                    </button>
-
-                  `
-                  : ""
-              }
-
-
-              <button
-                class="btn btn-print"
-                onclick="
-                  imprimirPedido(
-                    '${String(pedido.id).replaceAll("'", "\\'")}'
-                  )
-                ">
-
-                🖨️ Imprimir pedido
-
-              </button>
-
-
-              <select
-                class="status-select"
-                onchange="
-                  alterarStatusPedido(
-                    '${String(pedido.id).replaceAll("'", "\\'")}',
-                    this.value
-                  )
-                ">
-
-                ${opcoesStatus(
-                  status
-                )}
-
-              </select>
-
-            </div>
-
-          </div>
-
-
-          <!-- TIMELINE -->
-
-          <div class="detail-section full">
-
-            <h3>
-              🔄 Acompanhamento
-            </h3>
-
-            <div class="timeline">
-
-              ${timelineStatus(
-                status
-              )}
-
-            </div>
-
-          </div>
-
-        </div>
-
-      `;
-
-
-      document
-        .getElementById(
-          "orderDetail"
-        )
-        .classList.add("show");
-
-    }
-
-
-    function fecharDetalhes() {
-
-      document
-        .getElementById(
-          "orderDetail"
-        )
-        .classList.remove(
-          "show"
-        );
-
-    }
-
-
-    document
-      .getElementById(
-        "orderDetail"
-      )
-      .addEventListener(
-        "click",
-        function(event) {
-
-          if (
-            event.target ===
-            this
-          ) {
-
-            fecharDetalhes();
+          if(
+            payload.eventType === "INSERT"
+          ){
+
+            pedidos.unshift(
+              payload.new
+            );
 
           }
 
-        }
-      );
+          if(
+            payload.eventType === "UPDATE"
+          ){
 
+            const indice =
+              pedidos.findIndex(
+                p =>
+                  Number(p.id) ===
+                  Number(payload.new.id)
+              );
 
-    /* =========================================================
-       ITENS DOS PEDIDOS
-    ========================================================= */
+            if(indice !== -1){
 
-    function extrairItensPedido(pedido) {
+              pedidos[indice] =
+                payload.new;
 
-      const possiveis = [
-        pedido.items,
-        pedido.order_items,
-        pedido.products,
-        pedido.cart_items,
-        pedido.itens
-      ];
+            }else{
 
-
-      for (
-        const valor of possiveis
-      ) {
-
-        if (
-          Array.isArray(valor)
-        ) {
-
-          return valor;
-
-        }
-
-
-        if (
-          typeof valor ===
-          "string"
-        ) {
-
-          try {
-
-            const convertido =
-              JSON.parse(valor);
-
-            if (
-              Array.isArray(convertido)
-            ) {
-
-              return convertido;
+              pedidos.unshift(
+                payload.new
+              );
 
             }
 
-          } catch (error) {}
+            if(
+              pedidoAtual &&
+              Number(pedidoAtual.id) ===
+              Number(payload.new.id)
+            ){
+
+              pedidoAtual =
+                payload.new;
+
+              preencherDetalhePedido(
+                pedidoAtual
+              );
 
-        }
-
-      }
-
-
-      return [];
-
-    }
-
-
-    function renderizarItens(itens) {
-
-      if (!itens.length) {
-
-        return `
-
-          <div class="empty"
-               style="padding:20px">
-
-            Os itens deste pedido não estão
-            armazenados em uma lista no registro.
-
-          </div>
-
-        `;
-
-      }
-
-
-      return itens.map(
-        item => {
-
-          const nome =
-            item.name ||
-            item.product_name ||
-            item.productName ||
-            item.nome ||
-            "Produto";
-
-
-          const quantidade =
-            numeroSeguro(
-              item.quantity ||
-              item.qty ||
-              item.quantidade ||
-              1
-            );
-
-
-          const preco =
-            numeroSeguro(
-              item.price ||
-              item.unit_price ||
-              item.valor
-            );
-
-
-          const totalItem =
-            numeroSeguro(
-              item.total
-            ) ||
-            preco * quantidade;
-
-
-          const observacao =
-            item.observation ||
-            item.observations ||
-            item.notes ||
-            "";
-
-
-          return `
-
-            <div class="item">
-
-              <div>
-
-                <div class="item-name">
-
-                  ${quantidade}x
-                  ${escapeHTML(nome)}
-
-                </div>
-
-                ${
-                  observacao
-                    ? `
-                      <div class="item-details">
-
-                        ${escapeHTML(
-                          observacao
-                        )}
-
-                      </div>
-                    `
-                    : ""
-                }
-
-              </div>
-
-
-              <div class="item-price">
-
-                R$ ${dinheiro(
-                  totalItem
-                )}
-
-              </div>
-
-            </div>
-
-          `;
-
-        }
-      ).join("");
-
-    }
-
-
-    /* =========================================================
-       TIMELINE
-    ========================================================= */
-
-    function timelineStatus(statusAtual) {
-
-      const etapas = [
-        "pendente",
-        "confirmado",
-        "preparando",
-        "pronto",
-        "entregue"
-      ];
-
-
-      const cancelado =
-        statusAtual ===
-        "cancelado";
-
-
-      if (cancelado) {
-
-        return `
-
-          <div class="timeline-row active">
-
-            <span class="timeline-dot"></span>
-
-            <strong>
-              Pedido cancelado
-            </strong>
-
-          </div>
-
-        `;
-
-      }
-
-
-      const indiceAtual =
-        etapas.indexOf(
-          statusAtual
-        );
-
-
-      return etapas.map(
-        (status, indice) => `
-
-          <div
-            class="timeline-row ${
-              indice <= indiceAtual
-                ? "active"
-                : ""
-            }">
-
-            <span class="timeline-dot"></span>
-
-            <span>
-              ${escapeHTML(
-                nomeStatus(status)
-              )}
-            </span>
-
-          </div>
-
-        `
-      ).join("");
-
-    }
-
-
-    /* =========================================================
-       STATUS REALTIME
-    ========================================================= */
-
-    async function alterarStatusPedido(
-      id,
-      status
-    ) {
-
-      try {
-
-        const {
-          error
-        } =
-          await supabaseClient
-            .from("orders")
-            .update({
-              status
-            })
-            .eq(
-              "id",
-              id
-            );
-
-
-        if (error) {
-
-          throw error;
-
-        }
-
-
-        const pedido =
-          pedidos.find(
-            item =>
-              String(item.id) ===
-              String(id)
-          );
-
-
-        if (pedido) {
-
-          pedido.status =
-            status;
-
-        }
-
-
-        renderizarPedidos();
-
-        atualizarContadoresPedidos();
-
-        renderizarDashboard();
-
-
-        const detalheAberto =
-          document
-            .getElementById(
-              "orderDetail"
-            )
-            .classList.contains(
-              "show"
-            );
-
-
-        if (detalheAberto) {
-
-          abrirDetalhes(id);
-
-        }
-
-
-        mostrarMensagem(
-          "Status atualizado em tempo real!"
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Status:",
-          error
-        );
-
-        mostrarMensagem(
-          "Não foi possível atualizar o status: " +
-          error.message,
-          "error"
-        );
-
-        await carregarPedidos();
-
-      }
-
-    }
-
-
-    /* =========================================================
-       WHATSAPP
-    ========================================================= */
-
-    function limparTelefone(
-      telefone
-    ) {
-
-      let numero =
-        String(
-          telefone || ""
-        )
-        .replace(/\D/g, "");
-
-
-      if (
-        numero.length === 10 ||
-        numero.length === 11
-      ) {
-
-        numero =
-          "55" +
-          numero;
-
-      }
-
-
-      return numero;
-
-    }
-
-
-    function chamarWhatsApp(
-      telefone,
-      pedidoId
-    ) {
-
-      const numero =
-        limparTelefone(
-          telefone
-        );
-
-
-      if (!numero) {
-
-        mostrarMensagem(
-          "O cliente não possui WhatsApp cadastrado.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const mensagem =
-        `Olá! Aqui é da Lá Dociê. Estou entrando em contato sobre o seu pedido #${pedidoId}.`;
-
-
-      const url =
-        "https://wa.me/" +
-        numero +
-        "?text=" +
-        encodeURIComponent(
-          mensagem
-        );
-
-
-      window.open(
-        url,
-        "_blank"
-      );
-
-    }
-
-
-    /* =========================================================
-       IMPRESSÃO
-    ========================================================= */
-
-    function imprimirPedido(id) {
-
-      const pedido =
-        pedidos.find(
-          p =>
-            String(p.id) ===
-            String(id)
-        );
-
-
-      if (!pedido) {
-
-        mostrarMensagem(
-          "Pedido não encontrado.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      const cliente =
-        pedido.customer_name ||
-        pedido.customerName ||
-        pedido.name ||
-        "Não informado";
-
-
-      const telefone =
-        pedido.customer_phone ||
-        pedido.customerPhone ||
-        pedido.phone ||
-        "";
-
-
-      const endereco =
-        pedido.address ||
-        pedido.customer_address ||
-        pedido.delivery_address ||
-        "";
-
-
-      const data =
-        pedido.scheduled_date ||
-        pedido.delivery_date ||
-        pedido.date ||
-        "";
-
-
-      const horario =
-        pedido.scheduled_time ||
-        pedido.delivery_time ||
-        pedido.time ||
-        "";
-
-
-      const pagamento =
-        pedido.payment_method ||
-        pedido.paymentMethod ||
-        pedido.payment ||
-        "Não informado";
-
-
-      const total =
-        numeroSeguro(
-          pedido.total
-        );
-
-
-      const itens =
-        extrairItensPedido(
-          pedido
-        );
-
-
-      const htmlItens =
-        itens.length
-          ? itens.map(
-              item => {
-
-                const nome =
-                  item.name ||
-                  item.product_name ||
-                  item.productName ||
-                  item.nome ||
-                  "Produto";
-
-
-                const quantidade =
-                  numeroSeguro(
-                    item.quantity ||
-                    item.qty ||
-                    1
-                  );
-
-
-                const preco =
-                  numeroSeguro(
-                    item.total
-                  ) ||
-                  numeroSeguro(
-                    item.price
-                  ) *
-                  quantidade;
-
-
-                return `
-
-                  <tr>
-
-                    <td>
-                      ${quantidade}x
-                      ${escapeHTML(nome)}
-                    </td>
-
-                    <td
-                      style="
-                        text-align:right
-                      ">
-
-                      R$ ${dinheiro(preco)}
-
-                    </td>
-
-                  </tr>
-
-                `;
-
-              }
-            ).join("")
-          : `
-
-              <tr>
-
-                <td colspan="2">
-                  Itens não disponíveis
-                </td>
-
-              </tr>
-
-            `;
-
-
-      const janela =
-        window.open(
-          "",
-          "_blank",
-          "width=800,height=900"
-        );
-
-
-      janela.document.write(`
-
-        <!DOCTYPE html>
-
-        <html lang="pt-BR">
-
-        <head>
-
-          <meta charset="UTF-8">
-
-          <title>
-            Pedido #${escapeHTML(id)}
-          </title>
-
-          <style>
-
-            body {
-              font-family: Arial, sans-serif;
-              padding: 30px;
-              color: #4b3329;
             }
-
-            h1 {
-              text-align:center;
-              margin-bottom:4px;
-            }
-
-            .sub {
-              text-align:center;
-              color:#777;
-              margin-bottom:25px;
-            }
-
-            .section {
-              border-top:1px solid #ddd;
-              padding-top:15px;
-              margin-top:15px;
-            }
-
-            table {
-              width:100%;
-              border-collapse:collapse;
-              margin-top:10px;
-            }
-
-            td {
-              padding:9px 0;
-              border-bottom:1px solid #eee;
-            }
-
-            .total {
-              font-size:22px;
-              font-weight:bold;
-              text-align:right;
-              margin-top:20px;
-            }
-
-            .footer {
-              text-align:center;
-              margin-top:35px;
-              color:#777;
-              font-size:12px;
-            }
-
-          </style>
-
-        </head>
-
-        <body>
-
-          <h1>
-            LÁ DOCIÊ
-          </h1>
-
-          <div class="sub">
-            Pedido #${escapeHTML(id)}
-          </div>
-
-
-          <div class="section">
-
-            <strong>
-              CLIENTE
-            </strong>
-
-            <p>
-              ${escapeHTML(cliente)}
-              <br>
-              ${escapeHTML(telefone)}
-              <br>
-              ${escapeHTML(endereco)}
-            </p>
-
-          </div>
-
-
-          <div class="section">
-
-            <strong>
-              AGENDAMENTO
-            </strong>
-
-            <p>
-              Data: ${escapeHTML(data)}
-              <br>
-              Horário: ${escapeHTML(horario)}
-            </p>
-
-          </div>
-
-
-          <div class="section">
-
-            <strong>
-              PRODUTOS
-            </strong>
-
-            <table>
-
-              ${htmlItens}
-
-            </table>
-
-          </div>
-
-
-          <div class="section">
-
-            <strong>
-              PAGAMENTO
-            </strong>
-
-            <p>
-              ${escapeHTML(
-                formatarPagamento(
-                  pagamento
-                )
-              )}
-            </p>
-
-          </div>
-
-
-          <div class="total">
-
-            TOTAL:
-            R$ ${dinheiro(total)}
-
-          </div>
-
-
-          <div class="footer">
-
-            Lá Dociê — Confeitaria
-
-          </div>
-
-
-          <script>
-
-            window.onload = function() {
-
-              window.print();
-
-            };
-
-          <\/script>
-
-        </body>
-
-        </html>
-
-      `);
-
-
-      janela.document.close();
-
-    }
-
-
-    /* =========================================================
-       FORMATAÇÃO
-    ========================================================= */
-
-    function formatarData(
-      valor
-    ) {
-
-      if (!valor) {
-
-        return "Data não informada";
-
-      }
-
-
-      const data =
-        new Date(valor);
-
-
-      if (
-        Number.isNaN(
-          data.getTime()
-        )
-      ) {
-
-        return String(valor);
-
-      }
-
-
-      return data.toLocaleString(
-        "pt-BR"
-      );
-
-    }
-
-
-    function formatarPagamento(
-      valor
-    ) {
-
-      const texto =
-        String(
-          valor || ""
-        ).toLowerCase();
-
-
-      if (
-        texto.includes("dinheiro")
-      ) {
-
-        return "Dinheiro";
-
-      }
-
-
-      if (
-        texto.includes("pix")
-      ) {
-
-        return "Pix";
-
-      }
-
-
-      if (
-        texto.includes("cart")
-      ) {
-
-        return "Cartão";
-
-      }
-
-
-      return valor ||
-        "Não informado";
-
-    }
-
-
-    function pagamentoEhDinheiro(
-      pagamento
-    ) {
-
-      return String(
-        pagamento || ""
-      )
-      .toLowerCase()
-      .includes(
-        "dinheiro"
-      );
-
-    }
-
-
-    function escapeJS(valor) {
-
-      return String(
-        valor ?? ""
-      )
-      .replaceAll("\\", "\\\\")
-      .replaceAll("'", "\\'")
-      .replaceAll("\n", "\\n")
-      .replaceAll("\r", "");
-
-    }
-
-
-    /* =========================================================
-       PRODUTOS
-    ========================================================= */
-
-    async function carregarProdutos() {
-
-      const area =
-        document.getElementById(
-          "listaProdutos"
-        );
-
-
-      area.innerHTML = `
-        <div class="loading">
-          Carregando produtos...
-        </div>
-      `;
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("products")
-            .select(
-              "id,name,category,price,description,image,active,created_at"
-            )
-            .order(
-              "created_at",
-              {
-                ascending: false
-              }
-            );
-
-
-        if (error) {
-
-          throw error;
-
-        }
-
-
-        produtos =
-          Array.isArray(data)
-            ? data
-            : [];
-
-
-        renderizarProdutos();
-
-        atualizarContadoresPedidos();
-
-      } catch (error) {
-
-        console.error(
-          "Produtos:",
-          error
-        );
-
-        area.innerHTML = `
-          <div class="empty">
-            Erro ao carregar produtos.
-            <br><br>
-            ${escapeHTML(
-              error.message
-            )}
-          </div>
-        `;
-
-      }
-
-    }
-
-
-    function renderizarProdutos() {
-
-      const area =
-        document.getElementById(
-          "listaProdutos"
-        );
-
-
-      if (!produtos.length) {
-
-        area.innerHTML = `
-          <div class="empty">
-            Nenhum produto cadastrado.
-          </div>
-        `;
-
-        return;
-
-      }
-
-
-      area.innerHTML = "";
-
-
-      produtos.forEach(
-        produto => {
-
-          const card =
-            document.createElement(
-              "div"
-            );
-
-
-          card.className =
-            "product-card";
-
-
-          const imagem =
-            produto.image
-              ? `
-                <img
-                  src="${escapeHTML(
-                    produto.image
-                  )}"
-                  alt="${escapeHTML(
-                    produto.name
-                  )}">
-              `
-              : "🍰";
-
-
-          card.innerHTML = `
-
-            <div class="product-img">
-              ${imagem}
-            </div>
-
-
-            <div class="product-content">
-
-              <span
-                class="${produto.active
-                  ? "status status-pronto"
-                  : "status status-cancelado"}">
-
-                ${
-                  produto.active
-                    ? "ATIVO"
-                    : "INATIVO"
-                }
-
-              </span>
-
-
-              <h3>
-                ${escapeHTML(
-                  produto.name
-                )}
-              </h3>
-
-
-              <div class="summary-small">
-                ${escapeHTML(
-                  produto.category
-                )}
-              </div>
-
-
-              <div class="product-price">
-
-                R$ ${dinheiro(
-                  produto.price
-                )}
-
-              </div>
-
-
-              <div class="product-actions">
-
-                <button
-                  class="btn btn-primary"
-                  onclick="
-                    editarProduto(
-                      '${String(
-                        produto.id
-                      ).replaceAll(
-                        "'",
-                        "\\'"
-                      )}'
-                    )
-                  ">
-
-                  ✏️ Editar
-
-                </button>
-
-
-                <button
-                  class="btn btn-red"
-                  onclick="
-                    desativarProduto(
-                      '${String(
-                        produto.id
-                      ).replaceAll(
-                        "'",
-                        "\\'"
-                      )}'
-                    )
-                  ">
-
-                  ${
-                    produto.active
-                      ? "Ocultar"
-                      : "Ativar"
-                  }
-
-                </button>
-
-              </div>
-
-            </div>
-
-          `;
-
-
-          area.appendChild(card);
-
-        }
-      );
-
-    }
-
-
-    function novoProduto() {
-
-      document
-        .getElementById(
-          "editorProduto"
-        )
-        .classList.remove(
-          "hidden"
-        );
-
-
-      document.getElementById(
-        "editorTitulo"
-      ).textContent =
-        "Novo produto";
-
-
-      document.getElementById(
-        "produtoId"
-      ).value = "";
-
-
-      document.getElementById(
-        "produtoNome"
-      ).value = "";
-
-
-      document.getElementById(
-        "produtoCategoria"
-      ).value = "bolos";
-
-
-      document.getElementById(
-        "produtoPreco"
-      ).value = "";
-
-
-      document.getElementById(
-        "produtoDescricao"
-      ).value = "";
-
-
-      document.getElementById(
-        "produtoImagem"
-      ).value = "";
-
-
-      document.getElementById(
-        "produtoAtivo"
-      ).checked = true;
-
-    }
-
-
-    function editarProduto(id) {
-
-      const produto =
-        produtos.find(
-          p =>
-            String(p.id) ===
-            String(id)
-        );
-
-
-      if (!produto) {
-
-        mostrarMensagem(
-          "Produto não encontrado.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      document
-        .getElementById(
-          "editorProduto"
-        )
-        .classList.remove(
-          "hidden"
-        );
-
-
-      document.getElementById(
-        "editorTitulo"
-      ).textContent =
-        "Editar produto";
-
-
-      document.getElementById(
-        "produtoId"
-      ).value =
-        produto.id;
-
-
-      document.getElementById(
-        "produtoNome"
-      ).value =
-        produto.name || "";
-
-
-      document.getElementById(
-        "produtoCategoria"
-      ).value =
-        produto.category || "bolos";
-
-
-      document.getElementById(
-        "produtoPreco"
-      ).value =
-        produto.price ?? "";
-
-
-      document.getElementById(
-        "produtoDescricao"
-      ).value =
-        produto.description || "";
-
-
-      document.getElementById(
-        "produtoImagem"
-      ).value =
-        produto.image || "";
-
-
-      document.getElementById(
-        "produtoAtivo"
-      ).checked =
-        produto.active !== false;
-
-    }
-
-
-    function fecharEditor() {
-
-      document
-        .getElementById(
-          "editorProduto"
-        )
-        .classList.add(
-          "hidden"
-        );
-
-    }
-
-
-    async function salvarProduto() {
-
-      const id =
-        document.getElementById(
-          "produtoId"
-        ).value;
-
-
-      const dados = {
-
-        name:
-          document.getElementById(
-            "produtoNome"
-          ).value.trim(),
-
-        category:
-          document.getElementById(
-            "produtoCategoria"
-          ).value,
-
-        price:
-          numeroSeguro(
-            document.getElementById(
-              "produtoPreco"
-            ).value
-          ),
-
-        description:
-          document.getElementById(
-            "produtoDescricao"
-          ).value.trim() ||
-          null,
-
-        image:
-          document.getElementById(
-            "produtoImagem"
-          ).value.trim() ||
-          null,
-
-        active:
-          document.getElementById(
-            "produtoAtivo"
-          ).checked
-
-      };
-
-
-      if (!dados.name) {
-
-        mostrarMensagem(
-          "Digite o nome do produto.",
-          "error"
-        );
-
-        return;
-
-      }
-
-
-      try {
-
-        if (id) {
-
-          const {
-            data,
-            error
-          } =
-            await supabaseClient
-              .from("products")
-              .update(dados)
-              .eq(
-                "id",
-                id
-              )
-              .select()
-              .single();
-
-
-          if (error) {
-
-            throw error;
 
           }
 
+          if(
+            payload.eventType === "DELETE"
+          ){
 
-          const indice =
-            produtos.findIndex(
-              p =>
-                String(p.id) ===
-                String(id)
-            );
+            pedidos =
+              pedidos.filter(
+                p =>
+                  Number(p.id) !==
+                  Number(payload.old.id)
+              );
 
+            if(
+              pedidoAtual &&
+              Number(pedidoAtual.id) ===
+              Number(payload.old.id)
+            ){
 
-          if (indice >= 0) {
+              fecharPedido();
 
-            produtos[indice] =
-              data;
+            }
 
           }
 
+          renderizarPedidos();
+          atualizarDashboard();
 
           mostrarMensagem(
-            "Produto atualizado!"
-          );
-
-        } else {
-
-          const {
-            data,
-            error
-          } =
-            await supabaseClient
-              .from("products")
-              .insert([
-                dados
-              ])
-              .select()
-              .single();
-
-
-          if (error) {
-
-            throw error;
-
-          }
-
-
-          produtos.unshift(
-            data
-          );
-
-
-          mostrarMensagem(
-            "Produto criado!"
+            "Pedido atualizado em tempo real."
           );
 
         }
+      )
 
+      .subscribe(status=>{
 
-        renderizarProdutos();
-
-        atualizarContadoresPedidos();
-
-        fecharEditor();
-
-      } catch (error) {
-
-        console.error(
-          "Produto:",
-          error
+        console.log(
+          "Realtime:",
+          status
         );
 
-        mostrarMensagem(
-          error.message,
-          "error"
-        );
+      });
 
-      }
+}
+
+
+/* =========================================================
+   CARREGAR TUDO
+========================================================= */
+
+async function carregarTudo(){
+
+  await Promise.all([
+    carregarProdutos(),
+    carregarPedidos(),
+    carregarLoja()
+  ]);
+
+  atualizarDashboard();
+
+}
+
+
+/* =========================================================
+   INICIALIZAÇÃO
+========================================================= */
+
+async function iniciar(){
+
+  try{
+
+    const {data} =
+      await supabaseClient.auth.getSession();
+
+    if(
+      data &&
+      data.session
+    ){
+
+      await abrirAdmin();
 
     }
 
+  }catch(error){
 
-    async function desativarProduto(id) {
+    console.error(
+      "Inicialização:",
+      error
+    );
 
-      const produto =
-        produtos.find(
-          p =>
-            String(p.id) ===
-            String(id)
-        );
+  }
 
+}
 
-      if (!produto) {
+iniciar();
 
-        return;
-
-      }
-
-
-      const novoEstado =
-        !Boolean(
-          produto.active
-        );
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("products")
-            .update({
-              active:
-                novoEstado
-            })
-            .eq(
-              "id",
-              id
-            )
-            .select()
-            .single();
-
-
-        if (error) {
-
-          throw error;
-
-        }
-
-
-        const indice =
-          produtos.findIndex(
-            p =>
-              String(p.id) ===
-              String(id)
-          );
-
-
-        if (indice >= 0) {
-
-          produtos[indice] =
-            data;
-
-        }
-
-
-        renderizarProdutos();
-
-        atualizarContadoresPedidos();
-
-
-        mostrarMensagem(
-          novoEstado
-            ? "Produto ativado!"
-            : "Produto ocultado!"
-        );
-
-      } catch (error) {
-
-        mostrarMensagem(
-          error.message,
-          "error"
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       ESTOQUE
-    ========================================================= */
-
-    async function carregarEstoque() {
-
-      const area =
-        document.getElementById(
-          "listaEstoque"
-        );
-
-
-      area.innerHTML = `
-        <div class="loading">
-          Carregando estoque...
-        </div>
-      `;
-
-
-      /*
-        Esta parte usa a coluna stock,
-        caso ela já exista na tabela products.
-
-        Se a sua tabela ainda não possuir essa
-        coluna, o sistema não altera seus produtos.
-      */
-
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("products")
-            .select(
-              "id,name,price,active,stock"
-            )
-            .order(
-              "name",
-              {
-                ascending: true
-              }
-            );
-
-
-        if (error) {
-
-          throw error;
-
-        }
-
-
-        const lista =
-          Array.isArray(data)
-            ? data
-            : [];
-
-
-        if (!lista.length) {
-
-          area.innerHTML = `
-            <div class="empty">
-              Nenhum produto cadastrado.
-            </div>
-          `;
-
-          return;
-
-        }
-
-
-        area.innerHTML = "";
-
-
-        lista.forEach(
-          produto => {
-
-            const estoque =
-              numeroSeguro(
-                produto.stock
-              );
-
-
-            const card =
-              document.createElement(
-                "div"
-              );
-
-
-            card.className =
-              "stock-card";
-
-
-            card.innerHTML = `
-
-              <strong>
-                ${escapeHTML(
-                  produto.name
-                )}
-              </strong>
-
-              <div
-                class="
-                  stock-number
-                  ${
-                    estoque <= 5
-                      ? "stock-low"
-                      : "stock-ok"
-                  }
-                "
-                style="margin:10px 0">
-
-                ${estoque}
-
-              </div>
-
-              <div
-                class="summary-small">
-
-                ${
-                  estoque <= 5
-                    ? "⚠️ Estoque baixo"
-                    : "✓ Estoque normal"
-                }
-
-              </div>
-
-
-              <div
-                style="
-                  display:flex;
-                  gap:7px;
-                  margin-top:12px;
-                ">
-
-                <input
-                  id="stock-${produto.id}"
-                  type="number"
-                  min="0"
-                  value="${estoque}"
-                  style="
-                    flex:1;
-                    padding:10px;
-                    border:1px solid #eadfd7;
-                    border-radius:9px;
-                  ">
-
-
-                <button
-                  class="btn btn-primary"
-                  onclick="
-                    salvarEstoque(
-                      '${String(
-                        produto.id
-                      ).replaceAll(
-                        "'",
-                        "\\'"
-                      )}'
-                    )
-                  ">
-
-                  Salvar
-
-                </button>
-
-              </div>
-
-            `;
-
-
-            area.appendChild(card);
-
-          }
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Estoque:",
-          error
-        );
-
-
-        area.innerHTML = `
-
-          <div class="empty">
-
-            O controle de estoque precisa
-            da coluna <strong>stock</strong>
-            na tabela products.
-
-            <br><br>
-
-            Nenhum pedido ou produto foi apagado.
-
-          </div>
-
-        `;
-
-      }
-
-    }
-
-
-    async function salvarEstoque(id) {
-
-      const input =
-        document.getElementById(
-          "stock-" + id
-        );
-
-
-      if (!input) {
-
-        return;
-
-      }
-
-
-      const quantidade =
-        Math.max(
-          0,
-          Math.floor(
-            numeroSeguro(
-              input.value
-            )
-          )
-        );
-
-
-      try {
-
-        const {
-          error
-        } =
-          await supabaseClient
-            .from("products")
-            .update({
-              stock:
-                quantidade
-            })
-            .eq(
-              "id",
-              id
-            );
-
-
-        if (error) {
-
-          throw error;
-
-        }
-
-
-        mostrarMensagem(
-          "Estoque atualizado!"
-        );
-
-
-        carregarEstoque();
-
-      } catch (error) {
-
-        console.error(
-          "Estoque:",
-          error
-        );
-
-        mostrarMensagem(
-          "Não foi possível atualizar o estoque: " +
-          error.message,
-          "error"
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       LOJA
-    ========================================================= */
-
-    async function carregarLoja() {
-
-      try {
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("store_settings")
-            .select("*")
-            .limit(1)
-            .maybeSingle();
-
-
-        if (error) {
-
-          throw error;
-
-        }
-
-
-        loja =
-          data || null;
-
-
-        if (!loja) {
-
-          return;
-
-        }
-
-
-        document.getElementById(
-          "lojaNome"
-        ).value =
-          loja.store_name || "";
-
-
-        document.getElementById(
-          "lojaDescricao"
-        ).value =
-          loja.description || "";
-
-
-        document.getElementById(
-          "lojaTelefone"
-        ).value =
-          loja.phone || "";
-
-
-        document.getElementById(
-          "lojaWhatsapp"
-        ).value =
-          loja.whatsapp || "";
-
-
-        document.getElementById(
-          "lojaEndereco"
-        ).value =
-          loja.address || "";
-
-
-        document.getElementById(
-          "lojaInstagram"
-        ).value =
-          loja.instagram || "";
-
-
-        document.getElementById(
-          "lojaHorario"
-        ).value =
-          loja.opening_hours ||
-          "Terça a sábado: 14h às 21h\nDomingo: 15h30 às 20h";
-
-
-        document.getElementById(
-          "lojaPix"
-        ).value =
-          loja.pix_key || "";
-
-
-        document.getElementById(
-          "lojaTaxa"
-        ).value =
-          loja.delivery_fee ?? 0;
-
-      } catch (error) {
-
-        console.error(
-          "Loja:",
-          error
-        );
-
-        mostrarMensagem(
-          "Não foi possível carregar as informações da loja.",
-          "error"
-        );
-
-      }
-
-    }
-
-
-    async function salvarLoja() {
-
-      const dados = {
-
-        store_name:
-          document.getElementById(
-            "lojaNome"
-          ).value.trim(),
-
-        description:
-          document.getElementById(
-            "lojaDescricao"
-          ).value.trim(),
-
-        phone:
-          document.getElementById(
-            "lojaTelefone"
-          ).value.trim(),
-
-        whatsapp:
-          document.getElementById(
-            "lojaWhatsapp"
-          ).value.trim(),
-
-        address:
-          document.getElementById(
-            "lojaEndereco"
-          ).value.trim(),
-
-        instagram:
-          document.getElementById(
-            "lojaInstagram"
-          ).value.trim(),
-
-        opening_hours:
-          document.getElementById(
-            "lojaHorario"
-          ).value.trim(),
-
-        pix_key:
-          document.getElementById(
-            "lojaPix"
-          ).value.trim(),
-
-        delivery_fee:
-          numeroSeguro(
-            document.getElementById(
-              "lojaTaxa"
-            ).value
-          ),
-
-        updated_at:
-          new Date().toISOString()
-
-      };
-
-
-      try {
-
-        if (
-          loja &&
-          loja.id
-        ) {
-
-          const {
-            data,
-            error
-          } =
-            await supabaseClient
-              .from("store_settings")
-              .update(dados)
-              .eq(
-                "id",
-                loja.id
-              )
-              .select()
-              .single();
-
-
-          if (error) {
-
-            throw error;
-
-          }
-
-
-          loja =
-            data;
-
-        } else {
-
-          const {
-            data,
-            error
-          } =
-            await supabaseClient
-              .from("store_settings")
-              .insert([
-                dados
-              ])
-              .select()
-              .single();
-
-
-          if (error) {
-
-            throw error;
-
-          }
-
-
-          loja =
-            data;
-
-        }
-
-
-        mostrarMensagem(
-          "Informações da loja salvas!"
-        );
-
-      } catch (error) {
-
-        console.error(
-          "Loja:",
-          error
-        );
-
-        mostrarMensagem(
-          error.message,
-          "error"
-        );
-
-      }
-
-    }
-
-
-    /* =========================================================
-       DASHBOARD
-    ========================================================= */
-
-    function renderizarDashboard() {
-
-      const area =
-        document.getElementById(
-          "dashboardPedidos"
-        );
-
-
-      if (!area) {
-
-        return;
-
-      }
-
-
-      const recentes =
-        pedidos.slice(
-          0,
-          5
-        );
-
-
-      if (!recentes.length) {
-
-        area.innerHTML = `
-          <div class="empty">
-            Nenhum pedido recente.
-          </div>
-        `;
-
-        return;
-
-      }
-
-
-      area.innerHTML = "";
-
-
-      recentes.forEach(
-        pedido => {
-
-          area.appendChild(
-            criarCardPedido(
-              pedido
-            )
-          );
-
-        }
-      );
-
-    }
-
-
-    /* =========================================================
-       REALTIME
-    ========================================================= */
-
-    function iniciarRealtime() {
-
-      if (realtimeChannel) {
-
-        return;
-
-      }
-
-
-      realtimeChannel =
-        supabaseClient
-          .channel(
-            "admin-orders-realtime"
-          )
-          .on(
-            "postgres_changes",
-            {
-              event: "*",
-              schema: "public",
-              table: "orders"
-            },
-            payload => {
-
-              console.log(
-                "Realtime pedido:",
-                payload
-              );
-
-
-              if (
-                payload.eventType ===
-                "INSERT"
-              ) {
-
-                const existe =
-                  pedidos.some(
-                    p =>
-                      String(p.id) ===
-                      String(
-                        payload.new.id
-                      )
-                  );
-
-
-                if (!existe) {
-
-                  pedidos.unshift(
-                    payload.new
-                  );
-
-                }
-
-              }
-
-
-              if (
-                payload.eventType ===
-                "UPDATE"
-              ) {
-
-                const indice =
-                  pedidos.findIndex(
-                    p =>
-                      String(p.id) ===
-                      String(
-                        payload.new.id
-                      )
-                  );
-
-
-                if (indice >= 0) {
-
-                  pedidos[indice] =
-                    payload.new;
-
-                } else {
-
-                  pedidos.unshift(
-                    payload.new
-                  );
-
-                }
-
-              }
-
-
-              if (
-                payload.eventType ===
-                "DELETE"
-              ) {
-
-                pedidos =
-                  pedidos.filter(
-                    p =>
-                      String(p.id) !==
-                      String(
-                        payload.old.id
-                      )
-                  );
-
-              }
-
-
-              atualizarContadoresPedidos();
-
-              renderizarPedidos();
-
-              renderizarDashboard();
-
-
-              mostrarMensagem(
-                "Pedido atualizado em tempo real."
-              );
-
-            }
-          )
-          .subscribe(
-            status => {
-
-              console.log(
-                "Status Realtime:",
-                status
-              );
-
-            }
-          );
-
-    }
-
-
-    /* =========================================================
-       CARREGAR TUDO
-    ========================================================= */
-
-    async function carregarTudo() {
-
-      await Promise.all([
-        carregarProdutos(),
-        carregarPedidos(),
-        carregarLoja()
-      ]);
-
-      carregarEstoque();
-
-      atualizarContadoresPedidos();
-
-      renderizarDashboard();
-
-    }
-
-
-    /* =========================================================
-       INICIALIZAÇÃO
-    ========================================================= */
-
-    async function iniciar() {
-
-      try {
-
-        const {
-          data
-        } =
-          await supabaseClient.auth
-            .getSession();
-
-
-        if (
-          data &&
-          data.session
-        ) {
-
-          document
-            .getElementById(
-              "loginScreen"
-            )
-            .classList.add(
-              "hidden"
-            );
-
-
-          document
-            .getElementById(
-              "adminScreen"
-            )
-            .classList.remove(
-              "hidden"
-            );
-
-
-          document
-            .getElementById(
-              "usuarioEmail"
-            )
-            .textContent =
-            data.session.user.email ||
-            "";
-
-
-          await carregarTudo();
-
-          iniciarRealtime();
-
-        }
-
-      } catch (error) {
-
-        console.error(
-          "Inicialização:",
-          error
-        );
-
-      }
-
-    }
-
-
-    iniciar();
-
-  </script>
+</script>
 
 </body>
-
 </html>
-
-

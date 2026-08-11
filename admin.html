@@ -1,103 +1,296 @@
 <!DOCTYPE html>
-
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Painel Administrativo | Lá Dociê</title>
+<title>Lá Dociê | Painel Administrativo</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-
 *{
   box-sizing:border-box;
 }
 
+:root{
+  --marrom:#4b281d;
+  --marrom2:#6b3b2a;
+  --dourado:#e0b35b;
+  --dourado2:#c89532;
+  --fundo:#f7f3f0;
+  --branco:#ffffff;
+  --texto:#352019;
+  --muted:#806d64;
+  --borda:#eaded7;
+  --verde:#2d7a43;
+  --vermelho:#a63c3c;
+  --azul:#4267a8;
+}
+
 body{
   margin:0;
-  font-family:Arial,sans-serif;
-  background:#f8f3ef;
-  color:#4b281d;
+  font-family:Arial,Helvetica,sans-serif;
+  background:var(--fundo);
+  color:var(--texto);
 }
 
 button,
 input,
 textarea,
 select{
-  font-family:inherit;
+  font:inherit;
 }
 
 button{
   cursor:pointer;
 }
 
-header{
-  background:#4b281d;
+.hidden{
+  display:none!important;
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+.login-screen{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  background:
+    radial-gradient(circle at top,#fff 0,#f7f3f0 55%,#eee4de 100%);
+}
+
+.login-card{
+  width:100%;
+  max-width:430px;
+  background:white;
+  border-radius:24px;
+  padding:34px;
+  box-shadow:0 20px 60px rgba(75,40,29,.15);
+}
+
+.login-logo{
+  text-align:center;
+  font-size:30px;
+  font-weight:800;
+  color:var(--marrom);
+}
+
+.login-logo span{
+  color:var(--dourado2);
+}
+
+.login-subtitle{
+  text-align:center;
+  color:var(--muted);
+  margin:8px 0 28px;
+}
+
+.field{
+  margin-bottom:16px;
+}
+
+.field label{
+  display:block;
+  font-weight:700;
+  margin-bottom:7px;
+}
+
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+  border:1px solid var(--borda);
+  background:#fff;
+  border-radius:12px;
+  padding:13px 14px;
+  outline:none;
+  color:var(--texto);
+}
+
+.field input:focus,
+.field textarea:focus,
+.field select:focus{
+  border-color:var(--dourado2);
+  box-shadow:0 0 0 3px rgba(200,149,50,.12);
+}
+
+.field textarea{
+  min-height:100px;
+  resize:vertical;
+}
+
+.login-button{
+  width:100%;
+  border:0;
+  background:var(--marrom);
   color:white;
-  padding:18px 20px;
+  padding:14px;
+  border-radius:12px;
+  font-weight:700;
+  margin-top:5px;
+}
+
+.login-button:hover{
+  background:var(--marrom2);
+}
+
+/* =========================
+   LAYOUT ADMIN
+========================= */
+
+.admin{
+  min-height:100vh;
+}
+
+.sidebar{
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  width:250px;
+  background:var(--marrom);
+  color:white;
+  padding:22px 15px;
+  z-index:100;
+  overflow-y:auto;
+}
+
+.brand{
+  padding:10px 12px 28px;
+  font-size:24px;
+  font-weight:800;
+}
+
+.brand span{
+  color:var(--dourado);
+}
+
+.brand small{
+  display:block;
+  font-size:11px;
+  font-weight:400;
+  color:#dbc8be;
+  margin-top:5px;
+}
+
+.menu{
+  display:grid;
+  gap:7px;
+}
+
+.menu button{
+  border:0;
+  background:transparent;
+  color:#f6ebe5;
+  padding:13px 14px;
+  border-radius:12px;
+  text-align:left;
+  font-weight:600;
+  transition:.2s;
+}
+
+.menu button:hover{
+  background:rgba(255,255,255,.08);
+}
+
+.menu button.active{
+  background:var(--dourado);
+  color:var(--marrom);
+}
+
+.menu-icon{
+  width:24px;
+  display:inline-block;
+}
+
+.sidebar-bottom{
+  position:absolute;
+  left:15px;
+  right:15px;
+  bottom:20px;
+}
+
+.logout-button{
+  width:100%;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.06);
+  color:white;
+  padding:12px;
+  border-radius:11px;
+}
+
+.main{
+  margin-left:250px;
+  min-height:100vh;
+}
+
+.topbar{
+  height:72px;
+  background:white;
+  border-bottom:1px solid var(--borda);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 30px;
   position:sticky;
   top:0;
   z-index:50;
 }
 
-.header{
-  max-width:1200px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:15px;
+.topbar-title{
+  font-weight:800;
+  font-size:19px;
 }
 
-.logo{
-  font-size:23px;
-  font-weight:bold;
-}
-
-.logo span{
-  color:#e0b35b;
-}
-
-.logout{
-  background:#e0b35b;
+.mobile-menu{
+  display:none;
   border:0;
-  color:#4b281d;
-  padding:10px 16px;
-  border-radius:10px;
-  font-weight:bold;
-}
-
-.container{
-  max-width:1200px;
-  margin:auto;
-  padding:25px 18px 50px;
-}
-
-h1{
-  margin-top:0;
-}
-
-.tabs{
-  display:flex;
-  gap:8px;
-  flex-wrap:wrap;
-  margin-bottom:25px;
-}
-
-.tab{
-  border:1px solid #d8cbc4;
-  background:white;
-  color:#4b281d;
-  padding:11px 15px;
-  border-radius:10px;
-}
-
-.tab.active{
-  background:#4b281d;
+  background:var(--marrom);
   color:white;
+  border-radius:9px;
+  padding:9px 12px;
 }
+
+.content{
+  padding:28px;
+  max-width:1450px;
+  margin:auto;
+}
+
+/* =========================
+   NOTICE
+========================= */
+
+.notice{
+  display:none;
+  padding:13px 16px;
+  border-radius:12px;
+  margin-bottom:18px;
+  font-weight:600;
+}
+
+.notice.show{
+  display:block;
+}
+
+.notice.success{
+  background:#def3e3;
+  color:#216735;
+}
+
+.notice.error{
+  background:#ffe1e1;
+  color:#8b2525;
+}
+
+/* =========================
+   PANELS
+========================= */
 
 .panel{
   display:none;
@@ -107,42 +300,175 @@ h1{
   display:block;
 }
 
-.box{
-  background:white;
-  border-radius:16px;
-  padding:20px;
-  margin-bottom:20px;
-  box-shadow:0 4px 15px rgba(70,35,20,.07);
+.page-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:22px;
 }
 
-.box h2{
-  margin-top:0;
+.page-header h1{
+  margin:0;
+  font-size:28px;
+}
+
+.page-header p{
+  color:var(--muted);
+  margin:6px 0 0;
+}
+
+.primary-button{
+  border:0;
+  background:var(--marrom);
+  color:white;
+  padding:12px 17px;
+  border-radius:11px;
+  font-weight:700;
+}
+
+.gold-button{
+  border:0;
+  background:var(--dourado);
+  color:var(--marrom);
+  padding:12px 17px;
+  border-radius:11px;
+  font-weight:700;
+}
+
+/* =========================
+   DASHBOARD
+========================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-bottom:24px;
+}
+
+.stat{
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:17px;
+  padding:20px;
+  box-shadow:0 4px 15px rgba(70,35,20,.05);
+}
+
+.stat-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.stat-icon{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  background:#f5eadc;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:21px;
+}
+
+.stat-number{
+  font-size:27px;
+  font-weight:800;
+  margin-top:15px;
+}
+
+.stat-label{
+  color:var(--muted);
+  font-size:13px;
+  margin-top:4px;
+}
+
+.dashboard-grid{
+  display:grid;
+  grid-template-columns:1.5fr 1fr;
+  gap:18px;
+}
+
+.card{
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:17px;
+  padding:20px;
+  box-shadow:0 4px 15px rgba(70,35,20,.05);
+}
+
+.card-title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.card-title h2{
+  margin:0;
+  font-size:18px;
+}
+
+/* =========================
+   PRODUTOS
+========================= */
+
+.toolbar{
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:16px;
+  padding:15px;
+  display:flex;
+  gap:10px;
+  margin-bottom:18px;
+  flex-wrap:wrap;
+}
+
+.search{
+  flex:1;
+  min-width:200px;
+}
+
+.search input{
+  width:100%;
+  padding:12px 14px;
+  border:1px solid var(--borda);
+  border-radius:10px;
+  outline:none;
+}
+
+.filter{
+  padding:12px;
+  border:1px solid var(--borda);
+  border-radius:10px;
+  background:white;
 }
 
 .products{
   display:grid;
-  grid-template-columns:repeat(auto-fit,minmax(270px,1fr));
+  grid-template-columns:repeat(3,1fr);
   gap:18px;
 }
 
 .product-card{
-  border:1px solid #e6dcd6;
-  border-radius:15px;
-  padding:15px;
-  background:#fff;
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:17px;
+  overflow:hidden;
+  box-shadow:0 4px 15px rgba(70,35,20,.05);
 }
 
 .product-img{
-  width:100%;
-  height:180px;
-  border-radius:12px;
-  overflow:hidden;
-  background:#f2e6df;
+  height:190px;
+  background:#f2e7e0;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:50px;
-  margin-bottom:12px;
+  font-size:55px;
+  overflow:hidden;
 }
 
 .product-img img{
@@ -151,758 +477,1251 @@ h1{
   object-fit:cover;
 }
 
-.field{
-  margin-bottom:12px;
+.product-body{
+  padding:17px;
 }
 
-.field label{
-  display:block;
-  font-weight:bold;
-  margin-bottom:6px;
+.product-body h3{
+  margin:0 0 7px;
+  font-size:18px;
 }
 
-.field input,
-.field textarea,
-.field select{
-  width:100%;
-  padding:11px;
-  border:1px solid #d8cbc4;
-  border-radius:9px;
-  background:white;
-  color:#4b281d;
-  font-size:15px;
+.product-category{
+  font-size:12px;
+  color:var(--muted);
+  margin-bottom:10px;
 }
 
-.field textarea{
-  min-height:75px;
-  resize:vertical;
+.product-description{
+  color:var(--muted);
+  font-size:13px;
+  min-height:36px;
+  line-height:1.4;
 }
 
-.row{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
+.product-price{
+  color:var(--dourado2);
+  font-size:21px;
+  font-weight:800;
+  margin:13px 0;
 }
 
-.actions{
+.product-actions{
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:8px;
-  margin-top:12px;
 }
 
 .btn{
   border:0;
   padding:11px;
-  border-radius:9px;
-  font-weight:bold;
+  border-radius:10px;
+  font-weight:700;
 }
 
-.btn-save{
-  background:#4b281d;
-  color:white;
+.btn-edit{
+  background:#f1e5d8;
+  color:var(--marrom);
 }
 
 .btn-delete{
-  background:#a33e3e;
-  color:white;
+  background:#ffe3e3;
+  color:#9b3232;
 }
 
-.btn-new{
-  background:#e0b35b;
-  color:#4b281d;
+.btn-edit:hover{
+  background:#e9d7c4;
 }
 
-.btn-cancel{
-  background:#e9ded8;
-  color:#4b281d;
+.btn-delete:hover{
+  background:#ffd0d0;
 }
 
 .status{
-  display:inline-block;
+  display:inline-flex;
   padding:5px 9px;
-  border-radius:15px;
-  font-size:12px;
-  font-weight:bold;
-  margin-bottom:10px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:800;
+  margin-bottom:8px;
 }
 
 .status.on{
-  background:#dff3df;
-  color:#276227;
+  background:#def3e3;
+  color:#276b38;
 }
 
 .status.off{
-  background:#f7dddd;
-  color:#8a2828;
-}
-
-.notice{
-  display:none;
-  padding:12px;
-  border-radius:10px;
-  margin-bottom:15px;
-  font-weight:bold;
-}
-
-.notice.show{
-  display:block;
-}
-
-.notice.success{
-  background:#def3df;
-  color:#236329;
-}
-
-.notice.error{
   background:#ffe1e1;
   color:#8b2525;
 }
 
-.loading{
-  text-align:center;
-  padding:35px;
-  color:#765b51;
-}
+/* =========================
+   EDITOR
+========================= */
 
-.empty{
-  text-align:center;
-  padding:35px;
-  color:#765b51;
-}
-
-.login{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-}
-
-.login-box{
-  width:100%;
-  max-width:420px;
+.editor{
   background:white;
-  border-radius:20px;
-  padding:28px;
-  box-shadow:0 8px 30px rgba(70,35,20,.12);
+  border:1px solid var(--borda);
+  border-radius:17px;
+  padding:22px;
+  margin-bottom:20px;
+  box-shadow:0 5px 20px rgba(70,35,20,.07);
 }
 
-.login-box h1{
-  text-align:center;
+.editor-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
 }
 
-.login-box button{
-  width:100%;
+.editor-header h2{
+  margin:0;
+}
+
+.close-editor{
   border:0;
-  background:#4b281d;
-  color:white;
-  padding:13px;
-  border-radius:10px;
-  font-weight:bold;
+  background:#eee5df;
+  color:var(--marrom);
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  font-size:20px;
 }
 
-.hidden{
-  display:none!important;
+.editor-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:15px;
 }
+
+.editor-full{
+  grid-column:1/-1;
+}
+
+.editor-actions{
+  display:flex;
+  gap:10px;
+  margin-top:5px;
+}
+
+.cancel-button{
+  border:0;
+  background:#eee5df;
+  color:var(--marrom);
+  padding:12px 18px;
+  border-radius:10px;
+  font-weight:700;
+}
+
+/* =========================
+   PEDIDOS
+========================= */
 
 .orders{
   display:grid;
-  gap:12px;
+  gap:14px;
 }
 
 .order{
-  border:1px solid #e4d9d3;
-  border-radius:12px;
-  padding:15px;
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:16px;
+  padding:18px;
+}
+
+.order-head{
+  display:flex;
+  justify-content:space-between;
+  gap:15px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+
+.order-number{
+  font-weight:800;
+  font-size:17px;
+}
+
+.order-date{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.order-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.order-info{
+  background:#faf7f5;
+  padding:12px;
+  border-radius:10px;
+}
+
+.order-info small{
+  display:block;
+  color:var(--muted);
+  margin-bottom:4px;
+}
+
+.order-info strong{
+  display:block;
+}
+
+.order-footer{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-top:15px;
+  padding-top:15px;
+  border-top:1px solid var(--borda);
+}
+
+.order-total{
+  font-size:20px;
+  color:var(--dourado2);
+  font-weight:800;
+}
+
+.status-select{
+  border:1px solid var(--borda);
+  border-radius:9px;
+  padding:9px;
   background:white;
 }
 
-.order strong{
-  display:block;
-  margin-bottom:6px;
+/* =========================
+   LOJA
+========================= */
+
+.settings-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:18px;
 }
 
-.small{
-  font-size:13px;
-  color:#765b51;
+.settings-card{
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:17px;
+  padding:22px;
 }
 
-.save-all{
-  background:#4b281d;
-  color:white;
-  border:0;
-  padding:13px 18px;
-  border-radius:10px;
-  font-weight:bold;
+.settings-card.full{
+  grid-column:1/-1;
+}
+
+.settings-card h2{
+  margin-top:0;
+}
+
+/* =========================
+   EMPTY / LOADING
+========================= */
+
+.loading,
+.empty{
+  background:white;
+  border:1px solid var(--borda);
+  border-radius:15px;
+  padding:40px;
+  text-align:center;
+  color:var(--muted);
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:1100px){
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .products{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .dashboard-grid{
+    grid-template-columns:1fr;
+  }
+
+  .order-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+@media(max-width:800px){
+
+  .sidebar{
+    transform:translateX(-100%);
+    transition:.25s;
+  }
+
+  .sidebar.open{
+    transform:translateX(0);
+  }
+
+  .main{
+    margin-left:0;
+  }
+
+  .mobile-menu{
+    display:block;
+  }
+
+  .topbar{
+    padding:0 15px;
+  }
+
+  .content{
+    padding:18px 12px 35px;
+  }
+
+  .settings-grid{
+    grid-template-columns:1fr;
+  }
+
+  .settings-card.full{
+    grid-column:auto;
+  }
+
+  .editor-grid{
+    grid-template-columns:1fr;
+  }
+
+  .editor-full{
+    grid-column:auto;
+  }
 }
 
 @media(max-width:600px){
 
-  .row{
+  .stats{
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+  }
+
+  .stat{
+    padding:15px;
+  }
+
+  .stat-number{
+    font-size:22px;
+  }
+
+  .products{
     grid-template-columns:1fr;
   }
 
-  .actions{
+  .order-grid{
     grid-template-columns:1fr;
   }
 
-  .container{
-    padding:18px 12px 40px;
+  .order-footer{
+    align-items:stretch;
+    flex-direction:column;
   }
 
+  .page-header h1{
+    font-size:23px;
+  }
 }
-
 </style>
-
 </head>
 
 <body>
 
-<!-- LOGIN -->
+<!-- =========================
+     LOGIN
+========================= -->
 
-<div id="loginScreen" class="login">
+<div id="loginScreen" class="login-screen">
 
-  <div class="login-box">
+  <div class="login-card">
 
-```
-<h1>
-  LÁ <span style="color:#e0b35b">DOCIÊ</span>
-</h1>
+    <div class="login-logo">
+      LÁ <span>DOCIÊ</span>
+    </div>
 
-<p style="text-align:center">
-  Painel Administrativo
-</p>
+    <div class="login-subtitle">
+      Painel Administrativo
+    </div>
 
-<div class="field">
+    <div class="field">
+      <label>E-mail</label>
+      <input
+        id="loginEmail"
+        type="email"
+        placeholder="Seu e-mail"
+      >
+    </div>
 
-  <label>E-mail</label>
+    <div class="field">
+      <label>Senha</label>
+      <input
+        id="loginPassword"
+        type="password"
+        placeholder="Sua senha"
+      >
+    </div>
 
-  <input
-    id="loginEmail"
-    type="email"
-    placeholder="Seu e-mail"
-  >
+    <div id="loginError" class="notice error"></div>
 
-</div>
-
-<div class="field">
-
-  <label>Senha</label>
-
-  <input
-    id="loginPassword"
-    type="password"
-    placeholder="Sua senha"
-  >
-
-</div>
-
-<div
-  id="loginError"
-  class="notice error">
-</div>
-
-<button onclick="entrar()">
-  Entrar
-</button>
-```
+    <button
+      id="loginButton"
+      class="login-button"
+      onclick="entrar()"
+    >
+      Entrar
+    </button>
 
   </div>
 
 </div>
 
-<!-- PAINEL -->
 
-<div id="adminScreen" class="hidden">
+<!-- =========================
+     ADMIN
+========================= -->
 
-<header>
+<div id="adminScreen" class="admin hidden">
 
-  <div class="header">
+  <!-- SIDEBAR -->
 
-```
-<div class="logo">
-  LÁ <span>DOCIÊ</span>
-</div>
+  <aside id="sidebar" class="sidebar">
 
-<button
-  class="logout"
-  onclick="sair()">
-  Sair
-</button>
-```
+    <div class="brand">
+      LÁ <span>DOCIÊ</span>
+      <small>Painel administrativo</small>
+    </div>
 
-  </div>
+    <nav class="menu">
 
-</header>
+      <button
+        class="active"
+        onclick="abrirAba('dashboard',this)"
+      >
+        <span class="menu-icon">📊</span>
+        Dashboard
+      </button>
 
-<div class="container">
-
-  <h1>
-    Painel Administrativo
-  </h1>
-
-  <div
-    id="globalNotice"
-    class="notice">
-  </div>
-
-  <!-- ABAS -->
-
-  <div class="tabs">
-
-```
-<button
-  class="tab active"
-  onclick="abrirAba('produtos',this)">
-  🍰 Produtos
-</button>
-
-<button
-  class="tab"
-  onclick="abrirAba('pedidos',this)">
-  📦 Pedidos
-</button>
-
-<button
-  class="tab"
-  onclick="abrirAba('loja',this)">
-  ⚙️ Loja
-</button>
-```
-
-  </div>
-
-  <!-- ================= PRODUTOS ================= -->
-
-  <section
-    id="produtos"
-    class="panel active">
-
-```
-<div class="box">
-
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:10px;
-    flex-wrap:wrap;
-  ">
-
-    <div>
-
-      <h2>
+      <button
+        onclick="abrirAba('produtos',this)"
+      >
+        <span class="menu-icon">🍰</span>
         Produtos
-      </h2>
+      </button>
 
-      <div class="small">
-        Edite preços, nomes, descrições,
-        imagens e status.
+      <button
+        onclick="abrirAba('pedidos',this)"
+      >
+        <span class="menu-icon">📦</span>
+        Pedidos
+      </button>
+
+      <button
+        onclick="abrirAba('loja',this)"
+      >
+        <span class="menu-icon">⚙️</span>
+        Minha loja
+      </button>
+
+    </nav>
+
+    <div class="sidebar-bottom">
+
+      <button
+        class="logout-button"
+        onclick="sair()"
+      >
+        🚪 Sair
+      </button>
+
+    </div>
+
+  </aside>
+
+
+  <!-- MAIN -->
+
+  <main class="main">
+
+    <div class="topbar">
+
+      <div style="display:flex;align-items:center;gap:12px">
+
+        <button
+          class="mobile-menu"
+          onclick="toggleSidebar()"
+        >
+          ☰
+        </button>
+
+        <div class="topbar-title">
+          Administração
+        </div>
+
+      </div>
+
+      <div
+        id="topbarStoreName"
+        style="color:#806d64;font-size:13px"
+      >
+        LÁ DOCIÊ
       </div>
 
     </div>
 
-    <button
-      class="btn btn-new"
-      onclick="novoProduto()">
-      + Novo produto
-    </button>
 
-  </div>
+    <div class="content">
 
-</div>
+      <div id="globalNotice" class="notice"></div>
 
 
-<!-- EDITOR -->
+      <!-- =========================
+           DASHBOARD
+      ========================= -->
 
-<div
-  id="editorProduto"
-  class="box hidden">
-
-  <h2 id="editorTitulo">
-    Novo produto
-  </h2>
-
-  <input
-    id="produtoId"
-    type="hidden"
-  >
-
-  <div class="field">
-
-    <label>
-      Nome do produto
-    </label>
-
-    <input
-      id="produtoNome"
-      type="text"
-      placeholder="Ex.: Bolo de Chocolate"
-    >
-
-  </div>
-
-  <div class="row">
-
-    <div class="field">
-
-      <label>
-        Categoria
-      </label>
-
-      <select id="produtoCategoria">
-
-        <option value="bolos">
-          Bolos
-        </option>
-
-        <option value="doces">
-          Doces
-        </option>
-
-        <option value="kits">
-          Kits
-        </option>
-
-        <option value="outros">
-          Outros
-        </option>
-
-      </select>
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Preço
-      </label>
-
-      <input
-        id="produtoPreco"
-        type="number"
-        min="0"
-        step="0.01"
-        placeholder="0.00"
+      <section
+        id="dashboard"
+        class="panel active"
       >
 
-    </div>
+        <div class="page-header">
 
-  </div>
+          <div>
+            <h1>Olá, administradora 👋</h1>
+            <p>
+              Acompanhe sua loja e gerencie tudo em um só lugar.
+            </p>
+          </div>
 
-  <div class="field">
+          <button
+            class="gold-button"
+            onclick="atualizarDashboard()"
+          >
+            🔄 Atualizar
+          </button>
 
-    <label>
-      Descrição
-    </label>
+        </div>
 
-    <textarea
-      id="produtoDescricao"
-      placeholder="Descrição do produto">
-    </textarea>
 
-  </div>
+        <div class="stats">
 
-  <div class="field">
+          <div class="stat">
 
-    <label>
-      URL da imagem
-    </label>
+            <div class="stat-top">
 
-    <input
-      id="produtoImagem"
-      type="url"
-      placeholder="https://..."
-    >
+              <div class="stat-icon">
+                📦
+              </div>
 
-  </div>
+            </div>
 
-  <div class="field">
+            <div
+              id="statPedidos"
+              class="stat-number"
+            >
+              0
+            </div>
 
-    <label>
+            <div class="stat-label">
+              Pedidos
+            </div>
 
-      <input
-        id="produtoAtivo"
-        type="checkbox"
-        checked
-        style="width:auto"
+          </div>
+
+
+          <div class="stat">
+
+            <div class="stat-top">
+
+              <div class="stat-icon">
+                🍰
+              </div>
+
+            </div>
+
+            <div
+              id="statProdutos"
+              class="stat-number"
+            >
+              0
+            </div>
+
+            <div class="stat-label">
+              Produtos cadastrados
+            </div>
+
+          </div>
+
+
+          <div class="stat">
+
+            <div class="stat-top">
+
+              <div class="stat-icon">
+                🟢
+              </div>
+
+            </div>
+
+            <div
+              id="statAtivos"
+              class="stat-number"
+            >
+              0
+            </div>
+
+            <div class="stat-label">
+              Produtos disponíveis
+            </div>
+
+          </div>
+
+
+          <div class="stat">
+
+            <div class="stat-top">
+
+              <div class="stat-icon">
+                💰
+              </div>
+
+            </div>
+
+            <div
+              id="statFaturamento"
+              class="stat-number"
+            >
+              R$ 0,00
+            </div>
+
+            <div class="stat-label">
+              Total dos pedidos
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="dashboard-grid">
+
+          <div class="card">
+
+            <div class="card-title">
+
+              <h2>
+                Últimos pedidos
+              </h2>
+
+              <button
+                class="btn btn-edit"
+                onclick="abrirAbaPorNome('pedidos')"
+              >
+                Ver todos
+              </button>
+
+            </div>
+
+            <div id="dashboardPedidos">
+              <div class="loading">
+                Carregando...
+              </div>
+            </div>
+
+          </div>
+
+
+          <div class="card">
+
+            <div class="card-title">
+              <h2>Produtos ativos</h2>
+            </div>
+
+            <div id="dashboardProdutos">
+              <div class="loading">
+                Carregando...
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           PRODUTOS
+      ========================= -->
+
+      <section
+        id="produtos"
+        class="panel"
       >
 
-      Produto disponível no site
+        <div class="page-header">
 
-    </label>
+          <div>
+            <h1>Produtos</h1>
 
-  </div>
+            <p>
+              Gerencie preços, imagens, categorias e disponibilidade.
+            </p>
+          </div>
 
-  <div class="actions">
+          <button
+            class="primary-button"
+            onclick="novoProduto()"
+          >
+            + Novo produto
+          </button>
 
-    <button
-      class="btn btn-save"
-      onclick="salvarProduto()">
-
-      💾 Salvar
-
-    </button>
-
-    <button
-      class="btn btn-cancel"
-      onclick="fecharEditor()">
-
-      Cancelar
-
-    </button>
-
-  </div>
-
-</div>
+        </div>
 
 
-<!-- LISTA -->
+        <!-- EDITOR -->
 
-<div
-  id="listaProdutos"
-  class="products">
+        <div
+          id="editorProduto"
+          class="editor hidden"
+        >
 
-  <div class="loading">
-    Carregando produtos...
-  </div>
+          <div class="editor-header">
 
-</div>
-```
+            <h2 id="editorTitulo">
+              Novo produto
+            </h2>
 
-  </section>
+            <button
+              class="close-editor"
+              onclick="fecharEditor()"
+            >
+              ×
+            </button>
 
-  <!-- ================= PEDIDOS ================= -->
+          </div>
 
-  <section
-    id="pedidos"
-    class="panel">
 
-```
-<div class="box">
+          <input
+            id="produtoId"
+            type="hidden"
+          >
 
-  <div style="
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-  ">
 
-    <h2>
-      Pedidos
-    </h2>
+          <div class="editor-grid">
 
-    <button
-      class="btn btn-new"
-      onclick="carregarPedidos()">
+            <div class="field">
 
-      🔄 Atualizar
+              <label>
+                Nome do produto
+              </label>
 
-    </button>
+              <input
+                id="produtoNome"
+                type="text"
+                placeholder="Ex.: Bolo de Chocolate"
+              >
 
-  </div>
+            </div>
 
-  <div
-    id="listaPedidos"
-    class="orders">
 
-    <div class="loading">
-      Carregando pedidos...
-    </div>
+            <div class="field">
 
-  </div>
+              <label>
+                Categoria
+              </label>
 
-</div>
-```
+              <select id="produtoCategoria">
 
-  </section>
+                <option value="bolos">
+                  🎂 Bolos
+                </option>
 
-  <!-- ================= LOJA ================= -->
+                <option value="doces">
+                  🍫 Doces
+                </option>
 
-  <section
-    id="loja"
-    class="panel">
+                <option value="kits">
+                  🎁 Kits
+                </option>
 
-```
-<div class="box">
+                <option value="outros">
+                  ✨ Outros
+                </option>
 
-  <h2>
-    Informações da loja
-  </h2>
+              </select>
 
-  <div class="field">
+            </div>
 
-    <label>
-      Nome da loja
-    </label>
 
-    <input
-      id="lojaNome"
-      type="text"
-    >
+            <div class="field">
 
-  </div>
+              <label>
+                Preço
+              </label>
 
-  <div class="field">
+              <input
+                id="produtoPreco"
+                type="number"
+                min="0"
+                step="0.01"
+                placeholder="0,00"
+              >
 
-    <label>
-      Descrição
-    </label>
+            </div>
 
-    <textarea
-      id="lojaDescricao">
-    </textarea>
 
-  </div>
+            <div class="field">
 
-  <div class="row">
+              <label>
+                URL da imagem
+              </label>
 
-    <div class="field">
+              <input
+                id="produtoImagem"
+                type="url"
+                placeholder="https://..."
+              >
 
-      <label>
-        Telefone
-      </label>
+            </div>
 
-      <input
-        id="lojaTelefone"
-        type="text"
+
+            <div class="field editor-full">
+
+              <label>
+                Descrição
+              </label>
+
+              <textarea
+                id="produtoDescricao"
+                placeholder="Descrição do produto"
+              ></textarea>
+
+            </div>
+
+
+            <div class="field editor-full">
+
+              <label>
+
+                <input
+                  id="produtoAtivo"
+                  type="checkbox"
+                  checked
+                  style="width:auto;margin-right:6px"
+                >
+
+                Produto disponível no site
+
+              </label>
+
+            </div>
+
+          </div>
+
+
+          <div class="editor-actions">
+
+            <button
+              class="primary-button"
+              onclick="salvarProduto()"
+            >
+              💾 Salvar produto
+            </button>
+
+            <button
+              class="cancel-button"
+              onclick="fecharEditor()"
+            >
+              Cancelar
+            </button>
+
+          </div>
+
+        </div>
+
+
+        <!-- BUSCA -->
+
+        <div class="toolbar">
+
+          <div class="search">
+
+            <input
+              id="buscaProduto"
+              type="search"
+              placeholder="🔎 Buscar produto..."
+              oninput="filtrarProdutos()"
+            >
+
+          </div>
+
+
+          <select
+            id="filtroCategoria"
+            class="filter"
+            onchange="filtrarProdutos()"
+          >
+
+            <option value="">
+              Todas as categorias
+            </option>
+
+            <option value="bolos">
+              Bolos
+            </option>
+
+            <option value="doces">
+              Doces
+            </option>
+
+            <option value="kits">
+              Kits
+            </option>
+
+            <option value="outros">
+              Outros
+            </option>
+
+          </select>
+
+
+          <select
+            id="filtroStatus"
+            class="filter"
+            onchange="filtrarProdutos()"
+          >
+
+            <option value="">
+              Todos
+            </option>
+
+            <option value="ativo">
+              Ativos
+            </option>
+
+            <option value="inativo">
+              Inativos
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div
+          id="listaProdutos"
+          class="products"
+        >
+          <div class="loading">
+            Carregando produtos...
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           PEDIDOS
+      ========================= -->
+
+      <section
+        id="pedidos"
+        class="panel"
       >
 
-    </div>
+        <div class="page-header">
 
-    <div class="field">
+          <div>
+            <h1>Pedidos</h1>
 
-      <label>
-        WhatsApp
-      </label>
+            <p>
+              Acompanhe e atualize os pedidos dos clientes.
+            </p>
+          </div>
 
-      <input
-        id="lojaWhatsapp"
-        type="text"
+          <button
+            class="gold-button"
+            onclick="carregarPedidos()"
+          >
+            🔄 Atualizar
+          </button>
+
+        </div>
+
+
+        <div
+          id="listaPedidos"
+          class="orders"
+        >
+          <div class="loading">
+            Carregando pedidos...
+          </div>
+        </div>
+
+      </section>
+
+
+      <!-- =========================
+           LOJA
+      ========================= -->
+
+      <section
+        id="loja"
+        class="panel"
       >
 
+        <div class="page-header">
+
+          <div>
+            <h1>Minha loja</h1>
+
+            <p>
+              Essas informações aparecem no site dos clientes.
+            </p>
+          </div>
+
+        </div>
+
+
+        <div class="settings-grid">
+
+          <div class="settings-card">
+
+            <h2>🏪 Identidade da loja</h2>
+
+            <div class="field">
+
+              <label>
+                Nome da loja
+              </label>
+
+              <input
+                id="lojaNome"
+                type="text"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Descrição
+              </label>
+
+              <textarea
+                id="lojaDescricao"
+              ></textarea>
+
+            </div>
+
+          </div>
+
+
+          <div class="settings-card">
+
+            <h2>📞 Contato</h2>
+
+            <div class="field">
+
+              <label>
+                Telefone
+              </label>
+
+              <input
+                id="lojaTelefone"
+                type="text"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                WhatsApp
+              </label>
+
+              <input
+                id="lojaWhatsapp"
+                type="text"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Instagram
+              </label>
+
+              <input
+                id="lojaInstagram"
+                type="text"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div class="settings-card">
+
+            <h2>📍 Localização</h2>
+
+            <div class="field">
+
+              <label>
+                Endereço
+              </label>
+
+              <input
+                id="lojaEndereco"
+                type="text"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Horário de funcionamento
+              </label>
+
+              <textarea
+                id="lojaHorario"
+              ></textarea>
+
+            </div>
+
+          </div>
+
+
+          <div class="settings-card">
+
+            <h2>💳 Pagamento e entrega</h2>
+
+            <div class="field">
+
+              <label>
+                Chave Pix
+              </label>
+
+              <input
+                id="lojaPix"
+                type="text"
+              >
+
+            </div>
+
+
+            <div class="field">
+
+              <label>
+                Taxa de entrega
+              </label>
+
+              <input
+                id="lojaTaxa"
+                type="number"
+                min="0"
+                step="0.01"
+              >
+
+            </div>
+
+          </div>
+
+
+          <div class="settings-card full">
+
+            <button
+              class="primary-button"
+              onclick="salvarLoja()"
+            >
+              💾 Salvar informações da loja
+            </button>
+
+          </div>
+
+        </div>
+
+      </section>
+
     </div>
 
-  </div>
-
-  <div class="field">
-
-    <label>
-      Endereço
-    </label>
-
-    <input
-      id="lojaEndereco"
-      type="text"
-    >
-
-  </div>
-
-  <div class="field">
-
-    <label>
-      Instagram
-    </label>
-
-    <input
-      id="lojaInstagram"
-      type="text"
-    >
-
-  </div>
-
-  <div class="field">
-
-    <label>
-      Horário de funcionamento
-    </label>
-
-    <textarea
-      id="lojaHorario">
-    </textarea>
-
-  </div>
-
-  <div class="field">
-
-    <label>
-      Chave Pix
-    </label>
-
-    <input
-      id="lojaPix"
-      type="text"
-    >
-
-  </div>
-
-  <div class="field">
-
-    <label>
-      Taxa de entrega
-    </label>
-
-    <input
-      id="lojaTaxa"
-      type="number"
-      min="0"
-      step="0.01"
-    >
-
-  </div>
-
-  <button
-    class="save-all"
-    onclick="salvarLoja()">
-
-    💾 Salvar informações
-
-  </button>
-
-</div>
-```
-
-  </section>
+  </main>
 
 </div>
 
-</div>
 
 <script>
 
-/* ==================================================
+/* =========================================================
    SUPABASE
-================================================== */
+========================================================= */
 
 const SUPABASE_URL =
-  "https://lzihqkpscesurkfmcasb.supabase.co";
+"https://lzihqkpscesurkfmcasb.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
+"sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
 
 const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 
-/* ==================================================
+/* =========================================================
    VARIÁVEIS
-================================================== */
+========================================================= */
 
 let produtos = [];
-
+let produtosFiltrados = [];
 let pedidos = [];
-
 let loja = null;
-
 let usuarioLogado = false;
 
 
-/* ==================================================
+/* =========================================================
    UTILIDADES
-================================================== */
+========================================================= */
+
+function escapeHTML(valor){
+
+  return String(valor ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+
+}
+
+
+function dinheiro(valor){
+
+  return Number(valor || 0)
+    .toFixed(2)
+    .replace(".",",");
+
+}
+
 
 function mostrarMensagem(
   mensagem,
@@ -914,20 +1733,23 @@ function mostrarMensagem(
       "globalNotice"
     );
 
-  box.textContent =
-    mensagem;
+  box.textContent = mensagem;
 
   box.className =
-    "notice show " +
-    tipo;
+    "notice show " + tipo;
 
-  setTimeout(() => {
+  window.clearTimeout(
+    window.noticeTimer
+  );
 
-    box.classList.remove(
-      "show"
-    );
+  window.noticeTimer =
+    setTimeout(() => {
 
-  },5000);
+      box.classList.remove(
+        "show"
+      );
+
+    },5000);
 
 }
 
@@ -944,53 +1766,28 @@ function mostrarLoginErro(
   box.textContent =
     mensagem;
 
-  box.classList.add(
-    "show"
-  );
+  box.className =
+    "notice show error";
 
 }
 
 
-function escapeHTML(valor){
-
-  return String(
-    valor ?? ""
-  )
-  .replaceAll("&","&amp;")
-  .replaceAll("<","&lt;")
-  .replaceAll(">","&gt;")
-  .replaceAll('"',"&quot;")
-  .replaceAll("'","&#039;");
-
-}
-
-
-function dinheiro(valor){
-
-  return Number(
-    valor || 0
-  )
-  .toFixed(2)
-  .replace(".",",");
-
-}
-
-
-/* ==================================================
+/* =========================================================
    LOGIN
-================================================== */
+========================================================= */
 
 async function entrar(){
 
   const email =
-    document.getElementById(
-      "loginEmail"
-    ).value.trim();
+    document
+      .getElementById("loginEmail")
+      .value
+      .trim();
 
   const senha =
-    document.getElementById(
-      "loginPassword"
-    ).value;
+    document
+      .getElementById("loginPassword")
+      .value;
 
   if(!email || !senha){
 
@@ -999,12 +1796,12 @@ async function entrar(){
     );
 
     return;
-
   }
 
+
   const botao =
-    document.querySelector(
-      ".login-box button"
+    document.getElementById(
+      "loginButton"
     );
 
   botao.disabled = true;
@@ -1012,13 +1809,8 @@ async function entrar(){
   botao.textContent =
     "Entrando...";
 
-  try{
 
-    /*
-      Primeiro tentamos Supabase Auth.
-      Isso é mais seguro quando o projeto
-      estiver usando autenticação do Supabase.
-    */
+  try{
 
     const {data,error} =
       await supabaseClient.auth
@@ -1027,27 +1819,34 @@ async function entrar(){
           password:senha
         });
 
+
     if(error){
 
       /*
-        Compatibilidade com o sistema antigo:
-        se não existir usuário no Auth,
-        verificamos a tabela admins.
+       Compatibilidade com o sistema
+       antigo de administradores.
       */
 
       const resultado =
         await supabaseClient
           .from("admins")
-          .select("id,email,password_hash")
-          .eq("email",email)
+          .select(
+            "id,email,password_hash"
+          )
+          .eq(
+            "email",
+            email
+          )
           .limit(1)
           .maybeSingle();
+
 
       if(resultado.error){
 
         throw resultado.error;
 
       }
+
 
       if(!resultado.data){
 
@@ -1057,11 +1856,10 @@ async function entrar(){
 
       }
 
+
       /*
-        Atenção:
-        password_hash deve ser substituído
-        pelo sistema de autenticação do Supabase.
-        Não guardamos senha em texto puro.
+       Mantido apenas para compatibilidade
+       com a estrutura antiga existente.
       */
 
       if(
@@ -1090,11 +1888,13 @@ async function entrar(){
 
     }
 
+
     document
       .getElementById(
         "loginScreen"
       )
       .classList.add("hidden");
+
 
     document
       .getElementById(
@@ -1102,7 +1902,9 @@ async function entrar(){
       )
       .classList.remove("hidden");
 
+
     await carregarTudo();
+
 
   }catch(error){
 
@@ -1118,8 +1920,7 @@ async function entrar(){
 
   }finally{
 
-    botao.disabled =
-      false;
+    botao.disabled = false;
 
     botao.textContent =
       "Entrar";
@@ -1129,9 +1930,9 @@ async function entrar(){
 }
 
 
-/* ==================================================
+/* =========================================================
    SAIR
-================================================== */
+========================================================= */
 
 async function sair(){
 
@@ -1145,26 +1946,46 @@ async function sair(){
 
   }
 
+
   usuarioLogado = false;
+
 
   document
     .getElementById(
       "adminScreen"
     )
-    .classList.add("hidden");
+    .classList.add(
+      "hidden"
+    );
+
 
   document
     .getElementById(
       "loginScreen"
     )
-    .classList.remove("hidden");
+    .classList.remove(
+      "hidden"
+    );
 
 }
 
 
-/* ==================================================
+/* =========================================================
+   SIDEBAR MOBILE
+========================================================= */
+
+function toggleSidebar(){
+
+  document
+    .getElementById("sidebar")
+    .classList.toggle("open");
+
+}
+
+
+/* =========================================================
    ABAS
-================================================== */
+========================================================= */
 
 function abrirAba(
   nome,
@@ -1180,8 +2001,9 @@ function abrirAba(
         )
     );
 
+
   document
-    .querySelectorAll(".tab")
+    .querySelectorAll(".menu button")
     .forEach(
       item =>
         item.classList.remove(
@@ -1189,18 +2011,91 @@ function abrirAba(
         )
     );
 
-  document
-    .getElementById(nome)
-    .classList.add("active");
 
-  botao.classList.add("active");
+  const painel =
+    document.getElementById(nome);
+
+  if(painel){
+
+    painel.classList.add(
+      "active"
+    );
+
+  }
+
+
+  if(botao){
+
+    botao.classList.add(
+      "active"
+    );
+
+  }
+
+
+  document
+    .getElementById("sidebar")
+    .classList.remove("open");
+
+
+  if(nome === "produtos"){
+
+    carregarProdutos();
+
+  }
+
+  if(nome === "pedidos"){
+
+    carregarPedidos();
+
+  }
+
+  if(nome === "loja"){
+
+    carregarLoja();
+
+  }
 
 }
 
 
-/* ==================================================
-   PRODUTOS - CARREGAR
-================================================== */
+function abrirAbaPorNome(nome){
+
+  const botoes =
+    document.querySelectorAll(
+      ".menu button"
+    );
+
+  let botaoEncontrado = null;
+
+  botoes.forEach(botao => {
+
+    if(
+      botao
+        .getAttribute("onclick")
+        ?.includes(
+          "'" + nome + "'"
+        )
+    ){
+
+      botaoEncontrado = botao;
+
+    }
+
+  });
+
+
+  abrirAba(
+    nome,
+    botaoEncontrado
+  );
+
+}
+
+
+/* =========================================================
+   PRODUTOS
+========================================================= */
 
 async function carregarProdutos(){
 
@@ -1209,11 +2104,13 @@ async function carregarProdutos(){
       "listaProdutos"
     );
 
+
   area.innerHTML = `
     <div class="loading">
       Carregando produtos...
     </div>
   `;
+
 
   try{
 
@@ -1225,8 +2122,11 @@ async function carregarProdutos(){
         )
         .order(
           "created_at",
-          {ascending:false}
+          {
+            ascending:false
+          }
         );
+
 
     if(error){
 
@@ -1234,12 +2134,22 @@ async function carregarProdutos(){
 
     }
 
+
     produtos =
       Array.isArray(data)
         ? data
         : [];
 
+
+    produtosFiltrados =
+      [...produtos];
+
+
     renderizarProdutos();
+
+
+    atualizarDashboardProdutos();
+
 
   }catch(error){
 
@@ -1248,9 +2158,10 @@ async function carregarProdutos(){
       error
     );
 
+
     area.innerHTML = `
       <div class="empty">
-        Erro ao carregar produtos.
+        ❌ Não foi possível carregar os produtos.
         <br><br>
         ${escapeHTML(
           error.message
@@ -1263,9 +2174,95 @@ async function carregarProdutos(){
 }
 
 
-/* ==================================================
-   PRODUTOS - RENDER
-================================================== */
+/* =========================================================
+   FILTRO
+========================================================= */
+
+function filtrarProdutos(){
+
+  const busca =
+    document
+      .getElementById(
+        "buscaProduto"
+      )
+      .value
+      .toLowerCase()
+      .trim();
+
+
+  const categoria =
+    document
+      .getElementById(
+        "filtroCategoria"
+      )
+      .value;
+
+
+  const status =
+    document
+      .getElementById(
+        "filtroStatus"
+      )
+      .value;
+
+
+  produtosFiltrados =
+    produtos.filter(produto => {
+
+      const nome =
+        String(
+          produto.name || ""
+        ).toLowerCase();
+
+
+      const descricao =
+        String(
+          produto.description || ""
+        ).toLowerCase();
+
+
+      const correspondeBusca =
+        !busca ||
+        nome.includes(busca) ||
+        descricao.includes(busca);
+
+
+      const correspondeCategoria =
+        !categoria ||
+        String(
+          produto.category || ""
+        ).toLowerCase() === categoria;
+
+
+      const correspondeStatus =
+        !status ||
+        (
+          status === "ativo" &&
+          produto.active === true
+        ) ||
+        (
+          status === "inativo" &&
+          produto.active !== true
+        );
+
+
+      return (
+        correspondeBusca &&
+        correspondeCategoria &&
+        correspondeStatus
+      );
+
+    });
+
+
+  renderizarProdutos();
+
+}
+
+
+/* =========================================================
+   RENDER PRODUTOS
+========================================================= */
 
 function renderizarProdutos(){
 
@@ -1274,11 +2271,12 @@ function renderizarProdutos(){
       "listaProdutos"
     );
 
-  if(!produtos.length){
+
+  if(!produtosFiltrados.length){
 
     area.innerHTML = `
       <div class="empty">
-        Nenhum produto cadastrado.
+        Nenhum produto encontrado.
       </div>
     `;
 
@@ -1286,18 +2284,22 @@ function renderizarProdutos(){
 
   }
 
+
   area.innerHTML = "";
 
-  produtos.forEach(
+
+  produtosFiltrados.forEach(
     produto => {
 
       const card =
         document.createElement(
-          "div"
+          "article"
         );
+
 
       card.className =
         "product-card";
+
 
       const imagem =
         produto.image
@@ -1309,22 +2311,25 @@ function renderizarProdutos(){
               alt="${escapeHTML(
                 produto.name
               )}"
+              onerror="this.style.display='none';this.parentElement.innerHTML='🍰';"
             >
           `
           : "🍰";
+
 
       const status =
         produto.active
           ? `
             <span class="status on">
-              ATIVO
+              ● DISPONÍVEL
             </span>
           `
           : `
             <span class="status off">
-              INATIVO
+              ● INDISPONÍVEL
             </span>
           `;
+
 
       card.innerHTML = `
 
@@ -1332,64 +2337,59 @@ function renderizarProdutos(){
           ${imagem}
         </div>
 
-        ${status}
+        <div class="product-body">
 
-        <h3>
-          ${escapeHTML(
-            produto.name
-          )}
-        </h3>
+          ${status}
 
-        <div class="small">
-          Categoria:
-          ${escapeHTML(
-            produto.category
-          )}
-        </div>
+          <h3>
+            ${escapeHTML(
+              produto.name ||
+              "Produto"
+            )}
+          </h3>
 
-        <p>
-          ${escapeHTML(
-            produto.description
-          )}
-        </p>
+          <div class="product-category">
+            ${escapeHTML(
+              produto.category ||
+              "Sem categoria"
+            )}
+          </div>
 
-        <strong
-          style="
-            display:block;
-            font-size:21px;
-            color:#b47b20;
-            margin:10px 0;
-          ">
+          <div class="product-description">
+            ${escapeHTML(
+              produto.description ||
+              "Sem descrição."
+            )}
+          </div>
 
-          R$ ${dinheiro(
-            produto.price
-          )}
+          <div class="product-price">
+            R$ ${dinheiro(
+              produto.price
+            )}
+          </div>
 
-        </strong>
+          <div class="product-actions">
 
-        <div class="actions">
+            <button
+              class="btn btn-edit"
+              onclick="editarProduto(${JSON.stringify(produto.id)})"
+            >
+              ✏️ Editar
+            </button>
 
-          <button
-            class="btn btn-save"
-            data-action="editar"
-            data-id="${produto.id}">
+            <button
+              class="btn btn-delete"
+              onclick="retirarProduto(${JSON.stringify(produto.id)})"
+            >
+              ${produto.active ? "🗑️ Retirar" : "↩️ Ativar"}
+            </button>
 
-            ✏️ Editar
-
-          </button>
-
-          <button
-            class="btn btn-delete"
-            data-action="excluir"
-            data-id="${produto.id}">
-
-            🗑️ Excluir
-
-          </button>
+          </div>
 
         </div>
 
       `;
+
 
       area.appendChild(card);
 
@@ -1399,50 +2399,9 @@ function renderizarProdutos(){
 }
 
 
-/* ==================================================
-   EVENTOS DOS PRODUTOS
-================================================== */
-
-document.addEventListener(
-  "click",
-  function(event){
-
-    const botao =
-      event.target.closest(
-        "[data-action]"
-      );
-
-    if(!botao){
-      return;
-    }
-
-    const id =
-      Number(
-        botao.dataset.id
-      );
-
-    const acao =
-      botao.dataset.action;
-
-    if(acao === "editar"){
-
-      editarProduto(id);
-
-    }
-
-    if(acao === "excluir"){
-
-      excluirProduto(id);
-
-    }
-
-  }
-);
-
-
-/* ==================================================
+/* =========================================================
    NOVO PRODUTO
-================================================== */
+========================================================= */
 
 function novoProduto(){
 
@@ -1454,59 +2413,73 @@ function novoProduto(){
       "hidden"
     );
 
+
   document.getElementById(
     "editorTitulo"
   ).textContent =
     "Novo produto";
 
+
   document.getElementById(
     "produtoId"
   ).value = "";
+
 
   document.getElementById(
     "produtoNome"
   ).value = "";
 
+
   document.getElementById(
     "produtoCategoria"
   ).value = "bolos";
+
 
   document.getElementById(
     "produtoPreco"
   ).value = "";
 
+
   document.getElementById(
     "produtoDescricao"
   ).value = "";
+
 
   document.getElementById(
     "produtoImagem"
   ).value = "";
 
+
   document.getElementById(
     "produtoAtivo"
   ).checked = true;
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+
+  document
+    .getElementById(
+      "editorProduto"
+    )
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
 
 }
 
 
-/* ==================================================
+/* =========================================================
    EDITAR PRODUTO
-================================================== */
+========================================================= */
 
 function editarProduto(id){
 
   const produto =
     produtos.find(
       item =>
-        Number(item.id) ===
-        Number(id)
+        String(item.id) ===
+        String(id)
     );
+
 
   if(!produto){
 
@@ -1519,6 +2492,7 @@ function editarProduto(id){
 
   }
 
+
   document
     .getElementById(
       "editorProduto"
@@ -1527,57 +2501,70 @@ function editarProduto(id){
       "hidden"
     );
 
+
   document.getElementById(
     "editorTitulo"
   ).textContent =
     "Editar produto";
+
 
   document.getElementById(
     "produtoId"
   ).value =
     produto.id;
 
+
   document.getElementById(
     "produtoNome"
   ).value =
     produto.name || "";
 
+
   document.getElementById(
     "produtoCategoria"
   ).value =
-    produto.category || "bolos";
+    produto.category || "outros";
+
 
   document.getElementById(
     "produtoPreco"
   ).value =
     produto.price ?? "";
 
+
   document.getElementById(
     "produtoDescricao"
   ).value =
     produto.description || "";
+
 
   document.getElementById(
     "produtoImagem"
   ).value =
     produto.image || "";
 
+
   document.getElementById(
     "produtoAtivo"
   ).checked =
     produto.active !== false;
 
-  window.scrollTo({
-    top:0,
-    behavior:"smooth"
-  });
+
+  document
+    .getElementById(
+      "editorProduto"
+    )
+    .scrollIntoView({
+      behavior:"smooth",
+      block:"start"
+    });
 
 }
 
 
-/* ==================================================
+/* =========================================================
    FECHAR EDITOR
-================================================== */
+========================================================= */
 
 function fecharEditor(){
 
@@ -1592,46 +2579,70 @@ function fecharEditor(){
 }
 
 
-/* ==================================================
+/* =========================================================
    SALVAR PRODUTO
-================================================== */
+========================================================= */
 
 async function salvarProduto(){
 
   const id =
-    document.getElementById(
-      "produtoId"
-    ).value;
+    document
+      .getElementById(
+        "produtoId"
+      )
+      .value;
+
 
   const nome =
-    document.getElementById(
-      "produtoNome"
-    ).value.trim();
+    document
+      .getElementById(
+        "produtoNome"
+      )
+      .value
+      .trim();
+
 
   const categoria =
-    document.getElementById(
-      "produtoCategoria"
-    ).value;
+    document
+      .getElementById(
+        "produtoCategoria"
+      )
+      .value;
+
 
   const precoTexto =
-    document.getElementById(
-      "produtoPreco"
-    ).value;
+    document
+      .getElementById(
+        "produtoPreco"
+      )
+      .value;
+
 
   const descricao =
-    document.getElementById(
-      "produtoDescricao"
-    ).value.trim();
+    document
+      .getElementById(
+        "produtoDescricao"
+      )
+      .value
+      .trim();
+
 
   const imagem =
-    document.getElementById(
-      "produtoImagem"
-    ).value.trim();
+    document
+      .getElementById(
+        "produtoImagem"
+      )
+      .value
+      .trim();
+
 
   const ativo =
-    document.getElementById(
-      "produtoAtivo"
-    ).checked;
+    document
+      .getElementById(
+        "produtoAtivo"
+      )
+      .checked;
+
 
   if(!nome){
 
@@ -1644,10 +2655,12 @@ async function salvarProduto(){
 
   }
 
+
   const preco =
     Number(
       precoTexto
     );
+
 
   if(
     !Number.isFinite(preco) ||
@@ -1662,6 +2675,7 @@ async function salvarProduto(){
     return;
 
   }
+
 
   const dados = {
 
@@ -1684,14 +2698,15 @@ async function salvarProduto(){
 
   };
 
+
   try{
 
     if(id){
 
       /*
-        UPDATE pelo ID específico.
-        Isso impede que o código altere
-        apenas os primeiros produtos.
+       UPDATE usando o ID exato.
+       Não depende da posição do produto
+       na lista.
       */
 
       const {data,error} =
@@ -1700,10 +2715,11 @@ async function salvarProduto(){
           .update(dados)
           .eq(
             "id",
-            Number(id)
+            id
           )
           .select()
           .single();
+
 
       if(error){
 
@@ -1711,16 +2727,14 @@ async function salvarProduto(){
 
       }
 
-      /*
-        Atualiza imediatamente a lista local.
-      */
 
       const indice =
         produtos.findIndex(
           item =>
-            Number(item.id) ===
-            Number(id)
+            String(item.id) ===
+            String(id)
         );
+
 
       if(indice !== -1){
 
@@ -1728,6 +2742,7 @@ async function salvarProduto(){
           data;
 
       }
+
 
       mostrarMensagem(
         "Produto atualizado com sucesso!"
@@ -1744,15 +2759,18 @@ async function salvarProduto(){
           .select()
           .single();
 
+
       if(error){
 
         throw error;
 
       }
 
+
       produtos.unshift(
         data
       );
+
 
       mostrarMensagem(
         "Produto criado com sucesso!"
@@ -1760,9 +2778,16 @@ async function salvarProduto(){
 
     }
 
-    renderizarProdutos();
+
+    produtosFiltrados =
+      [...produtos];
+
+
+    filtrarProdutos();
 
     fecharEditor();
+
+    atualizarDashboard();
 
   }catch(error){
 
@@ -1770,6 +2795,7 @@ async function salvarProduto(){
       "Salvar produto:",
       error
     );
+
 
     mostrarMensagem(
       "Não foi possível salvar o produto: " +
@@ -1782,18 +2808,19 @@ async function salvarProduto(){
 }
 
 
-/* ==================================================
-   EXCLUIR PRODUTO
-================================================== */
+/* =========================================================
+   RETIRAR / ATIVAR PRODUTO
+========================================================= */
 
-async function excluirProduto(id){
+async function retirarProduto(id){
 
   const produto =
     produtos.find(
       item =>
-        Number(item.id) ===
-        Number(id)
+        String(item.id) ===
+        String(id)
     );
+
 
   if(!produto){
 
@@ -1806,39 +2833,46 @@ async function excluirProduto(id){
 
   }
 
-  const confirmou =
-    confirm(
-      'Deseja realmente retirar "' +
-      produto.name +
-      '" do site?'
-    );
 
-  if(!confirmou){
+  const novoStatus =
+    produto.active !== true;
+
+
+  const pergunta =
+    novoStatus
+      ? `Deseja colocar "${produto.name}" novamente no site?`
+      : `Deseja retirar "${produto.name}" do site?`;
+
+
+  if(!confirm(pergunta)){
+
     return;
+
   }
+
 
   try{
 
     /*
-      Em vez de DELETE definitivo,
-      desativamos o produto.
-
-      Assim pedidos antigos continuam
-      preservados no banco.
+     Não fazemos DELETE definitivo.
+     O produto apenas fica active=false.
+     Isso preserva produtos relacionados
+     a pedidos antigos.
     */
 
     const {data,error} =
       await supabaseClient
         .from("products")
         .update({
-          active:false
+          active:novoStatus
         })
         .eq(
           "id",
-          Number(id)
+          id
         )
         .select()
         .single();
+
 
     if(error){
 
@@ -1846,12 +2880,14 @@ async function excluirProduto(id){
 
     }
 
+
     const indice =
       produtos.findIndex(
         item =>
-          Number(item.id) ===
-          Number(id)
+          String(item.id) ===
+          String(id)
       );
+
 
     if(indice !== -1){
 
@@ -1860,21 +2896,34 @@ async function excluirProduto(id){
 
     }
 
-    renderizarProdutos();
+
+    produtosFiltrados =
+      [...produtos];
+
+
+    filtrarProdutos();
+
 
     mostrarMensagem(
-      "Produto retirado do site com sucesso!"
+      novoStatus
+        ? "Produto ativado novamente!"
+        : "Produto retirado do site!"
     );
+
+
+    atualizarDashboard();
+
 
   }catch(error){
 
     console.error(
-      "Excluir produto:",
+      "Alterar produto:",
       error
     );
 
+
     mostrarMensagem(
-      "Não foi possível excluir o produto: " +
+      "Não foi possível alterar o produto: " +
       error.message,
       "error"
     );
@@ -1884,9 +2933,9 @@ async function excluirProduto(id){
 }
 
 
-/* ==================================================
+/* =========================================================
    PEDIDOS
-================================================== */
+========================================================= */
 
 async function carregarPedidos(){
 
@@ -1895,11 +2944,13 @@ async function carregarPedidos(){
       "listaPedidos"
     );
 
+
   area.innerHTML = `
     <div class="loading">
       Carregando pedidos...
     </div>
   `;
+
 
   try{
 
@@ -1914,26 +2965,38 @@ async function carregarPedidos(){
           }
         );
 
+
     if(error){
 
       throw error;
 
     }
 
+
     pedidos =
       Array.isArray(data)
         ? data
         : [];
 
+
     renderizarPedidos();
+
+    atualizarDashboardPedidos();
+
+    atualizarEstatisticas();
+
 
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "Pedidos:",
+      error
+    );
+
 
     area.innerHTML = `
       <div class="empty">
-        Não foi possível carregar os pedidos.
+        ❌ Não foi possível carregar os pedidos.
         <br><br>
         ${escapeHTML(
           error.message
@@ -1946,6 +3009,10 @@ async function carregarPedidos(){
 }
 
 
+/* =========================================================
+   RENDER PEDIDOS
+========================================================= */
+
 function renderizarPedidos(){
 
   const area =
@@ -1953,11 +3020,12 @@ function renderizarPedidos(){
       "listaPedidos"
     );
 
+
   if(!pedidos.length){
 
     area.innerHTML = `
       <div class="empty">
-        Nenhum pedido encontrado.
+        📦 Nenhum pedido encontrado.
       </div>
     `;
 
@@ -1965,109 +3033,200 @@ function renderizarPedidos(){
 
   }
 
+
   area.innerHTML = "";
+
 
   pedidos.forEach(
     pedido => {
 
       const div =
         document.createElement(
-          "div"
+          "article"
         );
+
 
       div.className =
         "order";
 
+
+      const status =
+        pedido.status ||
+        "pendente";
+
+
       div.innerHTML = `
 
-        <strong>
-          Pedido #${escapeHTML(
-            pedido.id
-          )}
-        </strong>
+        <div class="order-head">
 
-        <div>
-          Cliente:
-          ${escapeHTML(
-            pedido.customer_name
-          )}
+          <div>
+
+            <div class="order-number">
+              Pedido #${escapeHTML(
+                pedido.id
+              )}
+            </div>
+
+            <div class="order-date">
+              ${escapeHTML(
+                pedido.created_at
+                  ? new Date(
+                      pedido.created_at
+                    ).toLocaleString(
+                      "pt-BR"
+                    )
+                  : ""
+              )}
+            </div>
+
+          </div>
+
+          <div>
+            <strong>
+              ${escapeHTML(
+                pedido.customer_name ||
+                "Cliente"
+              )}
+            </strong>
+          </div>
+
         </div>
 
-        <div>
-          WhatsApp:
-          ${escapeHTML(
-            pedido.customer_phone
-          )}
+
+        <div class="order-grid">
+
+          <div class="order-info">
+
+            <small>
+              WhatsApp
+            </small>
+
+            <strong>
+              ${escapeHTML(
+                pedido.customer_phone ||
+                "-"
+              )}
+            </strong>
+
+          </div>
+
+
+          <div class="order-info">
+
+            <small>
+              Data
+            </small>
+
+            <strong>
+              ${escapeHTML(
+                pedido.scheduled_date ||
+                "-"
+              )}
+            </strong>
+
+          </div>
+
+
+          <div class="order-info">
+
+            <small>
+              Horário
+            </small>
+
+            <strong>
+              ${escapeHTML(
+                pedido.scheduled_time ||
+                "-"
+              )}
+            </strong>
+
+          </div>
+
+
+          <div class="order-info">
+
+            <small>
+              Recebimento
+            </small>
+
+            <strong>
+              ${escapeHTML(
+                pedido.delivery_type ||
+                pedido.type ||
+                "-"
+              )}
+            </strong>
+
+          </div>
+
         </div>
 
-        <div>
-          Data:
-          ${escapeHTML(
-            pedido.scheduled_date
-          )}
-        </div>
 
-        <div>
-          Horário:
-          ${escapeHTML(
-            pedido.scheduled_time
-          )}
-        </div>
+        <div class="order-footer">
 
-        <div>
-          Total:
-          <strong>
-            R$ ${dinheiro(
-              pedido.total
-            )}
-          </strong>
-        </div>
+          <div>
 
-        <div class="small">
-          Status:
-          ${escapeHTML(
-            pedido.status || "pendente"
-          )}
-        </div>
+            <div style="font-size:12px;color:#806d64">
+              Total
+            </div>
 
-        <div style="margin-top:10px">
+            <div class="order-total">
+              R$ ${dinheiro(
+                pedido.total
+              )}
+            </div>
+
+          </div>
+
 
           <select
-            onchange="
-              alterarStatusPedido(
-                ${pedido.id},
-                this.value
-              )
-            ">
+            class="status-select"
+            onchange="alterarStatusPedido(
+              ${JSON.stringify(pedido.id)},
+              this.value
+            )"
+          >
 
-            <option value="pendente"
-              ${pedido.status==="pendente"?"selected":""}>
-              Pendente
+            <option
+              value="pendente"
+              ${status==="pendente"?"selected":""}
+            >
+              ⏳ Pendente
             </option>
 
-            <option value="confirmado"
-              ${pedido.status==="confirmado"?"selected":""}>
-              Confirmado
+            <option
+              value="confirmado"
+              ${status==="confirmado"?"selected":""}
+            >
+              ✅ Confirmado
             </option>
 
-            <option value="preparando"
-              ${pedido.status==="preparando"?"selected":""}>
-              Preparando
+            <option
+              value="preparando"
+              ${status==="preparando"?"selected":""}
+            >
+              👩‍🍳 Preparando
             </option>
 
-            <option value="pronto"
-              ${pedido.status==="pronto"?"selected":""}>
-              Pronto
+            <option
+              value="pronto"
+              ${status==="pronto"?"selected":""}
+            >
+              🎂 Pronto
             </option>
 
-            <option value="entregue"
-              ${pedido.status==="entregue"?"selected":""}>
-              Entregue
+            <option
+              value="entregue"
+              ${status==="entregue"?"selected":""}
+            >
+              🚚 Entregue
             </option>
 
-            <option value="cancelado"
-              ${pedido.status==="cancelado"?"selected":""}>
-              Cancelado
+            <option
+              value="cancelado"
+              ${status==="cancelado"?"selected":""}
+            >
+              ❌ Cancelado
             </option>
 
           </select>
@@ -2075,6 +3234,7 @@ function renderizarPedidos(){
         </div>
 
       `;
+
 
       area.appendChild(div);
 
@@ -2084,9 +3244,9 @@ function renderizarPedidos(){
 }
 
 
-/* ==================================================
-   ALTERAR STATUS PEDIDO
-================================================== */
+/* =========================================================
+   STATUS PEDIDO
+========================================================= */
 
 async function alterarStatusPedido(
   id,
@@ -2103,8 +3263,9 @@ async function alterarStatusPedido(
         })
         .eq(
           "id",
-          Number(id)
+          id
         );
+
 
     if(error){
 
@@ -2112,12 +3273,14 @@ async function alterarStatusPedido(
 
     }
 
+
     const pedido =
       pedidos.find(
         item =>
-          Number(item.id) ===
-          Number(id)
+          String(item.id) ===
+          String(id)
       );
+
 
     if(pedido){
 
@@ -2126,19 +3289,29 @@ async function alterarStatusPedido(
 
     }
 
+
     mostrarMensagem(
       "Status do pedido atualizado!"
     );
 
+
+    atualizarDashboard();
+
+
   }catch(error){
 
-    console.error(error);
+    console.error(
+      "Status pedido:",
+      error
+    );
+
 
     mostrarMensagem(
       "Não foi possível atualizar o pedido: " +
       error.message,
       "error"
     );
+
 
     await carregarPedidos();
 
@@ -2147,9 +3320,9 @@ async function alterarStatusPedido(
 }
 
 
-/* ==================================================
+/* =========================================================
    LOJA
-================================================== */
+========================================================= */
 
 async function carregarLoja(){
 
@@ -2162,14 +3335,17 @@ async function carregarLoja(){
         .limit(1)
         .maybeSingle();
 
+
     if(error){
 
       throw error;
 
     }
 
+
     loja =
       data || null;
+
 
     if(!loja){
 
@@ -2177,50 +3353,67 @@ async function carregarLoja(){
 
     }
 
+
     document.getElementById(
       "lojaNome"
     ).value =
       loja.store_name || "";
+
 
     document.getElementById(
       "lojaDescricao"
     ).value =
       loja.description || "";
 
+
     document.getElementById(
       "lojaTelefone"
     ).value =
       loja.phone || "";
+
 
     document.getElementById(
       "lojaWhatsapp"
     ).value =
       loja.whatsapp || "";
 
+
     document.getElementById(
       "lojaEndereco"
     ).value =
       loja.address || "";
+
 
     document.getElementById(
       "lojaInstagram"
     ).value =
       loja.instagram || "";
 
+
     document.getElementById(
       "lojaHorario"
     ).value =
       loja.opening_hours || "";
+
 
     document.getElementById(
       "lojaPix"
     ).value =
       loja.pix_key || "";
 
+
     document.getElementById(
       "lojaTaxa"
     ).value =
       loja.delivery_fee ?? 0;
+
+
+    document.getElementById(
+      "topbarStoreName"
+    ).textContent =
+      loja.store_name ||
+      "LÁ DOCIÊ";
+
 
   }catch(error){
 
@@ -2228,6 +3421,7 @@ async function carregarLoja(){
       "Loja:",
       error
     );
+
 
     mostrarMensagem(
       "Não foi possível carregar as informações da loja.",
@@ -2239,65 +3433,92 @@ async function carregarLoja(){
 }
 
 
-/* ==================================================
+/* =========================================================
    SALVAR LOJA
-================================================== */
+========================================================= */
 
 async function salvarLoja(){
 
   const dados = {
 
     store_name:
-      document.getElementById(
-        "lojaNome"
-      ).value.trim(),
+      document
+        .getElementById(
+          "lojaNome"
+        )
+        .value
+        .trim(),
 
     description:
-      document.getElementById(
-        "lojaDescricao"
-      ).value.trim(),
+      document
+        .getElementById(
+          "lojaDescricao"
+        )
+        .value
+        .trim(),
 
     phone:
-      document.getElementById(
-        "lojaTelefone"
-      ).value.trim(),
+      document
+        .getElementById(
+          "lojaTelefone"
+        )
+        .value
+        .trim(),
 
     whatsapp:
-      document.getElementById(
-        "lojaWhatsapp"
-      ).value.trim(),
+      document
+        .getElementById(
+          "lojaWhatsapp"
+        )
+        .value
+        .trim(),
 
     address:
-      document.getElementById(
-        "lojaEndereco"
-      ).value.trim(),
+      document
+        .getElementById(
+          "lojaEndereco"
+        )
+        .value
+        .trim(),
 
     instagram:
-      document.getElementById(
-        "lojaInstagram"
-      ).value.trim(),
+      document
+        .getElementById(
+          "lojaInstagram"
+        )
+        .value
+        .trim(),
 
     opening_hours:
-      document.getElementById(
-        "lojaHorario"
-      ).value.trim(),
+      document
+        .getElementById(
+          "lojaHorario"
+        )
+        .value
+        .trim(),
 
     pix_key:
-      document.getElementById(
-        "lojaPix"
-      ).value.trim(),
+      document
+        .getElementById(
+          "lojaPix"
+        )
+        .value
+        .trim(),
 
     delivery_fee:
       Number(
-        document.getElementById(
-          "lojaTaxa"
-        ).value || 0
+        document
+          .getElementById(
+            "lojaTaxa"
+          )
+          .value || 0
       ),
 
     updated_at:
       new Date().toISOString()
 
   };
+
 
   try{
 
@@ -2314,11 +3535,13 @@ async function salvarLoja(){
           .select()
           .single();
 
+
       if(error){
 
         throw error;
 
       }
+
 
       loja =
         data;
@@ -2334,20 +3557,31 @@ async function salvarLoja(){
           .select()
           .single();
 
+
       if(error){
 
         throw error;
 
       }
 
+
       loja =
         data;
 
     }
 
+
+    document.getElementById(
+      "topbarStoreName"
+    ).textContent =
+      loja.store_name ||
+      "LÁ DOCIÊ";
+
+
     mostrarMensagem(
       "Informações da loja salvas com sucesso!"
     );
+
 
   }catch(error){
 
@@ -2355,6 +3589,7 @@ async function salvarLoja(){
       "Salvar loja:",
       error
     );
+
 
     mostrarMensagem(
       "Não foi possível salvar as informações: " +
@@ -2367,9 +3602,261 @@ async function salvarLoja(){
 }
 
 
-/* ==================================================
+/* =========================================================
+   DASHBOARD - ESTATÍSTICAS
+========================================================= */
+
+function atualizarEstatisticas(){
+
+  const quantidadeProdutos =
+    produtos.length;
+
+
+  const ativos =
+    produtos.filter(
+      produto =>
+        produto.active === true
+    ).length;
+
+
+  const quantidadePedidos =
+    pedidos.length;
+
+
+  const faturamento =
+    pedidos.reduce(
+      (total,pedido) =>
+        total +
+        Number(
+          pedido.total || 0
+        ),
+      0
+    );
+
+
+  document.getElementById(
+    "statProdutos"
+  ).textContent =
+    quantidadeProdutos;
+
+
+  document.getElementById(
+    "statAtivos"
+  ).textContent =
+    ativos;
+
+
+  document.getElementById(
+    "statPedidos"
+  ).textContent =
+    quantidadePedidos;
+
+
+  document.getElementById(
+    "statFaturamento"
+  ).textContent =
+    "R$ " +
+    dinheiro(
+      faturamento
+    );
+
+}
+
+
+/* =========================================================
+   DASHBOARD - PRODUTOS
+========================================================= */
+
+function atualizarDashboardProdutos(){
+
+  const area =
+    document.getElementById(
+      "dashboardProdutos"
+    );
+
+
+  const ativos =
+    produtos
+      .filter(
+        produto =>
+          produto.active === true
+      )
+      .slice(0,6);
+
+
+  if(!ativos.length){
+
+    area.innerHTML = `
+      <div class="empty">
+        Nenhum produto ativo.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  area.innerHTML =
+    ativos
+      .map(
+        produto => `
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              align-items:center;
+              gap:10px;
+              padding:10px 0;
+              border-bottom:1px solid #eaded7;
+            "
+          >
+
+            <div>
+
+              <strong>
+                ${escapeHTML(
+                  produto.name
+                )}
+              </strong>
+
+              <div
+                style="
+                  color:#806d64;
+                  font-size:12px;
+                  margin-top:3px;
+                "
+              >
+                ${escapeHTML(
+                  produto.category || ""
+                )}
+              </div>
+
+            </div>
+
+            <strong
+              style="
+                color:#c89532;
+              "
+            >
+              R$ ${dinheiro(
+                produto.price
+              )}
+            </strong>
+
+          </div>
+
+        `
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   DASHBOARD - PEDIDOS
+========================================================= */
+
+function atualizarDashboardPedidos(){
+
+  const area =
+    document.getElementById(
+      "dashboardPedidos"
+    );
+
+
+  const recentes =
+    pedidos.slice(0,5);
+
+
+  if(!recentes.length){
+
+    area.innerHTML = `
+      <div class="empty">
+        Nenhum pedido ainda.
+      </div>
+    `;
+
+    return;
+
+  }
+
+
+  area.innerHTML =
+    recentes
+      .map(
+        pedido => `
+
+          <div
+            style="
+              display:flex;
+              justify-content:space-between;
+              gap:10px;
+              padding:11px 0;
+              border-bottom:1px solid #eaded7;
+            "
+          >
+
+            <div>
+
+              <strong>
+                #${escapeHTML(
+                  pedido.id
+                )}
+              </strong>
+
+              <div
+                style="
+                  color:#806d64;
+                  font-size:12px;
+                  margin-top:3px;
+                "
+              >
+                ${escapeHTML(
+                  pedido.customer_name ||
+                  "Cliente"
+                )}
+              </div>
+
+            </div>
+
+            <strong
+              style="
+                color:#c89532;
+              "
+            >
+              R$ ${dinheiro(
+                pedido.total
+              )}
+            </strong>
+
+          </div>
+
+        `
+      )
+      .join("");
+
+}
+
+
+/* =========================================================
+   ATUALIZAR DASHBOARD
+========================================================= */
+
+async function atualizarDashboard(){
+
+  await Promise.all([
+    carregarProdutos(),
+    carregarPedidos()
+  ]);
+
+}
+
+
+/* =========================================================
    CARREGAR TUDO
-================================================== */
+========================================================= */
 
 async function carregarTudo(){
 
@@ -2379,22 +3866,25 @@ async function carregarTudo(){
     carregarLoja()
   ]);
 
+  atualizarEstatisticas();
+  atualizarDashboardProdutos();
+  atualizarDashboardPedidos();
+
 }
 
 
-/* ==================================================
+/* =========================================================
    INICIALIZAÇÃO
-================================================== */
+========================================================= */
 
 async function iniciar(){
 
   try{
 
-    const {
-      data
-    } =
+    const {data} =
       await supabaseClient.auth
         .getSession();
+
 
     if(
       data &&
@@ -2402,6 +3892,7 @@ async function iniciar(){
     ){
 
       usuarioLogado = true;
+
 
       document
         .getElementById(
@@ -2411,6 +3902,7 @@ async function iniciar(){
           "hidden"
         );
 
+
       document
         .getElementById(
           "adminScreen"
@@ -2418,6 +3910,7 @@ async function iniciar(){
         .classList.remove(
           "hidden"
         );
+
 
       await carregarTudo();
 
@@ -2440,4 +3933,4 @@ iniciar();
 </script>
 
 </body>
-</html>
+  </html>

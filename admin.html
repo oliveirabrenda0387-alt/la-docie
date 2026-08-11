@@ -203,6 +203,14 @@ button{cursor:pointer}
   .order-actions .btn{flex:1}
   .card{padding:15px}
 }
+
+/* IMPRESSAO LIMPA DO PEDIDO */
+@media print{
+  body{background:#fff!important}
+  body *{visibility:hidden!important}
+  #printArea,#printArea *{visibility:visible!important}
+  #printArea{position:absolute;left:0;top:0;width:100%;padding:20px;font-family:Arial,Helvetica,sans-serif;color:#111;background:#fff}
+}
 </style>
 </head>
 
@@ -705,6 +713,9 @@ Domingo e segunda: fechado</textarea>
   </main>
 </div>
 
+<!-- AREA DE IMPRESSAO LIMPA -->
+<div id="printArea" style="display:none"></div>
+
 <!-- MODAL PRODUTO -->
 <div id="productModal" class="modal-bg">
   <div class="modal">
@@ -731,7 +742,13 @@ Domingo e segunda: fechado</textarea>
     </div>
 
     <div class="field"><label>Descrição</label><textarea id="produtoDescricao"></textarea></div>
-    <div class="field"><label>URL da imagem</label><input id="produtoImagem" type="url" placeholder="https://..."></div>
+    <div class="field">
+      <label>Imagem do produto</label>
+      <input id="produtoImagemArquivo" type="file" accept="image/*" onchange="previewImagemProduto(this)">
+      <div class="small" style="margin-top:6px">Escolha a foto diretamente do celular ou computador. Não precisa de URL.</div>
+      <div id="produtoImagemPreview" style="margin-top:10px"></div>
+      <input id="produtoImagem" type="hidden">
+    </div>
 
     <div class="grid-2">
       <div class="field"><label>Estoque atual</label><input id="produtoEstoque" type="number" min="0" step="1" value="0"></div>
@@ -777,6 +794,8 @@ let pedidoAtual = null;
 let itensPedidoAtual = [];
 let filtroAtual = "todos";
 let realtimeChannel = null;
+let pedidosPollTimer = null;
+let ultimaAtualizacaoPedidos = 0;
 
 /* =========================================================
    UTILIDADES
@@ -857,6 +876,7 @@ async function sair(){
     await supabaseClient.removeChannel(realtimeChannel);
     realtimeChannel = null;
   }
+  pararPollingPedidos();
 
   document.getElementById("adminScreen").classList.add("hidden");
   document.getElementById("loginScreen").classList.remove("hidden");
@@ -951,6 +971,8 @@ function abrirEditorProduto(id=null){
     document.getElementById("produtoPreco").value=produto.price ?? "";
     document.getElementById("produtoDescricao").value=produto.description || "";
     document.getElementById("produtoImagem").value=produto.image || "";
+    document.getElementById("produtoImagemArquivo").value="";
+    document.getElementById("produtoImagemPreview").innerHTML=produto.image ? `<img src="${escapeHTML(produto.image)}" style="width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid var(--border)">` : "";
     document.getElementById("produtoEstoque").value=produto.stock ?? 0;
     document.getElementById("produtoEstoqueMinimo").value=produto.min_stock ?? 5;
     document.getElementById("produtoAtivo").checked=produto.active !== false;
@@ -962,6 +984,8 @@ function abrirEditorProduto(id=null){
     document.getElementById("produtoPreco").value="";
     document.getElementById("produtoDescricao").value="";
     document.getElementById("produtoImagem").value="";
+    document.getElementById("produtoImagemArquivo").value="";
+    document.getElementById("produtoImagemPreview").innerHTML="";
     document.getElementById("produtoEstoque").value=0;
     document.getElementById("produtoEstoqueMinimo").value=5;
     document.getElementById("produtoAtivo").checked=true;
@@ -972,15 +996,60 @@ function fecharEditorProduto(){
   document.getElementById("productModal").classList.remove("show");
 }
 
+function previewImagemProduto(input){
+  const area=document.getElementById("produtoImagemPreview");
+  const arquivo=input?.files?.[0];
+  if(!area) return;
+  if(!arquivo){ area.innerHTML=""; return; }
+  const url=URL.createObjectURL(arquivo);
+  area.innerHTML=`<img src="${url}" style="width:120px;height:120px;object-fit:cover;border-radius:12px;border:1px solid var(--border)">`;
+}
+
+function prepararImagemProduto(arquivo){
+  return new Promise((resolve,reject)=>{
+    if(!arquivo.type.startsWith("image/")){ reject(new Error("Escolha uma imagem válida.")); return; }
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        const max=1200;
+        const escala=Math.min(1,max/Math.max(img.width,img.height));
+        const canvas=document.createElement("canvas");
+        canvas.width=Math.max(1,Math.round(img.width*escala));
+        canvas.height=Math.max(1,Math.round(img.height*escala));
+        const ctx=canvas.getContext("2d");
+        ctx.drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL("image/jpeg",0.82));
+      };
+      img.onerror=()=>reject(new Error("Não foi possível ler a imagem."));
+      img.src=reader.result;
+    };
+    reader.onerror=()=>reject(new Error("Falha ao ler o arquivo."));
+    reader.readAsDataURL(arquivo);
+  });
+}
+
 async function salvarProduto(){
   const id=document.getElementById("produtoId").value;
+
+  const arquivo=document.getElementById("produtoImagemArquivo")?.files?.[0] || null;
+  let imagemAtual=document.getElementById("produtoImagem").value.trim() || null;
+
+  if(arquivo){
+    try{
+      imagemAtual=await prepararImagemProduto(arquivo);
+    }catch(error){
+      mostrarMensagem("Não foi possível preparar a imagem: "+error.message,"error");
+      return;
+    }
+  }
 
   const dados={
     name:document.getElementById("produtoNome").value.trim(),
     category:document.getElementById("produtoCategoria").value,
     price:Number(document.getElementById("produtoPreco").value||0),
     description:document.getElementById("produtoDescricao").value.trim()||null,
-    image:document.getElementById("produtoImagem").value.trim()||null,
+    image:imagemAtual,
     active:document.getElementById("produtoAtivo").checked,
     stock:Number(document.getElementById("produtoEstoque").value||0),
     min_stock:Number(document.getElementById("produtoEstoqueMinimo").value||0)
@@ -1411,10 +1480,10 @@ function atualizarPagamentoDinheiro(pedido){
 
   document.getElementById("dinheiroCliente").textContent="R$ "+dinheiro(dinheiroCliente);
 
-  const precisa=dinheiroCliente>0&&dinheiroCliente<total;
+  const precisa=dinheiroCliente>=total && dinheiroCliente>0;
 
   document.getElementById("precisaTroco").textContent=
-    precisa?"Não":dinheiroCliente>=total?"Sim":"-";
+    dinheiroCliente<=0 ? "Não informado" : (dinheiroCliente>total ? "Sim" : "Não");
 
   const troco=dinheiroCliente-total;
 
@@ -1611,7 +1680,47 @@ function chamarWhatsApp(){
 
 function imprimirPedido(){
   if(!pedidoAtual) return;
+
+  const nome=pedidoAtual.customer_name||pedidoAtual.name||pedidoAtual.customer||"-";
+  const telefone=pedidoAtual.customer_phone||pedidoAtual.phone||pedidoAtual.whatsapp||pedidoAtual.customer_whatsapp||"-";
+  const endereco=pedidoAtual.address||pedidoAtual.customer_address||pedidoAtual.delivery_address||"-";
+  const status=pedidoAtual.status||"pendente";
+  const pagamento=pedidoAtual.payment_method||pedidoAtual.payment_type||pedidoAtual.payment||"-";
+  const pagamentoStatus=pedidoAtual.payment_status||pedidoAtual.payment_state||"-";
+  const observacoes=pedidoAtual.notes||pedidoAtual.observations||pedidoAtual.observation||"Nenhuma observação.";
+  const total=Number(pedidoAtual.total||0);
+  const itens=itensPedidoAtual.length ? itensPedidoAtual.map(item=>{
+    const q=Number(item.qty||0), p=Number(item.price||0);
+    return `<tr><td>${escapeHTML(item.name||"Produto")}</td><td style="text-align:center">${q}</td><td style="text-align:right">R$ ${dinheiro(q*p)}</td></tr>`;
+  }).join("") : `<tr><td colspan="3">Itens não carregados.</td></tr>`;
+
+  const area=document.getElementById("printArea");
+  area.innerHTML=`
+    <div style="max-width:700px;margin:0 auto">
+      <h2 style="text-align:center;margin:0 0 4px">LÁ DOCIÊ</h2>
+      <div style="text-align:center;font-size:12px;margin-bottom:18px">Pedido #${escapeHTML(pedidoAtual.id)}</div>
+      <hr>
+      <p><strong>Cliente:</strong> ${escapeHTML(nome)}</p>
+      <p><strong>WhatsApp:</strong> ${escapeHTML(telefone)}</p>
+      <p><strong>Endereço:</strong> ${escapeHTML(endereco)}</p>
+      <hr>
+      <h3>Pedido</h3>
+      <table style="width:100%;border-collapse:collapse" border="1" cellpadding="7">
+        <thead><tr><th style="text-align:left">Produto</th><th>Qtd.</th><th style="text-align:right">Total</th></tr></thead>
+        <tbody>${itens}</tbody>
+      </table>
+      <p style="text-align:right;font-size:18px"><strong>Valor: R$ ${dinheiro(total)}</strong></p>
+      <hr>
+      <p><strong>Status:</strong> ${escapeHTML(status)}</p>
+      <p><strong>Pagamento:</strong> ${escapeHTML(pagamento)}</p>
+      <p><strong>Status do pagamento:</strong> ${escapeHTML(pagamentoStatus)}</p>
+      <hr>
+      <p><strong>Observações:</strong><br>${escapeHTML(observacoes)}</p>
+    </div>`;
+
+  area.style.display="block";
   window.print();
+  setTimeout(()=>{ area.style.display="none"; area.innerHTML=""; },500);
 }
 
 /* =========================================================
@@ -1867,62 +1976,101 @@ function iniciarRealtime(){
     .channel("admin-orders-realtime")
     .on(
       "postgres_changes",
-      {
-        event:"*",
-        schema:"public",
-        table:"orders"
-      },
+      {event:"*",schema:"public",table:"orders"},
       async payload=>{
-
         console.log("Realtime pedido:",payload);
-
-        if(payload.eventType==="INSERT"){
-          pedidos.unshift(payload.new);
-          notificarNovoPedido(payload.new);
-        }
-
-        if(payload.eventType==="UPDATE"){
-          const indice=pedidos.findIndex(
-            p=>Number(p.id)===Number(payload.new.id)
-          );
-
-          if(indice!==-1){
-            pedidos[indice]=payload.new;
-          }else{
-            pedidos.unshift(payload.new);
-          }
-
-          if(
-            pedidoAtual &&
-            Number(pedidoAtual.id)===Number(payload.new.id)
-          ){
-            pedidoAtual=payload.new;
-            preencherDetalhePedido(pedidoAtual);
-            await carregarItensDoPedido(pedidoAtual.id);
-          }
-        }
-
-        if(payload.eventType==="DELETE"){
-          pedidos=pedidos.filter(
-            p=>Number(p.id)!==Number(payload.old.id)
-          );
-
-          if(
-            pedidoAtual &&
-            Number(pedidoAtual.id)===Number(payload.old.id)
-          ){
-            fecharPedido();
-          }
-        }
-
-        renderizarPedidos();
-        atualizarDashboard();
-        renderizarClientes();
+        aplicarEventoPedido(payload);
       }
     )
     .subscribe(status=>{
       console.log("Realtime:",status);
     });
+
+  iniciarPollingPedidos();
+}
+
+function aplicarEventoPedido(payload){
+  if(!payload) return;
+
+  if(payload.eventType==="INSERT"){
+    const existe=pedidos.some(p=>Number(p.id)===Number(payload.new.id));
+    if(!existe){
+      pedidos.unshift(payload.new);
+      notificarNovoPedido(payload.new);
+    }
+  }
+
+  if(payload.eventType==="UPDATE"){
+    const indice=pedidos.findIndex(p=>Number(p.id)===Number(payload.new.id));
+    if(indice!==-1) pedidos[indice]=payload.new;
+    else pedidos.unshift(payload.new);
+
+    if(pedidoAtual && Number(pedidoAtual.id)===Number(payload.new.id)){
+      pedidoAtual=payload.new;
+      preencherDetalhePedido(pedidoAtual);
+    }
+  }
+
+  if(payload.eventType==="DELETE"){
+    pedidos=pedidos.filter(p=>Number(p.id)!==Number(payload.old.id));
+    if(pedidoAtual && Number(pedidoAtual.id)===Number(payload.old.id)) fecharPedido();
+  }
+
+  pedidos.sort((a,b)=>new Date(b.created_at||0)-new Date(a.created_at||0));
+  renderizarPedidos();
+  atualizarDashboard();
+  renderizarClientes();
+}
+
+async function sincronizarPedidosSilenciosamente(){
+  try{
+    const {data,error}=await supabaseClient
+      .from("orders")
+      .select("*")
+      .order("created_at",{ascending:false});
+
+    if(error) throw error;
+    const novos=Array.isArray(data)?data:[];
+    const idsAntes=new Set(pedidos.map(p=>String(p.id)));
+    const idsDepois=new Set(novos.map(p=>String(p.id)));
+
+    const novoPedido=novos.find(p=>!idsAntes.has(String(p.id)));
+    if(novoPedido) notificarNovoPedido(novoPedido);
+
+    pedidos=novos;
+    ultimaAtualizacaoPedidos=Date.now();
+
+    if(pedidoAtual){
+      const atualizado=pedidos.find(p=>Number(p.id)===Number(pedidoAtual.id));
+      if(atualizado){
+        pedidoAtual=atualizado;
+        preencherDetalhePedido(atualizado);
+      }else if(!idsDepois.has(String(pedidoAtual.id))){
+        fecharPedido();
+      }
+    }
+
+    renderizarPedidos();
+    atualizarDashboard();
+    renderizarClientes();
+  }catch(error){
+    console.error("Sincronização automática dos pedidos:",error);
+  }
+}
+
+function iniciarPollingPedidos(){
+  if(pedidosPollTimer) clearInterval(pedidosPollTimer);
+  pedidosPollTimer=setInterval(()=>{
+    if(document.hidden) return;
+    sincronizarPedidosSilenciosamente();
+  },5000);
+}
+
+function pararPollingPedidos(){
+  if(pedidosPollTimer){
+    clearInterval(pedidosPollTimer);
+    pedidosPollTimer=null;
+  }
 }
 
 /* =========================================================
@@ -1962,8 +2110,15 @@ document.getElementById("loginPassword").addEventListener("keydown",e=>{
   if(e.key==="Enter") entrar();
 });
 
+document.addEventListener("visibilitychange",()=>{
+  if(!document.hidden){
+    const sessao=document.getElementById("adminScreen");
+    if(sessao && !sessao.classList.contains("hidden")) sincronizarPedidosSilenciosamente();
+  }
+});
+
 iniciar();
 </script>
 
 </body>
-                                        </html>
+  </html>

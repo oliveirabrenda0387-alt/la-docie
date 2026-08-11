@@ -1,250 +1,140 @@
 <!DOCTYPE html>
+
 <html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Painel Administrativo | Lá Dociê</title>
 
-  <title>Painel Lá Dociê</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#fffaf7;
+  color:#4b281d
+}
+header{
+  background:#4b281d;
+  color:#fff;
+  padding:18px;
+  text-align:center;
+  position:sticky;
+  top:0;
+  z-index:10
+}
+header h1{margin:0;font-size:24px}
+header p{margin:5px 0 0;opacity:.8}
+main{max-width:1000px;margin:auto;padding:18px}
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:18px;
+  box-shadow:0 3px 15px #00000012
+}
+input,select,textarea{
+  width:100%;
+  padding:12px;
+  margin:6px 0 12px;
+  border:1px solid #ddd;
+  border-radius:10px;
+  font-size:15px
+}
+textarea{min-height:90px;resize:vertical}
+button{
+  border:0;
+  border-radius:10px;
+  padding:12px 15px;
+  background:#4b281d;
+  color:white;
+  font-weight:bold;
+  cursor:pointer
+}
+button:hover{opacity:.9}
+.btn-secondary{background:#8b6b5c}
+.btn-danger{background:#a33d3d}
+.btn-success{background:#587b55}
+.hidden{display:none!important}
+.menu{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px
+}
+.menu button{
+  min-height:90px;
+  font-size:15px
+}
+.top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  flex-wrap:wrap
+}
+.top h2{margin:0}
+.item{
+  background:#fffaf7;
+  border:1px solid #eaded7;
+  border-radius:14px;
+  padding:15px;
+  margin-top:12px
+}
+.item img{
+  width:100%;
+  max-height:220px;
+  object-fit:cover;
+  border-radius:10px;
+  margin-bottom:10px
+}
+.actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+  margin-top:12px
+}
+.message{
+  padding:12px;
+  margin-top:10px;
+  border-radius:10px;
+  background:#fff0e9
+}
+.order-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  border-bottom:1px solid #eee;
+  padding-bottom:10px
+}
+.status{
+  background:#eadbd3;
+  border-radius:20px;
+  padding:6px 10px;
+  font-size:12px;
+  font-weight:bold
+}
+.order-info p{margin:7px 0}
+.order-item{
+  display:flex;
+  justify-content:space-between;
+  border-bottom:1px solid #eee;
+  padding:8px 0
+}
+.empty{text-align:center;padding:30px;color:#777}
+label{font-weight:bold;display:block;margin-top:8px}
+@media(max-width:600px){
+  main{padding:10px}
+  .card{padding:15px}
+  .menu{grid-template-columns:1fr 1fr}
+  .actions{grid-template-columns:1fr}
+  .order-head{align-items:flex-start}
+  header h1{font-size:21px}
+}
+</style>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #fffaf7;
-      color: #4b281d;
-    }
-
-    header {
-      background: #4b281d;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 25px;
-    }
-
-    header p {
-      margin: 6px 0 0;
-      opacity: .85;
-    }
-
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 16px;
-      padding: 22px;
-      margin-top: 20px;
-      box-shadow: 0 4px 18px rgba(0,0,0,.08);
-    }
-
-    h2 {
-      margin-top: 0;
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 14px;
-      margin: 8px 0;
-      border: 1px solid #ddd;
-      border-radius: 10px;
-      font-size: 16px;
-      font-family: inherit;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
-    }
-
-    button {
-      width: 100%;
-      padding: 14px;
-      margin-top: 10px;
-      border: 0;
-      border-radius: 10px;
-      background: #4b281d;
-      color: white;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: .9;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-
-    .menu {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .menu button {
-      min-height: 100px;
-      margin: 0;
-    }
-
-    .logout,
-    .danger {
-      background: #9b3d3d;
-    }
-
-    .secondary {
-      background: #8b6b5c;
-    }
-
-    .success {
-      background: #587b55;
-    }
-
-    .message {
-      margin-top: 12px;
-      padding: 12px;
-      border-radius: 8px;
-      background: #fff1eb;
-    }
-
-    .welcome {
-      text-align: center;
-    }
-
-    .topo {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .topo h2 {
-      margin: 0;
-    }
-
-    .topo button {
-      width: auto;
-      margin: 0;
-    }
-
-    .produto,
-    .pedido {
-      background: #fffaf7;
-      border: 1px solid #eee1da;
-      border-radius: 16px;
-      padding: 16px;
-      margin-top: 15px;
-    }
-
-    .produto img {
-      width: 100%;
-      max-height: 230px;
-      object-fit: cover;
-      border-radius: 12px;
-      margin-bottom: 10px;
-    }
-
-    .acoes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .status {
-      display: inline-block;
-      padding: 7px 12px;
-      border-radius: 20px;
-      background: #eadbd3;
-      font-size: 13px;
-      font-weight: bold;
-    }
-
-    .pedido-topo {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      align-items: center;
-      border-bottom: 1px solid #eee;
-      padding-bottom: 12px;
-    }
-
-    .pedido-topo small {
-      display: block;
-      margin-top: 5px;
-      color: #777;
-    }
-
-    .pedido-info {
-      margin-top: 15px;
-    }
-
-    .pedido-info p {
-      margin: 8px 0;
-    }
-
-    .pedido-produtos {
-      margin-top: 15px;
-      padding-top: 12px;
-      border-top: 1px solid #eee;
-    }
-
-    .pedido-item {
-      display: flex;
-      justify-content: space-between;
-      gap: 10px;
-      padding: 10px 0;
-      border-bottom: 1px solid #eee;
-    }
-
-    .pedido-item:last-child {
-      border-bottom: 0;
-    }
-
-    .pedido-acoes {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      margin-top: 15px;
-    }
-
-    .vazio {
-      text-align: center;
-      padding: 30px 10px;
-      color: #777;
-    }
-
-    label {
-      display: block;
-      margin-top: 12px;
-      font-weight: bold;
-    }
-
-    @media (max-width: 600px) {
-      .menu,
-      .acoes,
-      .pedido-acoes {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  </style>
 </head>
 
 <body>
@@ -254,1547 +144,817 @@
   <p>Painel Administrativo</p>
 </header>
 
-<div class="container">
+<main>
 
-  <!-- LOGIN -->
+<!-- LOGIN -->
 
-  <div id="loginArea" class="card">
+<section id="login" class="card">
+  <h2>🔐 Acesso administrativo</h2>
 
-    <h2>🔐 Entrar</h2>
+  <input id="email" type="email" placeholder="E-mail">
+  <input id="senha" type="password" placeholder="Senha">
 
-    <p>Acesso exclusivo da administração.</p>
+<button onclick="login()">Entrar</button>
 
-    <input
-      type="email"
-      id="email"
-      placeholder="Seu e-mail"
-      autocomplete="email"
-    >
+  <div id="loginMsg"></div>
+</section>
 
-    <input
-      type="password"
-      id="password"
-      placeholder="Sua senha"
-      autocomplete="current-password"
-    >
+<!-- PAINEL -->
 
-    <button onclick="entrar()">
-      Entrar no painel
-    </button>
+<section id="painel" class="hidden">
 
-    <div id="loginMessage"></div>
+  <div class="card">
+    <h2>Olá! 👋</h2>
+    <p>Bem-vinda ao painel da <b>Lá Dociê</b>.</p>
 
-  </div>
-
-
-  <!-- PAINEL -->
-
-  <div id="painel" class="hidden">
-
-    <div class="card welcome">
-
-      <h2>Olá! 👋</h2>
-
-      <p>
-        Bem-vinda ao painel da
-        <strong>Lá Dociê</strong>.
-      </p>
-
-    </div>
-
-
-    <!-- MENU -->
-
-    <div id="menuArea" class="card">
-
-      <h2>📋 Administração</h2>
-
-      <div class="menu">
-
-        <button onclick="abrirProdutos()">
-          🍰<br>
-          Produtos
-        </button>
-
-        <button onclick="abrirPedidos()">
-          📦<br>
-          Pedidos
-        </button>
-
-        <button onclick="abrirConfiguracoes()">
-          ⚙️<br>
-          Configurações
-        </button>
-
-        <button onclick="abrirCadastroProduto()">
-          ➕<br>
-          Novo produto
-        </button>
-
-      </div>
-
-      <button class="logout" onclick="sair()">
-        Sair
-      </button>
-
-    </div>
-
-
-    <!-- PRODUTOS -->
-
-    <div id="produtosArea" class="card hidden">
-
-      <div class="topo">
-
-        <h2>🍰 Produtos</h2>
-
-        <button class="secondary" onclick="abrirMenu()">
-          Voltar
-        </button>
-
-      </div>
-
-      <button onclick="abrirCadastroProduto()">
-        ➕ Cadastrar novo produto
-      </button>
-
-      <button class="secondary" onclick="carregarProdutos()">
-        🔄 Atualizar produtos
-      </button>
-
-      <div id="listaProdutos">
-        Carregando produtos...
-      </div>
-
-    </div>
-
-
-    <!-- CADASTRO PRODUTO -->
-
-    <div id="cadastroArea" class="card hidden">
-
-      <h2 id="tituloFormulario">
-        ➕ Novo produto
-      </h2>
-
-      <input
-        type="hidden"
-        id="produtoId"
-      >
-
-      <label>Nome do produto</label>
-
-      <input
-        type="text"
-        id="produtoNome"
-        placeholder="Ex.: Bolo de chocolate"
-      >
-
-      <label>Categoria</label>
-
-      <input
-        type="text"
-        id="produtoCategoria"
-        placeholder="Ex.: Bolos"
-      >
-
-      <label>Preço</label>
-
-      <input
-        type="number"
-        id="produtoPreco"
-        step="0.01"
-        placeholder="Ex.: 89.90"
-      >
-
-      <label>Descrição</label>
-
-      <textarea
-        id="produtoDescricao"
-        placeholder="Descrição do produto"
-      ></textarea>
-
-      <label>Imagem</label>
-
-      <input
-        type="text"
-        id="produtoImagem"
-        placeholder="Cole o link da imagem"
-      >
-
-      <button onclick="salvarProduto()">
-        💾 Salvar produto
-      </button>
-
-      <button
-        class="secondary"
-        onclick="abrirProdutos()"
-      >
-        Voltar
-      </button>
-
-      <div id="produtoMessage"></div>
-
-    </div>
-
-
-    <!-- PEDIDOS -->
-
-    <div id="pedidosArea" class="card hidden">
-
-      <div class="topo">
-
-        <h2>📦 Pedidos</h2>
-
-        <button
-          class="secondary"
-          onclick="abrirMenu()"
-        >
-          Voltar
-        </button>
-
-      </div>
-
-      <button
-        class="secondary"
-        onclick="carregarPedidos()"
-      >
-        🔄 Atualizar pedidos
-      </button>
-
-      <div id="listaPedidos">
-        Carregando pedidos...
-      </div>
-
-    </div>
-
-
-    <!-- CONFIGURAÇÕES -->
-
-    <div id="configArea" class="card hidden">
-
-      <div class="topo">
-
-        <h2>⚙️ Configurações</h2>
-
-        <button
-          class="secondary"
-          onclick="abrirMenu()"
-        >
-          Voltar
-        </button>
-
-      </div>
-
-      <label>Nome da loja</label>
-
-      <input
-        id="configNome"
-        type="text"
-      >
-
-      <label>Descrição</label>
-
-      <textarea
-        id="configDescricao"
-      ></textarea>
-
-      <label>Telefone</label>
-
-      <input
-        id="configTelefone"
-        type="text"
-      >
-
-      <label>WhatsApp</label>
-
-      <input
-        id="configWhatsapp"
-        type="text"
-      >
-
-      <label>Chave Pix</label>
-
-      <input
-        id="configPix"
-        type="text"
-      >
-
-      <label>Taxa de entrega</label>
-
-      <input
-        id="configTaxa"
-        type="number"
-        step="0.01"
-      >
-
-      <label>Horário de funcionamento</label>
-
-      <textarea
-        id="configHorario"
-        placeholder="Ex.: Terça a sexta: 14h às 22h"
-      ></textarea>
-
-      <label>Endereço</label>
-
-      <input
-        id="configEndereco"
-        type="text"
-      >
-
-      <label>Instagram</label>
-
-      <input
-        id="configInstagram"
-        type="text"
-        placeholder="@ladocie"
-      >
-
-      <button onclick="salvarConfiguracoes()">
-        💾 Salvar configurações
-      </button>
-
-      <div id="configMessage"></div>
-
-    </div>
-
-  </div>
-
+```
+<div class="menu">
+  <button onclick="produtos()">🍰<br>Produtos</button>
+  <button onclick="pedidos()">📦<br>Pedidos</button>
+  <button onclick="configuracoes()">⚙️<br>Configurações</button>
+  <button onclick="novoProduto()">➕<br>Novo produto</button>
 </div>
 
+<button class="btn-danger" style="width:100%;margin-top:12px"
+  onclick="logout()">Sair</button>
+```
+
+  </div>
+
+  <!-- PRODUTOS -->
+
+  <section id="produtos" class="card hidden">
+
+```
+<div class="top">
+  <h2>🍰 Produtos</h2>
+  <button class="btn-secondary" onclick="menu()">Voltar</button>
+</div>
+
+<button style="margin-top:12px" onclick="novoProduto()">
+  ➕ Novo produto
+</button>
+
+<button class="btn-secondary" onclick="carregarProdutos()">
+  🔄 Atualizar
+</button>
+
+<div id="listaProdutos">Carregando...</div>
+```
+
+  </section>
+
+  <!-- FORM PRODUTO -->
+
+  <section id="formProduto" class="card hidden">
+
+```
+<div class="top">
+  <h2 id="formTitulo">➕ Novo produto</h2>
+  <button class="btn-secondary" onclick="produtos()">Voltar</button>
+</div>
+
+<input id="produtoId" type="hidden">
+
+<label>Nome</label>
+<input id="produtoNome" placeholder="Nome do produto">
+
+<label>Categoria</label>
+<input id="produtoCategoria" placeholder="Bolos, Doces, Kits...">
+
+<label>Preço</label>
+<input id="produtoPreco" type="number" step="0.01" placeholder="0,00">
+
+<label>Descrição</label>
+<textarea id="produtoDescricao"></textarea>
+
+<label>Link da imagem</label>
+<input id="produtoImagem" placeholder="https://...">
+
+<label>
+  <input id="produtoAtivo" type="checkbox" checked style="width:auto">
+  Produto ativo
+</label>
+
+<button onclick="salvarProduto()">💾 Salvar produto</button>
+
+<div id="produtoMsg"></div>
+```
+
+  </section>
+
+  <!-- PEDIDOS -->
+
+  <section id="pedidos" class="card hidden">
+
+```
+<div class="top">
+  <h2>📦 Pedidos</h2>
+  <button class="btn-secondary" onclick="menu()">Voltar</button>
+</div>
+
+<button class="btn-secondary" onclick="carregarPedidos()">
+  🔄 Atualizar pedidos
+</button>
+
+<div id="listaPedidos">Carregando...</div>
+```
+
+  </section>
+
+  <!-- CONFIGURAÇÕES -->
+
+  <section id="config" class="card hidden">
+
+```
+<div class="top">
+  <h2>⚙️ Configurações</h2>
+  <button class="btn-secondary" onclick="menu()">Voltar</button>
+</div>
+
+<label>Nome da loja</label>
+<input id="cfgNome">
+
+<label>Descrição</label>
+<textarea id="cfgDescricao"></textarea>
+
+<label>Telefone</label>
+<input id="cfgTelefone">
+
+<label>WhatsApp</label>
+<input id="cfgWhatsapp">
+
+<label>Chave Pix</label>
+<input id="cfgPix">
+
+<label>Taxa de entrega</label>
+<input id="cfgTaxa" type="number" step="0.01">
+
+<label>Horário de funcionamento</label>
+<textarea id="cfgHorario"></textarea>
+
+<label>Endereço</label>
+<input id="cfgEndereco">
+
+<label>Instagram</label>
+<input id="cfgInstagram">
+
+<button onclick="salvarConfig()">💾 Salvar configurações</button>
+
+<div id="configMsg"></div>
+```
+
+  </section>
+
+</section>
+</main>
 
 <script>
 
+/* ==============================
+   SUPABASE
+============================== */
+
 const SUPABASE_URL =
-  "https://lzihqkpscesurkfmcasb.supabase.co";
+"https://lzihqkpscesurkfmcasb.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
+"sb_publishable_okTsv4Dxh12-D-3a2x2gyg_H37xXvnG";
 
-const supabaseClient =
-  supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+const db =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
 
 
-/* =========================
+/* ==============================
+   UTILIDADES
+============================== */
+
+function $(id){
+  return document.getElementById(id);
+}
+
+function dinheiro(v){
+  return Number(v||0)
+    .toFixed(2)
+    .replace(".",",");
+}
+
+function esc(v){
+  return String(v??"")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function esconderTudo(){
+  $("login").classList.add("hidden");
+  $("painel").classList.add("hidden");
+  $("produtos").classList.add("hidden");
+  $("formProduto").classList.add("hidden");
+  $("pedidos").classList.add("hidden");
+  $("config").classList.add("hidden");
+}
+
+function menu(){
+  $("produtos").classList.add("hidden");
+  $("formProduto").classList.add("hidden");
+  $("pedidos").classList.add("hidden");
+  $("config").classList.add("hidden");
+  $("painel").classList.remove("hidden");
+}
+
+
+/* ==============================
    LOGIN
-========================= */
+============================== */
 
-async function entrar() {
+async function login(){
 
-  const email =
-    document.getElementById("email").value.trim();
+  const email=$("email").value.trim();
+  const password=$("senha").value;
 
-  const password =
-    document.getElementById("password").value;
+  $("loginMsg").innerHTML="";
 
-  const mensagem =
-    document.getElementById("loginMessage");
-
-  mensagem.innerHTML = "";
-
-  if (!email || !password) {
-
-    mensagem.innerHTML =
+  if(!email||!password){
+    $("loginMsg").innerHTML=
       '<div class="message">Preencha e-mail e senha.</div>';
-
     return;
   }
 
-  const { data, error } =
-    await supabaseClient.auth.signInWithPassword({
-      email: email,
-      password: password
-    });
+  const {data,error}=await db.auth.signInWithPassword({
+    email,
+    password
+  });
 
-  if (error) {
-
-    mensagem.innerHTML =
+  if(error){
+    $("loginMsg").innerHTML=
       '<div class="message">E-mail ou senha incorretos.</div>';
-
     console.error(error);
-
     return;
   }
 
-  const user = data.user;
+  const {data:admin,error:adminError}=await db
+    .from("admin_users")
+    .select("user_id")
+    .eq("user_id",data.user.id)
+    .maybeSingle();
 
-  const { data: admin, error: adminError } =
-    await supabaseClient
-      .from("admin_users")
-      .select("user_id")
-      .eq("user_id", user.id)
-      .maybeSingle();
+  if(adminError||!admin){
 
-  if (adminError || !admin) {
+    await db.auth.signOut();
 
-    await supabaseClient.auth.signOut();
-
-    mensagem.innerHTML =
+    $("loginMsg").innerHTML=
       '<div class="message">Esta conta não possui acesso administrativo.</div>';
 
     return;
   }
 
-  document
-    .getElementById("loginArea")
-    .classList.add("hidden");
+  $("login").classList.add("hidden");
+  $("painel").classList.remove("hidden");
+}
 
-  document
-    .getElementById("painel")
-    .classList.remove("hidden");
-
+async function logout(){
+  await db.auth.signOut();
+  esconderTudo();
+  $("login").classList.remove("hidden");
 }
 
 
-/* =========================
-   SAIR
-========================= */
-
-async function sair() {
-
-  await supabaseClient.auth.signOut();
-
-  document
-    .getElementById("painel")
-    .classList.add("hidden");
-
-  document
-    .getElementById("loginArea")
-    .classList.remove("hidden");
-
-}
-
-
-/* =========================
-   NAVEGAÇÃO
-========================= */
-
-function esconderAreas() {
-
-  document
-    .getElementById("menuArea")
-    .classList.add("hidden");
-
-  document
-    .getElementById("produtosArea")
-    .classList.add("hidden");
-
-  document
-    .getElementById("cadastroArea")
-    .classList.add("hidden");
-
-  document
-    .getElementById("pedidosArea")
-    .classList.add("hidden");
-
-  document
-    .getElementById("configArea")
-    .classList.add("hidden");
-
-}
-
-
-function abrirMenu() {
-
-  esconderAreas();
-
-  document
-    .getElementById("menuArea")
-    .classList.remove("hidden");
-
-}
-
-
-/* =========================
+/* ==============================
    PRODUTOS
-========================= */
+============================== */
 
-async function abrirProdutos() {
+async function produtos(){
 
-  esconderAreas();
+  $("painel").classList.add("hidden");
+  $("formProduto").classList.add("hidden");
+  $("pedidos").classList.add("hidden");
+  $("config").classList.add("hidden");
+  $("produtos").classList.remove("hidden");
 
-  document
-    .getElementById("produtosArea")
-    .classList.remove("hidden");
-
-  await carregarProdutos();
-
+  carregarProdutos();
 }
 
+async function carregarProdutos(){
 
-function abrirCadastroProduto() {
+  const area=$("listaProdutos");
+  area.innerHTML="Carregando produtos...";
 
-  esconderAreas();
+  const {data,error}=await db
+    .from("products")
+    .select("*")
+    .order("created_at",{ascending:false});
 
-  document
-    .getElementById("cadastroArea")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("tituloFormulario")
-    .innerText = "➕ Novo produto";
-
-  document
-    .getElementById("produtoId")
-    .value = "";
-
-  document
-    .getElementById("produtoNome")
-    .value = "";
-
-  document
-    .getElementById("produtoCategoria")
-    .value = "";
-
-  document
-    .getElementById("produtoPreco")
-    .value = "";
-
-  document
-    .getElementById("produtoDescricao")
-    .value = "";
-
-  document
-    .getElementById("produtoImagem")
-    .value = "";
-
-  document
-    .getElementById("produtoMessage")
-    .innerHTML = "";
-
-}
-
-
-async function carregarProdutos() {
-
-  const lista =
-    document.getElementById("listaProdutos");
-
-  lista.innerHTML =
-    "Carregando produtos...";
-
-  const { data, error } =
-    await supabaseClient
-      .from("products")
-      .select("*")
-      .order("name", {
-        ascending: true
-      });
-
-  if (error) {
-
-    console.error(error);
-
-    lista.innerHTML =
-      '<div class="message">Erro ao carregar produtos:<br>' +
-      error.message +
-      '</div>';
-
+  if(error){
+    area.innerHTML=
+      '<div class="message">Erro: '+esc(error.message)+'</div>';
     return;
   }
 
-  if (!data || data.length === 0) {
-
-    lista.innerHTML =
-      '<div class="vazio">Nenhum produto cadastrado.</div>';
-
+  if(!data?.length){
+    area.innerHTML=
+      '<div class="empty">Nenhum produto cadastrado.</div>';
     return;
   }
 
-  lista.innerHTML = "";
+  area.innerHTML="";
 
-  data.forEach(produto => {
+  data.forEach(p=>{
 
-    const div =
-      document.createElement("div");
+    const div=document.createElement("div");
+    div.className="item";
 
-    div.className = "produto";
+    div.innerHTML=`
 
-    if (produto.image) {
+      ${p.image?`
+        <img src="${esc(p.image)}"
+             alt="${esc(p.name)}"
+             onerror="this.style.display='none'">
+      `:""}
 
-      const img =
-        document.createElement("img");
+      <h3>${esc(p.name||"Sem nome")}</h3>
 
-      img.src = produto.image;
+      <p>
+        <b>Categoria:</b>
+        ${esc(p.category||"-")}
+      </p>
 
-      img.alt =
-        produto.name || "Produto";
+      <p>
+        <b>Preço:</b>
+        R$ ${dinheiro(p.price)}
+      </p>
 
-      div.appendChild(img);
+      <p>
+        <b>Status:</b>
+        ${p.active===false?"Inativo":"Ativo"}
+      </p>
 
-    }
+      ${p.description?
+        `<p>${esc(p.description)}</p>`:""}
 
-    const titulo =
-      document.createElement("h3");
+      <div class="actions">
 
-    titulo.innerText =
-      produto.name || "Sem nome";
+        <button onclick='editarProduto(${JSON.stringify(p)})'>
+          ✏️ Editar
+        </button>
 
-    div.appendChild(titulo);
+        <button class="btn-danger"
+          onclick="excluirProduto(${p.id})">
+          🗑️ Excluir
+        </button>
 
-    const categoria =
-      document.createElement("p");
+      </div>
+    `;
 
-    categoria.innerHTML =
-      "<strong>Categoria:</strong> " +
-      (produto.category || "Sem categoria");
-
-    div.appendChild(categoria);
-
-    const preco =
-      document.createElement("p");
-
-    preco.innerHTML =
-      "<strong>Preço:</strong> R$ " +
-      Number(produto.price || 0)
-        .toFixed(2)
-        .replace(".", ",");
-
-    div.appendChild(preco);
-
-    if (produto.description) {
-
-      const descricao =
-        document.createElement("p");
-
-      descricao.innerText =
-        produto.description;
-
-      div.appendChild(descricao);
-
-    }
-
-    const acoes =
-      document.createElement("div");
-
-    acoes.className = "acoes";
-
-    const editar =
-      document.createElement("button");
-
-    editar.innerText =
-      "✏️ Editar";
-
-    editar.onclick = function() {
-
-      editarProduto(produto);
-
-    };
-
-    const excluir =
-      document.createElement("button");
-
-    excluir.innerText =
-      "🗑️ Excluir";
-
-    excluir.className =
-      "danger";
-
-    excluir.onclick = function() {
-
-      excluirProduto(produto.id);
-
-    };
-
-    acoes.appendChild(editar);
-    acoes.appendChild(excluir);
-
-    div.appendChild(acoes);
-
-    lista.appendChild(div);
-
+    area.appendChild(div);
   });
-
 }
 
 
-async function salvarProduto() {
+/* ==============================
+   NOVO / EDITAR PRODUTO
+============================== */
 
-  const id =
-    document.getElementById("produtoId").value;
+function novoProduto(){
 
-  const nome =
-    document.getElementById("produtoNome").value.trim();
+  $("painel").classList.add("hidden");
+  $("produtos").classList.add("hidden");
+  $("pedidos").classList.add("hidden");
+  $("config").classList.add("hidden");
+  $("formProduto").classList.remove("hidden");
 
-  const categoria =
-    document.getElementById("produtoCategoria").value.trim();
+  $("formTitulo").innerText="➕ Novo produto";
 
-  const preco =
-    Number(
-      document.getElementById("produtoPreco").value || 0
-    );
+  $("produtoId").value="";
+  $("produtoNome").value="";
+  $("produtoCategoria").value="";
+  $("produtoPreco").value="";
+  $("produtoDescricao").value="";
+  $("produtoImagem").value="";
+  $("produtoAtivo").checked=true;
+  $("produtoMsg").innerHTML="";
+}
 
-  const descricao =
-    document.getElementById("produtoDescricao").value.trim();
+function editarProduto(p){
 
-  const imagem =
-    document.getElementById("produtoImagem").value.trim();
+  $("produtos").classList.add("hidden");
+  $("formProduto").classList.remove("hidden");
 
-  const mensagem =
-    document.getElementById("produtoMessage");
+  $("formTitulo").innerText="✏️ Editar produto";
 
-  mensagem.innerHTML = "";
+  $("produtoId").value=p.id;
+  $("produtoNome").value=p.name||"";
+  $("produtoCategoria").value=p.category||"";
+  $("produtoPreco").value=p.price||"";
+  $("produtoDescricao").value=p.description||"";
+  $("produtoImagem").value=p.image||"";
+  $("produtoAtivo").checked=p.active!==false;
+  $("produtoMsg").innerHTML="";
+}
 
-  if (!nome) {
+async function salvarProduto(){
 
-    mensagem.innerHTML =
-      '<div class="message">Digite o nome do produto.</div>';
+  const id=$("produtoId").value;
 
-    return;
-  }
-
-  if (preco < 0) {
-
-    mensagem.innerHTML =
-      '<div class="message">Digite um preço válido.</div>';
-
-    return;
-  }
-
-  const produto = {
-
-    name: nome,
-
-    category:
-      categoria || null,
-
-    price:
-      preco,
-
-    description:
-      descricao || null,
-
-    image:
-      imagem || null
-
+  const produto={
+    name:$("produtoNome").value.trim(),
+    category:$("produtoCategoria").value.trim()||null,
+    price:Number($("produtoPreco").value||0),
+    description:$("produtoDescricao").value.trim()||null,
+    image:$("produtoImagem").value.trim()||null,
+    active:$("produtoAtivo").checked
   };
 
-  let resultado;
+  if(!produto.name){
+    $("produtoMsg").innerHTML=
+      '<div class="message">Informe o nome.</div>';
+    return;
+  }
 
-  if (id) {
+  if(produto.price<0){
+    $("produtoMsg").innerHTML=
+      '<div class="message">Preço inválido.</div>';
+    return;
+  }
 
-    resultado =
-      await supabaseClient
-        .from("products")
-        .update(produto)
-        .eq("id", id);
+  let result;
 
-  } else {
+  if(id){
 
-    resultado =
-      await supabaseClient
-        .from("products")
-        .insert(produto);
+    result=await db
+      .from("products")
+      .update(produto)
+      .eq("id",id);
+
+  }else{
+
+    result=await db
+      .from("products")
+      .insert(produto);
 
   }
 
-  if (resultado.error) {
+  if(result.error){
 
-    console.error(resultado.error);
-
-    mensagem.innerHTML =
-      '<div class="message">Erro ao salvar produto:<br>' +
-      resultado.error.message +
+    $("produtoMsg").innerHTML=
+      '<div class="message">Erro: '+
+      esc(result.error.message)+
       '</div>';
 
     return;
   }
 
-  mensagem.innerHTML =
+  $("produtoMsg").innerHTML=
     '<div class="message">Produto salvo com sucesso! 🍰</div>';
 
-  setTimeout(() => {
-
-    abrirProdutos();
-
-  }, 700);
-
+  setTimeout(produtos,500);
 }
 
+async function excluirProduto(id){
 
-function editarProduto(produto) {
+  if(!confirm("Excluir este produto?"))return;
 
-  esconderAreas();
+  const {error}=await db
+    .from("products")
+    .delete()
+    .eq("id",id);
 
-  document
-    .getElementById("cadastroArea")
-    .classList.remove("hidden");
-
-  document
-    .getElementById("tituloFormulario")
-    .innerText =
-      "✏️ Editar produto";
-
-  document
-    .getElementById("produtoId")
-    .value =
-      produto.id || "";
-
-  document
-    .getElementById("produtoNome")
-    .value =
-      produto.name || "";
-
-  document
-    .getElementById("produtoCategoria")
-    .value =
-      produto.category || "";
-
-  document
-    .getElementById("produtoPreco")
-    .value =
-      produto.price || "";
-
-  document
-    .getElementById("produtoDescricao")
-    .value =
-      produto.description || "";
-
-  document
-    .getElementById("produtoImagem")
-    .value =
-      produto.image || "";
-
-}
-
-
-async function excluirProduto(id) {
-
-  if (
-    !confirm(
-      "Tem certeza que deseja excluir este produto?"
-    )
-  ) {
+  if(error){
+    alert("Erro: "+error.message);
     return;
   }
 
-  const { error } =
-    await supabaseClient
-      .from("products")
-      .delete()
-      .eq("id", id);
-
-  if (error) {
-
-    alert(
-      "Não foi possível excluir:\n" +
-      error.message
-    );
-
-    return;
-  }
-
-  alert(
-    "Produto excluído com sucesso! 🍰"
-  );
-
-  await carregarProdutos();
-
+  carregarProdutos();
 }
 
 
-/* =========================
+/* ==============================
    PEDIDOS
-========================= */
+============================== */
 
-async function abrirPedidos() {
+async function pedidos(){
 
-  esconderAreas();
+  $("painel").classList.add("hidden");
+  $("produtos").classList.add("hidden");
+  $("formProduto").classList.add("hidden");
+  $("config").classList.add("hidden");
+  $("pedidos").classList.remove("hidden");
 
-  document
-    .getElementById("pedidosArea")
-    .classList.remove("hidden");
-
-  await carregarPedidos();
-
+  carregarPedidos();
 }
 
+async function carregarPedidos(){
 
-async function carregarPedidos() {
+  const area=$("listaPedidos");
+  area.innerHTML="Carregando pedidos...";
 
-  const lista =
-    document.getElementById("listaPedidos");
+  const {data,error}=await db
+    .from("orders")
+    .select("*")
+    .order("created_at",{ascending:false});
 
-  lista.innerHTML =
-    "Carregando pedidos...";
-
-  const { data, error } =
-    await supabaseClient
-      .from("orders")
-      .select("*")
-      .order("created_at", {
-        ascending: false
-      });
-
-  if (error) {
-
-    console.error(error);
-
-    lista.innerHTML =
-      '<div class="message">' +
-      '<strong>Erro ao carregar pedidos.</strong><br><br>' +
-      error.message +
-      '</div>';
-
+  if(error){
+    area.innerHTML=
+      '<div class="message">Erro: '+esc(error.message)+'</div>';
     return;
   }
 
-  if (!data || data.length === 0) {
-
-    lista.innerHTML =
-      '<div class="vazio">' +
-      '📦 Nenhum pedido recebido ainda.' +
-      '</div>';
-
+  if(!data?.length){
+    area.innerHTML=
+      '<div class="empty">📦 Nenhum pedido recebido.</div>';
     return;
   }
 
-  lista.innerHTML = "";
+  area.innerHTML="";
 
-  for (const pedido of data) {
+  for(const pedido of data){
 
-    await criarCardPedido(
-      pedido,
-      lista
-    );
+    const div=document.createElement("div");
+    div.className="item";
 
-  }
+    const {data:itens}=await db
+      .from("order_items")
+      .select("name,qty,price")
+      .eq("order_id",pedido.id)
+      .order("id");
 
-}
+    let itensHTML="";
 
-
-async function criarCardPedido(
-  pedido,
-  lista
-) {
-
-  const div =
-    document.createElement("div");
-
-  div.className =
-    "pedido";
-
-  const dataPedido =
-    pedido.created_at
-      ? new Date(
-          pedido.created_at
-        ).toLocaleString("pt-BR")
-      : "-";
-
-  const itens =
-    await buscarItensPedido(
-      pedido.id
-    );
-
-  let itensHTML = "";
-
-  if (!itens.length) {
-
-    itensHTML =
-      "<p>Nenhum item encontrado.</p>";
-
-  } else {
-
-    itens.forEach(item => {
-
-      const quantidade =
-        Number(item.qty || 1);
-
-      const preco =
-        Number(item.price || 0);
-
-      itensHTML += `
-        <div class="pedido-item">
-          <span>
-            ${quantidade}x ${escapeHTML(item.name || "Produto")}
-          </span>
-
-          <strong>
-            R$ ${preco
-              .toFixed(2)
-              .replace(".", ",")}
-          </strong>
+    (itens||[]).forEach(item=>{
+      itensHTML+=`
+        <div class="order-item">
+          <span>${item.qty}x ${esc(item.name)}</span>
+          <b>R$ ${dinheiro(item.price*item.qty)}</b>
         </div>
       `;
-
     });
 
-  }
+    div.innerHTML=`
 
-  div.innerHTML = `
+      <div class="order-head">
 
-    <div class="pedido-topo">
+        <div>
+          <b>📦 Pedido #${pedido.id}</b>
+          <small>
+            ${pedido.created_at?
+            new Date(pedido.created_at)
+              .toLocaleString("pt-BR"):""}
+          </small>
+        </div>
 
-      <div>
-
-        <strong>
-          📦 Pedido #${pedido.id}
-        </strong>
-
-        <small>
-          ${dataPedido}
-        </small>
+        <span class="status">
+          ${esc(pedido.status||"novo")}
+        </span>
 
       </div>
 
-      <span class="status">
-        ${escapeHTML(
-          pedido.status || "novo"
-        )}
-      </span>
+      <div class="order-info">
 
-    </div>
+        <p>👤 <b>Cliente:</b>
+          ${esc(pedido.customer_name||"-")}
+        </p>
 
+        <p>📱 <b>WhatsApp:</b>
+          ${esc(pedido.customer_phone||"-")}
+        </p>
 
-    <div class="pedido-info">
+        <p>📧 <b>E-mail:</b>
+          ${esc(pedido.customer_email||"-")}
+        </p>
 
-      <p>
-        👤 <strong>Cliente:</strong>
-        ${escapeHTML(
-          pedido.customer_name || "-"
-        )}
-      </p>
+        <p>📅 <b>Data:</b>
+          ${esc(pedido.scheduled_date||pedido.order_date||"-")}
+        </p>
 
-      <p>
-        📱 <strong>Telefone:</strong>
-        ${escapeHTML(
-          pedido.customer_phone || "-"
-        )}
-      </p>
+        <p>⏰ <b>Horário:</b>
+          ${esc(pedido.scheduled_time||pedido.order_time||"-")}
+        </p>
 
-      <p>
-        📧 <strong>E-mail:</strong>
-        ${escapeHTML(
-          pedido.customer_email || "-"
-        )}
-      </p>
+        <p>📦 <b>Recebimento:</b>
+          ${esc(pedido.delivery_type||pedido.type||"retirada")}
+        </p>
 
-      <p>
-        📅 <strong>Data agendada:</strong>
-        ${escapeHTML(
-          pedido.scheduled_date || "-"
-        )}
-      </p>
+        ${pedido.delivery_address?`
+          <p>📍 <b>Endereço:</b>
+          ${esc(pedido.delivery_address)}</p>
+        `:""}
 
-      <p>
-        ⏰ <strong>Horário:</strong>
-        ${escapeHTML(
-          pedido.scheduled_time || "-"
-        )}
-      </p>
+        <p>💳 <b>Pagamento:</b>
+          ${esc(pedido.payment_method||"-")}
+        </p>
 
-      <p>
-        📦 <strong>Tipo:</strong>
-        ${escapeHTML(
-          pedido.delivery_type ||
-          pedido.type ||
-          "retirada"
-        )}
-      </p>
+        <p>💰 <b>Total:</b>
+          R$ ${dinheiro(pedido.total)}
+        </p>
 
-      ${
-        pedido.delivery_address
-        ? `
-          <p>
-            📍 <strong>Endereço:</strong>
-            ${escapeHTML(
-              pedido.delivery_address
-            )}
-          </p>
-        `
-        : ""
-      }
+        ${pedido.notes?`
+          <p>📝 <b>Observações:</b>
+          ${esc(pedido.notes)}</p>
+        `:""}
 
-      <p>
-        💳 <strong>Pagamento:</strong>
-        ${escapeHTML(
-          pedido.payment_method || "-"
-        )}
-      </p>
+      </div>
 
-      <p>
-        💰 <strong>Total:</strong>
-        R$ ${Number(
-          pedido.total || 0
-        )
-          .toFixed(2)
-          .replace(".", ",")}
-      </p>
+      <h3>🍰 Itens</h3>
 
-      ${
-        pedido.notes
-        ? `
-          <p>
-            📝 <strong>Observações:</strong>
-            ${escapeHTML(
-              pedido.notes
-            )}
-          </p>
-        `
-        : ""
-      }
+      ${itensHTML||"<p>Nenhum item encontrado.</p>"}
 
-    </div>
+      <label>Status</label>
 
+      <select onchange="alterarStatus(${pedido.id},this.value)">
 
-    <div class="pedido-produtos">
+        ${[
+          ["novo","Novo"],
+          ["confirmado","Confirmado"],
+          ["em_preparo","Em preparo"],
+          ["pronto","Pronto"],
+          ["entregue","Entregue"],
+          ["cancelado","Cancelado"]
+        ].map(x=>`
+          <option value="${x[0]}"
+            ${pedido.status===x[0]?"selected":""}>
+            ${x[1]}
+          </option>
+        `).join("")}
 
-      <h3>🍰 Produtos do pedido</h3>
+      </select>
 
-      ${itensHTML}
+      <div class="actions">
 
-    </div>
+        <button class="btn-success"
+          onclick="alterarStatus(${pedido.id},'confirmado')">
+          ✅ Confirmar
+        </button>
 
+        <button
+          onclick="alterarStatus(${pedido.id},'em_preparo')">
+          👩‍🍳 Em preparo
+        </button>
 
-    <label>
-      Alterar status
-    </label>
+        <button
+          onclick="alterarStatus(${pedido.id},'pronto')">
+          🎂 Pronto
+        </button>
 
-    <select
-      onchange="alterarStatusPedido(
-        ${pedido.id},
-        this.value
-      )"
-    >
+        <button
+          onclick="alterarStatus(${pedido.id},'entregue')">
+          📦 Entregue
+        </button>
 
-      <option
-        value="novo"
-        ${pedido.status === "novo" ? "selected" : ""}
-      >
-        Novo
-      </option>
+      </div>
 
-      <option
-        value="confirmado"
-        ${pedido.status === "confirmado" ? "selected" : ""}
-      >
-        Confirmado
-      </option>
-
-      <option
-        value="em_preparo"
-        ${pedido.status === "em_preparo" ? "selected" : ""}
-      >
-        Em preparo
-      </option>
-
-      <option
-        value="pronto"
-        ${pedido.status === "pronto" ? "selected" : ""}
-      >
-        Pronto
-      </option>
-
-      <option
-        value="entregue"
-        ${pedido.status === "entregue" ? "selected" : ""}
-      >
-        Entregue
-      </option>
-
-      <option
-        value="cancelado"
-        ${pedido.status === "cancelado" ? "selected" : ""}
-      >
-        Cancelado
-      </option>
-
-    </select>
-
-
-    <div class="pedido-acoes">
-
-      <button
-        onclick="alterarStatusPedido(
-          ${pedido.id},
-          'confirmado'
-        )"
-      >
-        ✅ Confirmar
+      <button class="btn-danger"
+        onclick="alterarStatus(${pedido.id},'cancelado')">
+        ❌ Cancelar pedido
       </button>
+    `;
 
-      <button
-        onclick="alterarStatusPedido(
-          ${pedido.id},
-          'em_preparo'
-        )"
-      >
-        👩‍🍳 Em preparo
-      </button>
-
-      <button
-        onclick="alterarStatusPedido(
-          ${pedido.id},
-          'pronto'
-        )"
-      >
-        🎂 Pronto
-      </button>
-
-      <button
-        onclick="alterarStatusPedido(
-          ${pedido.id},
-          'entregue'
-        )"
-      >
-        📦 Entregue
-      </button>
-
-    </div>
-
-
-    <button
-      class="danger"
-      onclick="cancelarPedido(${pedido.id})"
-    >
-      ❌ Cancelar pedido
-    </button>
-
-  `;
-
-  lista.appendChild(div);
-
-}
-
-
-async function buscarItensPedido(
-  orderId
-) {
-
-  const { data, error } =
-    await supabaseClient
-      .from("order_items")
-      .select(
-        "id, order_id, product_id, name, qty, price"
-      )
-      .eq(
-        "order_id",
-        orderId
-      )
-      .order(
-        "id",
-        {
-          ascending: true
-        }
-      );
-
-  if (error) {
-
-    console.error(
-      "Erro nos itens:",
-      error
-    );
-
-    return [];
-
+    area.appendChild(div);
   }
-
-  return data || [];
-
 }
 
+async function alterarStatus(id,status){
 
-async function alterarStatusPedido(
-  id,
-  status
-) {
+  const {error}=await db
+    .from("orders")
+    .update({status})
+    .eq("id",id);
 
-  const { error } =
-    await supabaseClient
-      .from("orders")
-      .update({
-        status: status
-      })
-      .eq(
-        "id",
-        id
-      );
-
-  if (error) {
-
-    alert(
-      "Erro ao alterar status:\n" +
-      error.message
-    );
-
-    console.error(error);
-
+  if(error){
+    alert("Erro: "+error.message);
     return;
   }
 
-  await carregarPedidos();
-
+  carregarPedidos();
 }
 
 
-async function cancelarPedido(id) {
-
-  if (
-    !confirm(
-      "Deseja realmente cancelar este pedido?"
-    )
-  ) {
-    return;
-  }
-
-  await alterarStatusPedido(
-    id,
-    "cancelado"
-  );
-
-}
-
-
-/* =========================
+/* ==============================
    CONFIGURAÇÕES
-========================= */
+============================== */
 
-async function abrirConfiguracoes() {
+async function configuracoes(){
 
-  esconderAreas();
+  $("painel").classList.add("hidden");
+  $("produtos").classList.add("hidden");
+  $("formProduto").classList.add("hidden");
+  $("pedidos").classList.add("hidden");
+  $("config").classList.remove("hidden");
 
-  document
-    .getElementById("configArea")
-    .classList.remove("hidden");
-
-  await carregarConfiguracoes();
-
+  carregarConfig();
 }
 
+async function carregarConfig(){
 
-async function carregarConfiguracoes() {
+  const {data,error}=await db
+    .from("store_settings")
+    .select("*")
+    .limit(1)
+    .maybeSingle();
 
-  const mensagem =
-    document.getElementById(
-      "configMessage"
-    );
-
-  const { data, error } =
-    await supabaseClient
-      .from("store_settings")
-      .select("*")
-      .limit(1)
-      .maybeSingle();
-
-  if (error) {
-
-    console.error(error);
-
-    mensagem.innerHTML =
-      '<div class="message">' +
-      "Erro ao carregar configurações:<br>" +
-      error.message +
-      "</div>";
-
+  if(error){
+    $("configMsg").innerHTML=
+      '<div class="message">Erro: '+esc(error.message)+'</div>';
     return;
   }
 
-  if (!data) {
+  if(!data)return;
 
-    mensagem.innerHTML =
-      '<div class="message">' +
-      "Nenhuma configuração cadastrada ainda." +
-      "</div>";
-
-    return;
-  }
-
-  document.getElementById(
-    "configNome"
-  ).value =
-    data.store_name || "";
-
-  document.getElementById(
-    "configDescricao"
-  ).value =
-    data.description || "";
-
-  document.getElementById(
-    "configTelefone"
-  ).value =
-    data.phone || "";
-
-  document.getElementById(
-    "configWhatsapp"
-  ).value =
-    data.whatsapp || "";
-
-  document.getElementById(
-    "configPix"
-  ).value =
-    data.pix_key || "";
-
-  document.getElementById(
-    "configTaxa"
-  ).value =
-    data.delivery_fee || 0;
-
-  document.getElementById(
-    "configHorario"
-  ).value =
-    data.opening_hours || "";
-
-  document.getElementById(
-    "configEndereco"
-  ).value =
-    data.address || "";
-
-  document.getElementById(
-    "configInstagram"
-  ).value =
-    data.instagram || "";
-
+  $("cfgNome").value=data.store_name||"";
+  $("cfgDescricao").value=data.description||"";
+  $("cfgTelefone").value=data.phone||"";
+  $("cfgWhatsapp").value=data.whatsapp||"";
+  $("cfgPix").value=data.pix_key||"";
+  $("cfgTaxa").value=data.delivery_fee||0;
+  $("cfgHorario").value=data.opening_hours||"";
+  $("cfgEndereco").value=data.address||"";
+  $("cfgInstagram").value=data.instagram||"";
 }
 
+async function salvarConfig(){
 
-async function salvarConfiguracoes() {
-
-  const mensagem =
-    document.getElementById(
-      "configMessage"
-    );
-
-  mensagem.innerHTML =
-    "Salvando...";
-
-  const { data: existente } =
-    await supabaseClient
-      .from("store_settings")
-      .select("id")
-      .limit(1)
-      .maybeSingle();
-
-  const configuracao = {
-
-    store_name:
-      document
-        .getElementById("configNome")
-        .value
-        .trim(),
-
-    description:
-      document
-        .getElementById("configDescricao")
-        .value
-        .trim(),
-
-    phone:
-      document
-        .getElementById("configTelefone")
-        .value
-        .trim(),
-
-    whatsapp:
-      document
-        .getElementById("configWhatsapp")
-        .value
-        .trim(),
-
-    pix_key:
-      document
-        .getElementById("configPix")
-        .value
-        .trim(),
-
-    delivery_fee:
-      Number(
-        document
-          .getElementById("configTaxa")
-          .value || 0
-      ),
-
-    opening_hours:
-      document
-        .getElementById("configHorario")
-        .value
-        .trim(),
-
-    address:
-      document
-        .getElementById("configEndereco")
-        .value
-        .trim(),
-
-    instagram:
-      document
-        .getElementById("configInstagram")
-        .value
-        .trim(),
-
-    updated_at:
-      new Date().toISOString()
-
+  const config={
+    store_name:$("cfgNome").value.trim(),
+    description:$("cfgDescricao").value.trim(),
+    phone:$("cfgTelefone").value.trim(),
+    whatsapp:$("cfgWhatsapp").value.trim(),
+    pix_key:$("cfgPix").value.trim(),
+    delivery_fee:Number($("cfgTaxa").value||0),
+    opening_hours:$("cfgHorario").value.trim(),
+    address:$("cfgEndereco").value.trim(),
+    instagram:$("cfgInstagram").value.trim(),
+    updated_at:new Date().toISOString()
   };
 
+  const {data:existente}=await db
+    .from("store_settings")
+    .select("id")
+    .limit(1)
+    .maybeSingle();
 
-  let resultado;
+  let result;
 
-  if (existente) {
+  if(existente){
 
-    resultado =
-      await supabaseClient
-        .from("store_settings")
-        .update(configuracao)
-        .eq(
-          "id",
-          existente.id
-        );
+    result=await db
+      .from("store_settings")
+      .update(config)
+      .eq("id",existente.id);
 
-  } else {
+  }else{
 
-    resultado =
-      await supabaseClient
-        .from("store_settings")
-        .insert(
-          configuracao
-        );
+    result=await db
+      .from("store_settings")
+      .insert(config);
 
   }
 
+  if(result.error){
 
-  if (resultado.error) {
-
-    console.error(
-      resultado.error
-    );
-
-    mensagem.innerHTML =
-      '<div class="message">' +
-      "Erro ao salvar:<br>" +
-      resultado.error.message +
-      "</div>";
+    $("configMsg").innerHTML=
+      '<div class="message">Erro: '+
+      esc(result.error.message)+
+      '</div>';
 
     return;
   }
 
-
-  mensagem.innerHTML =
-    '<div class="message">' +
-    "Configurações salvas com sucesso! ⚙️" +
-    "</div>";
-
+  $("configMsg").innerHTML=
+    '<div class="message">Configurações salvas! ⚙️</div>';
 }
 
 
-/* =========================
-   SEGURANÇA HTML
-========================= */
+/* ==============================
+   VERIFICAR SESSÃO
+============================== */
 
-function escapeHTML(valor) {
+(async function(){
 
-  return String(valor)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+  const {data}=await db.auth.getSession();
 
-}
+  if(data.session){
+
+    const {data:admin}=await db
+      .from("admin_users")
+      .select("user_id")
+      .eq("user_id",data.session.user.id)
+      .maybeSingle();
+
+    if(admin){
+
+      $("login").classList.add("hidden");
+      $("painel").classList.remove("hidden");
+
+    }
+  }
+
+})();
 
 </script>
 
 </body>
-  </html>
+</html>

@@ -387,8 +387,207 @@
       </div>
 
       <button class="secondary" onclick="carregarPedidos()">
-        🔄 Atualizar pedidos
-      </button>
+        async function carregarPedidos() {
+
+  const lista = document.getElementById("listaPedidos");
+
+  lista.innerHTML = "Carregando pedidos...";
+
+  try {
+
+    const resposta = await fetch(
+      SUPABASE_URL +
+      "/rest/v1/orders?select=*&order=id.desc",
+      {
+        method: "GET",
+
+        headers: {
+          "apikey": SUPABASE_KEY,
+          "Authorization": "Bearer " + SUPABASE_KEY
+        }
+      }
+    );
+
+    if (!resposta.ok) {
+
+      const erro = await resposta.text();
+
+      throw new Error(erro);
+    }
+
+    const pedidos = await resposta.json();
+
+    if (!pedidos.length) {
+
+      lista.innerHTML = `
+        <div class="pedido-vazio">
+          📦 Nenhum pedido recebido ainda.
+        </div>
+      `;
+
+      return;
+    }
+
+    lista.innerHTML = "";
+
+    for (const pedido of pedidos) {
+
+      const itens = await carregarItensPedido(pedido.id);
+
+      const itensHTML = itens.length
+        ? itens.map(item => `
+            <div class="pedido-item">
+              <span>
+                ${item.qty}x ${item.name}
+              </span>
+
+              <strong>
+                R$ ${Number(item.price || 0)
+                  .toFixed(2)
+                  .replace(".", ",")}
+              </strong>
+            </div>
+          `).join("")
+        : `
+          <div class="pedido-item">
+            Nenhum produto encontrado.
+          </div>
+        `;
+
+      const card = document.createElement("div");
+
+      card.className = "pedido-card";
+
+      card.innerHTML = `
+
+        <div class="pedido-topo">
+
+          <div>
+            <strong>
+              Pedido #${pedido.id}
+            </strong>
+
+            <small>
+              ${pedido.created_at
+                ? new Date(pedido.created_at)
+                    .toLocaleString("pt-BR")
+                : ""}
+            </small>
+          </div>
+
+          <span class="status">
+            ${pedido.status || "novo"}
+          </span>
+
+        </div>
+
+
+        <div class="pedido-info">
+
+          <p>
+            👤 <strong>Cliente:</strong>
+            ${pedido.customer_name || "-"}
+          </p>
+
+          <p>
+            📱 <strong>Telefone:</strong>
+            ${pedido.customer_phone || "-"}
+          </p>
+
+          <p>
+            📧 <strong>E-mail:</strong>
+            ${pedido.customer_email || "-"}
+          </p>
+
+          <p>
+            📅 <strong>Data:</strong>
+            ${pedido.scheduled_date || "-"}
+          </p>
+
+          <p>
+            ⏰ <strong>Horário:</strong>
+            ${pedido.scheduled_time || "-"}
+          </p>
+
+          <p>
+            📦 <strong>Tipo:</strong>
+            ${pedido.delivery_type || pedido.type || "retirada"}
+          </p>
+
+          ${
+            pedido.delivery_address
+              ? `
+                <p>
+                  📍 <strong>Endereço:</strong>
+                  ${pedido.delivery_address}
+                </p>
+              `
+              : ""
+          }
+
+          <p>
+            💳 <strong>Pagamento:</strong>
+            ${pedido.payment_method || "-"}
+          </p>
+
+          <p>
+            💰 <strong>Total:</strong>
+            R$ ${Number(pedido.total || 0)
+              .toFixed(2)
+              .replace(".", ",")}
+          </p>
+
+          ${
+            pedido.notes
+              ? `
+                <p>
+                  📝 <strong>Observações:</strong>
+                  ${pedido.notes}
+                </p>
+              `
+              : ""
+          }
+
+        </div>
+
+
+        <div class="pedido-produtos">
+
+          <h4>🍰 Produtos</h4>
+
+          ${itensHTML}
+
+        </div>
+
+
+        <div class="pedido-acoes">
+
+          <button
+            onclick="alterarStatusPedido(${pedido.id}, 'confirmado')"
+          >
+            ✅ Confirmar
+          </button>
+
+          <button
+            onclick="alterarStatusPedido(${pedido.id}, 'em_preparo')"
+          >
+            👩‍🍳 Em preparo
+          </button>
+
+          <button
+            onclick="alterarStatusPedido(${pedido.id}, 'pronto')"
+          >
+            🎂 Pronto
+          </button>
+
+          <button
+            onclick="alterarStatusPedido(${pedido.id}, 'entregue')"
+          >
+            📦 Finalizado
+          </button>
+
+        </div>
+    </button>
 
       <div id="listaPedidos">
         Carregando pedidos...
@@ -1368,5 +1567,84 @@
 
 </script>
 
+  pedido-card {
+  background: white;
+  border-radius: 16px;
+  padding: 18px;
+  margin-top: 15px;
+  box-shadow: 0 4px 15px rgba(0,0,0,.08);
+}
+
+.pedido-topo {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  border-bottom: 1px solid #eee;
+  padding-bottom: 12px;
+}
+
+.pedido-topo small {
+  display: block;
+  margin-top: 5px;
+  color: #777;
+}
+
+.status {
+  background: #f1dfbd;
+  color: #4b281d;
+  padding: 7px 10px;
+  border-radius: 20px;
+  font-size: 13px;
+}
+
+.pedido-info {
+  margin-top: 15px;
+}
+
+.pedido-info p {
+  margin: 8px 0;
+}
+
+.pedido-produtos {
+  margin-top: 15px;
+  padding-top: 12px;
+  border-top: 1px solid #eee;
+}
+
+.pedido-produtos h4 {
+  margin: 0 0 10px;
+}
+
+.pedido-item {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 0;
+}
+
+.pedido-acoes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 15px;
+}
+
+.pedido-acoes button {
+  padding: 10px;
+  border: 0;
+  border-radius: 8px;
+  background: #4b281d;
+  color: white;
+  cursor: pointer;
+}
+
+.pedido-vazio,
+.pedido-erro {
+  background: white;
+  padding: 25px;
+  border-radius: 12px;
+  margin-top: 15px;
+  text-align: center;
+}
 </body>
   </html>
